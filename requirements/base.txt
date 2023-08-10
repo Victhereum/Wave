@@ -1,0 +1,43 @@
+python-slugify==8.0.1  # https://github.com/un33k/python-slugify
+Pillow==10.0.0  # https://github.com/python-pillow/Pillow
+rcssmin==1.1.1  # https://github.com/ndparker/rcssmin
+argon2-cffi==21.3.0  # https://github.com/hynek/argon2_cffi
+whitenoise==6.5.0  # https://github.com/evansd/whitenoise
+redis==4.6.0  # https://github.com/redis/redis-py
+hiredis==2.2.3  # https://github.com/redis/hiredis-py
+celery==5.3.1  # pyup: < 6.0  # https://github.com/celery/celery
+django-celery-beat==2.5.0  # https://github.com/celery/django-celery-beat
+flower==2.0.0  # https://github.com/mher/flower
+uvicorn[standard]==0.23.1  # https://github.com/encode/uvicorn
+
+# Django
+# ------------------------------------------------------------------------------
+django==4.2.3  # pyup: < 5.0  # https://www.djangoproject.com/
+django-environ==0.10.0  # https://github.com/joke2k/django-environ
+django-model-utils==4.3.1  # https://github.com/jazzband/django-model-utils
+django-crispy-forms==2.0  # https://github.com/django-crispy-forms/django-crispy-forms
+crispy-bootstrap5==0.7  # https://github.com/django-crispy-forms/crispy-bootstrap5
+django-compressor==4.4  # https://github.com/django-compressor/django-compressor
+django-redis==5.3.0  # https://github.com/jazzband/django-redis
+# Django REST Framework
+djangorestframework==3.14.0  # https://github.com/encode/django-rest-framework
+django-cors-headers==4.2.0  # https://github.com/adamchainz/django-cors-headers
+# DRF-spectacular for api documentation
+drf-spectacular==0.26.4  # https://github.com/tfranzel/drf-spectacular
+
+# Authentication
+djoser==2.2.0 # https://github.com/sunscrapers/djoser
+djangorestframework-simplejwt==5.2.2 # https://github.com/jazzband/djangorestframework-simplejwt
+channels[daphne]==4.0.0
+channels-redis==4.0.0
+pyotp==2.9.0 # https://github.com/pyotp/pyotp
+twilio==8.5.0 # https://github.com/twilio/twilio-python
+django-filter==23.2 # https://github.com/carltongibson/django-filter/tree/main
+django-rest-knox==4.2.0
+moyasar==0.6.5
+openai==0.27.8
+openai-whisper==20230314
+django-auto-prefetch==1.4.0
+ffmpeg-python==0.2.0
+setuptools-rust==1.6.0
+dj-database-url==1.2.0

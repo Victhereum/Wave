@@ -1,0 +1,22 @@
+# General
+# ------------------------------------------------------------------------------
+USE_DOCKER=yes
+IPYTHONDIR=/app/.ipython
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
+
+# Celery
+# ------------------------------------------------------------------------------
+
+# Flower
+CELERY_FLOWER_USER=reocMFTVpanVbAvxCeLXACRnOwTFVZMP
+CELERY_FLOWER_PASSWORD=OTLWVpSP7rMduNsKs9csuhJbYx1CxmIhtyiMV9tzWg8U0WMp8vbU2WNnYTZE4zdH
+
+#TWILLIO
+TWILIO_ACCOUNT_SID=AC118eff3c177563e4f16512451de0a150
+TWILIO_AUTH_TOKEN=88616d269cfc441b053a8913d43898fd
+TWILIO_PHONE=12497004701
+MOYASAR_API_KEY=sk_test_zLGqM2UKa3fGDELto4mPb4HLvt6TpPeTeVU2JfgT
+OPEN_API_KEY=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
+OPEN_API_AUTHw=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
