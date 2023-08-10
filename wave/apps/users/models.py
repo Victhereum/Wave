@@ -1,22 +1,26 @@
-from typing import Any, Dict, Tuple
 from uuid import uuid4
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.db.models import CharField, BooleanField, IntegerField, Model
+from django.db.models import BooleanField, CharField, IntegerField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from wave.apps.users.managers import CustomUserManager
 from wave.utils.models import UIDTimeBasedModel
 
+
 def generate_id():
     return uuid4().hex
+
 
 class PhoneModel(UIDTimeBasedModel):
     mobile = CharField(blank=False, max_length=20, unique=True)
     is_verified = BooleanField(blank=False, default=False)
     counter = IntegerField(default=0, blank=False)
+
     def __str__(self):
         return str(self.mobile)
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
@@ -43,7 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         return reverse("users:detail", kwargs={"username": self.phone_no})
 
-    USERNAME_FIELD = 'phone_no'
+    USERNAME_FIELD = "phone_no"
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
@@ -51,12 +55,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.phone_no
 
-    def delete(self, using: Any = ..., keep_parents: bool = ...) -> Tuple[int, Dict[str, int]]:
+    def delete(self, using=..., keep_parents: bool = ...) -> tuple[int, dict[str, int]]:
         # Delete any reference in the PhoneModel table
         try:
             PhoneModel.objects.get(mobile=self.phone_no).delete()
         except PhoneModel.DoesNotExist:
             pass
         return super().delete(using, keep_parents)
-
-

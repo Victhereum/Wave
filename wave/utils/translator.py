@@ -1,14 +1,16 @@
 import openai
+
 # from django.conf import settings
 
 # OPEN_API_KEY = settings.OPEN_API_KEY
 # Initialize your OpenAI API key
 openai.api_key = "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"
 
+
 def transcribe_media(media_file_path):
     try:
         # Read the media file
-        with open(media_file_path, 'rb') as f:
+        with open(media_file_path, "rb") as f:
             # media_file_content = f.read()
 
             # Use OpenAI's Whisper API for speech-to-text transcription
@@ -18,7 +20,7 @@ def transcribe_media(media_file_path):
             )
 
             # Extract the transcribed text from the API response
-            transcription_text = transcription_result['choices'][0]['text']
+            transcription_text = transcription_result["choices"][0]["text"]
 
         return transcription_text
 
@@ -30,6 +32,7 @@ def transcribe_media(media_file_path):
         print(f"An unexpected error occurred: {e}")
 
     return None
+
 
 # # Example usage:
 media_file_path = "./Burna-Boy-Kilometre-(TrendyBeatz.com).mp3"  # Replace this with the actual media file path

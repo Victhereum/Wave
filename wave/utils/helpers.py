@@ -1,5 +1,7 @@
-from django.utils.timezone import datetime
 from django.conf import settings
+from django.utils.timezone import datetime
+
+
 class GenerateKey:
     @staticmethod
     def returnValue(phone):

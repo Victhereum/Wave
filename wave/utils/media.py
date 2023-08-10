@@ -4,6 +4,7 @@ from io import BytesIO
 from time import time
 
 from celery.utils.log import get_task_logger
+from core.utils.validators import _VALID_AUDIO_EXTENSIONS, _VALID_IMAGE_EXTENSIONS, _VALID_VIDEO_EXTENSIONS
 from django.conf import settings
 from django.core.files.base import File
 from django.core.files.storage import FileSystemStorage
@@ -11,12 +12,6 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.timezone import now
 from PIL import Image
-
-from core.utils.validators import (
-    _VALID_AUDIO_EXTENSIONS,
-    _VALID_IMAGE_EXTENSIONS,
-    _VALID_VIDEO_EXTENSIONS,
-)
 
 logger = get_task_logger(__name__)
 
@@ -76,9 +71,7 @@ class MediaHelper:
     def get_document_upload_path(model, filename):
         """generate media path for all medias to prevent duplicate"""
         ext = filename.rsplit(".", 1)
-        return MediaHelper._upload_path_file_only(
-            model, f"{ext}/{now().date()}", filename
-        )
+        return MediaHelper._upload_path_file_only(model, f"{ext}/{now().date()}", filename)
 
     @staticmethod
     def upload_path_finder(model, filename):

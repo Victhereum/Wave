@@ -1,10 +1,11 @@
-from djoser.serializers import UserCreateSerializer
 from django.db.transaction import atomic
-
+from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
-from wave.utils.custom_exceptions import CustomError
-from wave.apps.users.models import PhoneModel, User
+
+from wave.apps.users.models import PhoneModel
+from wave.apps.users.models import User
 from wave.apps.users.models import User as UserType
+from wave.utils.custom_exceptions import CustomError
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -13,7 +14,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('phone_no', 'name')
+        fields = ("phone_no", "name")
 
     @atomic
     def create(self, validated_data):
@@ -22,6 +23,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
             raise CustomError.BadRequest(detail="Phone number already exist")
         user = User.objects.create_user(phone_no=phone.mobile, name=validated_data["name"])
         return user
+
 
 class CustomUserSerializer(serializers.ModelSerializer[UserType]):
     class Meta:
@@ -32,10 +34,9 @@ class CustomUserSerializer(serializers.ModelSerializer[UserType]):
             "url": {"view_name": "api:user-detail", "lookup_field": "username"},
         }
 
+
 class CustomUserCreateSerializer(UserCreateSerializer):
-    re_password = serializers.CharField(
-        style={"input_type": "password"}, required=True, write_only=True
-    )
+    re_password = serializers.CharField(style={"input_type": "password"}, required=True, write_only=True)
     phone_no = serializers.CharField(required=True)
     name = serializers.CharField(required=True)
 
@@ -44,9 +45,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         attrs = super().validate(attrs)
         password = attrs.get("password")
         if password != re_password:
-            raise serializers.ValidationError(
-                {"error": "The passwords entered do not match."}
-            )
+            raise serializers.ValidationError({"error": "The passwords entered do not match."})
         return attrs
 
     class Meta(UserCreateSerializer.Meta):
@@ -56,20 +55,27 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             "re_password": {"write_only": True},
         }
 
-class GetUserSerializer(serializers.ModelSerializer):
 
+class GetUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "phone_no", "name",)
+        fields = (
+            "id",
+            "phone_no",
+            "name",
+        )
+
 
 class PhoneSerializer(serializers.Serializer):
     phone_no = serializers.CharField(required=True)
+
     class Meta:
-        fields = ("phone_no")
+        fields = "phone_no"
+
 
 class OTPSerializer(serializers.Serializer):
     phone_no = serializers.CharField(required=True)
     otp = serializers.CharField(required=True)
+
     class Meta:
         fields = ("phone", "otp")
-

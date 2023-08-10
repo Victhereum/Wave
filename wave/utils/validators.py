@@ -39,10 +39,7 @@ _VALID_IMAGE_EXTENSIONS = [
 ]
 
 _ALL_VALID_EXTENSIONS = (
-    _VALID_FILE_EXTENSIONS
-    + _VALID_VIDEO_EXTENSIONS
-    + _VALID_AUDIO_EXTENSIONS
-    + _VALID_IMAGE_EXTENSIONS
+    _VALID_FILE_EXTENSIONS + _VALID_VIDEO_EXTENSIONS + _VALID_AUDIO_EXTENSIONS + _VALID_IMAGE_EXTENSIONS
 )
 
 
@@ -60,10 +57,7 @@ class FileValidatorHelper:
         ext = os.path.splitext(obj.name)[1]
 
         if not ext.lower() in _VALID_FILE_EXTENSIONS:
-            raise ValidationError(
-                "Only pdf, doc, docx, xlsx, xls, jpg, pptx "
-                + "and png file is supported."
-            )
+            raise ValidationError("Only pdf, doc, docx, xlsx, xls, jpg, pptx " + "and png file is supported.")
 
     @staticmethod
     def validate_multiple_filetype_extension(obj):
@@ -95,12 +89,8 @@ class FileValidatorHelper:
         filesize = obj.size
 
         if filesize > settings.MAX_AUDIO_SIZE:
-            mb = (
-                settings.MAX_AUDIO_SIZE / 1048576
-            )  # Convert the file size from bytes to MB
-            raise ValidationError(
-                f"The maximum video size that can be uploaded is {mb}MB"
-            )
+            mb = settings.MAX_AUDIO_SIZE / 1048576  # Convert the file size from bytes to MB
+            raise ValidationError(f"The maximum video size that can be uploaded is {mb}MB")
 
         return obj
 
@@ -113,9 +103,7 @@ class FileValidatorHelper:
         ext = os.path.splitext(obj.name)[1]
 
         if not ext.lower() in _VALID_VIDEO_EXTENSIONS:
-            raise ValidationError(
-                "Only avi, mp4, mov, wmv, flv, mkv " + "and webm file is supported."
-            )
+            raise ValidationError("Only avi, mp4, mov, wmv, flv, mkv " + "and webm file is supported.")
 
     @staticmethod
     def validate_video_size(obj):
@@ -125,12 +113,8 @@ class FileValidatorHelper:
         filesize = obj.size
 
         if filesize > settings.MAX_VIDEO_SIZE:
-            mb = (
-                settings.MAX_VIDEO_SIZE / 1048576
-            )  # Convert the file size from bytes to MB
-            raise ValidationError(
-                f"The maximum video size that can be uploaded is {mb}MB"
-            )
+            mb = settings.MAX_VIDEO_SIZE / 1048576  # Convert the file size from bytes to MB
+            raise ValidationError(f"The maximum video size that can be uploaded is {mb}MB")
 
         return obj
 
@@ -142,12 +126,8 @@ class FileValidatorHelper:
         filesize = obj.size
 
         if filesize > settings.MAX_VIDEO_SIZE:
-            mb = (
-                settings.MAX_VIDEO_SIZE / 1048576
-            )  # Convert the file size from bytes to MB
-            raise ValidationError(
-                f"The maximum file size that can be uploaded is {mb}MB"
-            )
+            mb = settings.MAX_VIDEO_SIZE / 1048576  # Convert the file size from bytes to MB
+            raise ValidationError(f"The maximum file size that can be uploaded is {mb}MB")
 
         return obj
 

@@ -1,5 +1,5 @@
 import requests
-from rest_framework.exceptions import APIException
+
 
 class MoyasarAPIWrapper:
     def __init__(self, api_key):
@@ -39,6 +39,7 @@ class MoyasarAPIWrapper:
         data = {"amount": amount} if amount else None
         return self._make_request("post", f"v1/payments/{payment_id}/refund", data)
 
+
 # Example usage:
 if __name__ == "__main__":
     # Replace 'YOUR_API_KEY' with your actual API key from Moyasar
@@ -69,5 +70,3 @@ if __name__ == "__main__":
     # Refund a payment (optional)
     refund_response = api.refund_payment(payment_id, amount=5000)  # Refunding half of the payment amount
     print("Refund response:", refund_response)
-
-import moyasar

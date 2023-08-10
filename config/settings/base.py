@@ -2,8 +2,8 @@
 Base settings to build other settings files upon.
 """
 import os
-from pathlib import Path
 import ssl
+from pathlib import Path
 
 import environ
 
@@ -255,13 +255,9 @@ if USE_TZ:
     # https://docs.celeryq.dev/en/stable/userguide/configuration.html#std:setting-timezone
     CELERY_TIMEZONE = TIME_ZONE
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#std:setting-broker_url
-CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://localhost:6377") or env(
-    "REDIS_URL"
-)
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://localhost:6377") or env("REDIS_URL")
 REDIS_CA_CERT_FILE_PATH: str = env("REDIS_CA_CERT_FILE_PATH", default=None)
-REDIS_CA_CERT_FILE_EXISTS = REDIS_CA_CERT_FILE_PATH and os.path.exists(
-    REDIS_CA_CERT_FILE_PATH
-)
+REDIS_CA_CERT_FILE_EXISTS = REDIS_CA_CERT_FILE_PATH and os.path.exists(REDIS_CA_CERT_FILE_PATH)
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#std:setting-result_backend
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 REDIS_IS_USING_SSL = CELERY_RESULT_BACKEND.startswith("rediss")
@@ -312,7 +308,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         # "rest_framework.authentication.TokenAuthentication",
-        'knox.auth.TokenAuthentication',
+        "knox.auth.TokenAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -353,7 +349,7 @@ API_VERSION = env("API_VERSION", default="v1")
 
 TWILIO_ACCOUNT_SID = env("TWILIO_ACCOUNT_SID", default="xxx")
 TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN", default="xxx")
-TWILIO_PHONE = env("TWILIO_PHONE", default='xxx')
-MOYASAR_API_KEY = env("MOYASAR_API_KEY", default='xxx')
+TWILIO_PHONE = env("TWILIO_PHONE", default="xxx")
+MOYASAR_API_KEY = env("MOYASAR_API_KEY", default="xxx")
 MAX_VIDEO_SIZE = 25_000_000
 OPEN_API_KEY = env("OPEN_API_KEY", default="xxx")

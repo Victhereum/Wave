@@ -1,6 +1,8 @@
 import whisper
 
-model = whisper.load_model("small",)
+model = whisper.load_model(
+    "small",
+)
 
 result = model.transcribe("./yo.mp3", task="transcribe")
 print(result)

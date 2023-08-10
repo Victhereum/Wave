@@ -1,23 +1,20 @@
 import base64
-from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.timezone import datetime
-import pyotp
 
+import pyotp
+from django.contrib.auth import get_user_model
+from django.utils.timezone import datetime
+from knox.models import AuthToken
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.exceptions import APIException, NotFound, PermissionDenied
 from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.views import APIView
-from rest_framework.exceptions import PermissionDenied, NotFound, APIException
-from twilio.base.exceptions import TwilioRestException
+from rest_framework.viewsets import GenericViewSet
 
-from knox.models import AuthToken
-
-from wave.apps.users.api.serializers import CustomUserSerializer, CreateUserSerializer, GetUserSerializer, OTPSerializer, PhoneSerializer
+from wave.apps.users.api.serializers import CreateUserSerializer, GetUserSerializer, OTPSerializer, PhoneSerializer
 from wave.apps.users.models import PhoneModel
 from wave.utils.custom_exceptions import CustomError
 from wave.utils.twillio import send_otp
@@ -48,9 +45,12 @@ class RegistrationAPI(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        return Response({
-            "detail": GetUserSerializer(user, context=self.get_serializer_context()).data,
-        })
+        return Response(
+            {
+                "detail": GetUserSerializer(user, context=self.get_serializer_context()).data,
+            }
+        )
+
 
 class generateKey:
     @staticmethod
@@ -72,7 +72,9 @@ class PhoneNumberView(APIView):
         except User.DoesNotExist:
             raise PermissionDenied(detail="User does not exist, kindly create one")
         try:
-            mobile = PhoneModel.objects.get(mobile=user.phone_no)  # if mobile already exists the take this else create New One
+            mobile = PhoneModel.objects.get(
+                mobile=user.phone_no
+            )  # if mobile already exists the take this else create New One
         except PhoneModel.DoesNotExist:
             raise PermissionDenied(detail="Phone number does not exist, kindly create an account with it")
         mobile.counter += 1  # Update Counter At every Call

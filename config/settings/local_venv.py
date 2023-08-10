@@ -1,7 +1,7 @@
 import dj_database_url
 
 from .base import *  # noqa
-from .base import env, BASE_DIR
+from .base import BASE_DIR, env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -77,4 +77,4 @@ CELERY_TASK_EAGER_PROPAGATES = True
 # ------------------------------------------------------------------------------
 TWILIO_ACCOUNT_SID = env("TWILIO_ACCOUNT_SID", default="AC118eff3c177563e4f16512451de0a150")
 TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN", default="88616d269cfc441b053a8913d43898fd")
-TWILIO_PHONE = env("TWILIO_PHONE", default='12497004701')
+TWILIO_PHONE = env("TWILIO_PHONE", default="12497004701")
