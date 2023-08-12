@@ -6,7 +6,7 @@ from wave.apps.payments.models import Payments
 @admin.register(Payments)
 class PaymentsAdmin(admin.ModelAdmin):
     list_display = ("user", "plan", "status")
-    list_filter = ("plan", "status")
+    list_filter = ("plan",)
     search_fields = ("user__name", "user__phone_no")
     readonly_fields = ("user", "plan", "status", "metadata")
 
