@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Activate the virtual environment
-source /opt/render/project/src/venv/bin/activate
 
 # Start Gunicorn
 exec gunicorn config.wsgi:application \
