@@ -1,11 +1,15 @@
+from datetime import timedelta
 from uuid import uuid4
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.db.models import BooleanField, CharField, IntegerField
+from django.db.models import BooleanField, CharField, DateTimeField, IntegerField
 from django.urls import reverse
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
+from wave.apps.payments.models import Payments
 from wave.apps.users.managers import CustomUserManager
+from wave.utils.choices import FreeModeChoices, PaymentPlans, PaymentStatus
 from wave.utils.models import UIDTimeBasedModel
 
 
@@ -37,6 +41,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = None  # type: ignore
     is_active = BooleanField(default=True)
     is_staff = BooleanField(default=False)
+    free_mode_activated = BooleanField(default=False)
+    free_mode_activated_at = DateTimeField(null=True)
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
@@ -54,6 +60,65 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.phone_no
+
+    def _last_payment(self) -> Payments:
+        payments = self.user_payments
+        if payments:
+            return payments.first()
+        return None
+
+    def _free_mode_status(self) -> str:
+        if self.free_mode_activated:
+            time_difference: timedelta = now() - self.free_mode_activated_at
+            if time_difference.days > 3:
+                return FreeModeChoices.EXPIRED
+            return FreeModeChoices.ACTIVE
+        return FreeModeChoices.NOT_USED
+
+    def _has_active_subscription(self) -> bool:
+        # Get the last payment made by this user
+        # Differentiate the type
+        # If the the type is monthly
+        # Get the time difference by month(30 days)
+        # If the the type is yearly
+        # Get the time difference by year(365 days)
+        if self._last_payment():
+            last_payment = self._last_payment()
+            time_difference: timedelta = now() - last_payment.created_at
+            payment_type = last_payment.plan
+            # If the last payment status, didn't go through
+            # return False
+            if last_payment.status != PaymentStatus.PAID:
+                return False
+            if payment_type == PaymentPlans.MONTHLY:
+                if time_difference.days > 30:
+                    return False
+                return True
+            elif payment_type == PaymentPlans.YEARLY:
+                if time_difference.days > 365:
+                    return False
+                return True
+            else:
+                return False
+        return False
+
+    @property
+    def has_active_subscription(self):
+        return self._has_active_subscription
+
+    @property
+    def free_mode_status(self):
+        return self._free_mode_status()
+
+    @property
+    def can_download(self) -> bool:
+        if self._free_mode_status() == FreeModeChoices.ACTIVE:
+            return True
+        elif self._free_mode_status() in [FreeModeChoices.EXPIRED, FreeModeChoices.NOT_USED]:
+            # If the user has an active subscription return True
+            # Else return False
+            return self._has_active_subscription()
+        return False
 
     def delete(self, using=..., keep_parents: bool = ...) -> tuple[int, dict[str, int]]:
         # Delete any reference in the PhoneModel table

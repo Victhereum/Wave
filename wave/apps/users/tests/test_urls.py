@@ -1,6 +1,6 @@
 from django.urls import resolve, reverse
 
-from wave.users.models import User
+from wave.apps.users.models import User
 
 
 def test_detail(user: User):

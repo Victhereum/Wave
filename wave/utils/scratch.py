@@ -4,7 +4,7 @@ model = whisper.load_model(
     "small",
 )
 
-result = model.transcribe("./yo.mp3", task="transcribe")
+result = model.transcribe("./ar.mp3", task="transcribe")
 print(result)
 
 # # load audio and pad/trim it to fit 30 seconds

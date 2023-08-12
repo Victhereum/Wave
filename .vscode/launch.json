@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+
+      {
+          "name": "Python: Django in Docker",
+          "type": "python",
+          "request": "attach",
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "/app",
+          "port": 8000,
+          "host": "localhost",
+          "pathMappings": [
+              {
+                  "localRoot": "${workspaceFolder}",
+                  "remoteRoot": "/app"
+              }
+          ]
+      }
+  ]
+}

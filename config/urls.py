@@ -22,11 +22,11 @@ urlpatterns += [
     # API base url
     path(f"api/{settings.API_VERSION}/", include("config.api_router")),
     # DRF auth token
-    path(f"api/{settings.API_VERSION}/auth/", include("knox.urls")),
+    # path(f"api/{settings.API_VERSION}/auth/", include("knox.urls")),
     # path(f"api/{settings.API_VERSION}/auth/", include("djoser.urls.jwt")),
-    path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
+    path(f"api/{settings.API_VERSION}/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     path(
-        "api/docs/",
+        f"api/{settings.API_VERSION}/docs/",
         SpectacularSwaggerView.as_view(url_name="api-schema"),
         name="api-docs",
     ),

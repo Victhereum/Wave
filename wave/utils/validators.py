@@ -18,6 +18,7 @@ _VALID_AUDIO_EXTENSIONS = [
     ".mp3",
     ".aac",
     ".wav",
+    ".m4a",
 ]
 
 _VALID_VIDEO_EXTENSIONS = [
@@ -29,6 +30,8 @@ _VALID_VIDEO_EXTENSIONS = [
     ".mp4",
     ".webm",
     ".wmv",
+    ".m4a",
+    ".mp3",
 ]
 
 _VALID_IMAGE_EXTENSIONS = [

@@ -1,7 +1,6 @@
 import base64
 
 import pyotp
-from django.contrib.auth import get_user_model
 from django.utils.timezone import datetime
 from knox.models import AuthToken
 from rest_framework import status
@@ -15,11 +14,9 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from wave.apps.users.api.serializers import CreateUserSerializer, GetUserSerializer, OTPSerializer, PhoneSerializer
-from wave.apps.users.models import PhoneModel
+from wave.apps.users.models import PhoneModel, User
 from wave.utils.custom_exceptions import CustomError
 from wave.utils.twillio import send_otp
-
-User = get_user_model()
 
 
 class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet):
@@ -35,6 +32,17 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
     def me(self, request):
         serializer = GetUserSerializer(request.user, context={"request": request})
         return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+    @action(detail=False, methods=["patch"])
+    def free_mode(self, request, *args, **kwargs):
+        user: User = request.user
+
+        if not user.free_mode_activated_at:
+            user.free_mode_activated = True
+            user.free_mode_activated_at = datetime.now()
+            user.save()
+            return Response(data={"detail": "free mode activated"}, status=status.HTTP_202_ACCEPTED)
+        raise PermissionDenied(detail="You have exhausted your 3-day trial period")
 
 
 class RegistrationAPI(GenericAPIView):

@@ -1,6 +1,6 @@
 from django.urls import reverse
 
-from wave.users.models import User
+from wave.apps.users.models import User
 
 
 class TestUserAdmin:

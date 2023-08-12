@@ -1,8 +1,8 @@
 import pytest
 from rest_framework.test import APIRequestFactory
 
-from wave.users.api.views import UserViewSet
-from wave.users.models import User
+from wave.apps.users.api.views import UserViewSet
+from wave.apps.users.models import User
 
 
 class TestUserViewSet:

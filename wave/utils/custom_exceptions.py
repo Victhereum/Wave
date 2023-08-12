@@ -12,3 +12,8 @@ class CustomError:
         status_code = status.HTTP_400_BAD_REQUEST
         default_detail = "bad request"
         default_code = "bad_request"
+
+    class EmptyResponse(APIException):
+        status_code = status.HTTP_200_OK
+        default_detail = []
+        default_code = status.HTTP_200_OK

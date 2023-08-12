@@ -49,7 +49,7 @@ class UIDTimeBasedModel(TimeBasedModel):
 
     class Meta(auto_prefetch.Model.Meta):
         abstract = True
-        ordering = ["created_at"]
+        ordering = ["-created_at"]
 
     def __str__(self):
         return self.id

@@ -14,7 +14,10 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("phone_no", "name")
+        fields = (
+            "phone_no",
+            "name",
+        )
 
     @atomic
     def create(self, validated_data):
@@ -57,12 +60,19 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class GetUserSerializer(serializers.ModelSerializer):
+    has_active_subscription = serializers.ReadOnlyField()
+    free_mode_status = serializers.ReadOnlyField()
+    can_download = serializers.ReadOnlyField()
+
     class Meta:
         model = User
         fields = (
             "id",
             "phone_no",
             "name",
+            "has_active_subscription",
+            "free_mode_status",
+            "can_download",
         )
 
 

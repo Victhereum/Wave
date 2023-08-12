@@ -77,6 +77,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "wave.apps.users.apps.UsersConfig",
+    "wave.apps.payments.apps.PaymentsConfig",
+    "wave.apps.video.apps.VideoConfig",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -324,32 +326,14 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Wave API",
     "DESCRIPTION": "Documentation of API endpoints of Wave",
     "VERSION": "1.0.0",
-    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
 API_VERSION = env("API_VERSION", default="v1")
-# DJOSER = {
-#     "SERIALIZERS": {
-#         "user_create": "wave.apps.users.api.serializers.CustomUserCreateSerializer",
-#         "user": "wave.apps.users.api.serializers.CustomUserSerializer",
-#         "current_user": "wave.apps..users.api.serializers.GetUser",
-#     },
-#     "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
-#     "ACTIVATION_URL": "activate/{uid}/{token}",
-#     "SEND_ACTIVATION_EMAIL": False,
-#     "SEND_CONFIRMATION_EMAIL": False,
-#     "PASSWORD_CHANGED_EMAIL_CONFIRMATION": False,
-#     "USERNAME_CHANGED_EMAIL_CONFIRMATION": False,
-#     # "USER_CREATE_PASSWORD_RETYPE": True,
-#     "SET_PASSWORD_RETYPE": False,
-#     "PASSWORD_RESET_CONFIRM_RETYPE": False,
-# }
-
-
 TWILIO_ACCOUNT_SID = env("TWILIO_ACCOUNT_SID", default="xxx")
 TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN", default="xxx")
 TWILIO_PHONE = env("TWILIO_PHONE", default="xxx")
 MOYASAR_API_KEY = env("MOYASAR_API_KEY", default="xxx")
 MAX_VIDEO_SIZE = 25_000_000
-OPEN_API_KEY = env("OPEN_API_KEY", default="xxx")
+OPEN_AI_KEY = env("OPEN_AI_KEY", default="xxx")

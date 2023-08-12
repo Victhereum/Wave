@@ -4,7 +4,6 @@ from io import BytesIO
 from time import time
 
 from celery.utils.log import get_task_logger
-from core.utils.validators import _VALID_AUDIO_EXTENSIONS, _VALID_IMAGE_EXTENSIONS, _VALID_VIDEO_EXTENSIONS
 from django.conf import settings
 from django.core.files.base import File
 from django.core.files.storage import FileSystemStorage
@@ -12,6 +11,8 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.timezone import now
 from PIL import Image
+
+from wave.utils.validators import _VALID_AUDIO_EXTENSIONS, _VALID_IMAGE_EXTENSIONS, _VALID_VIDEO_EXTENSIONS
 
 logger = get_task_logger(__name__)
 
