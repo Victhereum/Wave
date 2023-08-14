@@ -1,6 +1,7 @@
 import base64
 
 import pyotp
+from django.conf import settings
 from django.utils.timezone import datetime
 from rest_framework import status
 from rest_framework.decorators import action
@@ -10,8 +11,6 @@ from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateMode
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
-# from knox.models import AuthToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from wave.apps.users.api.serializers import CreateUserSerializer, GetUserSerializer, OTPSerializer, PhoneSerializer
@@ -99,10 +98,15 @@ class PhoneNumberView(GenericAPIView):
         # Using Multi-Threading send the OTP Using Messaging Services like Twilio or Fast2sms
         otp = OTP.at(mobile.counter)
         try:
-            send_otp(mobile.mobile, otp)
+            if settings.DEBUG:
+                return Response({"OTP": otp}, status=200)  # Just for demonstration
+
+            if settings.USE_TWILIO:
+                send_otp(mobile.mobile, otp)
+                return Response({"detail": "OTP sent"}, status=status.HTTP_200_OK)  # Just for demonstration
+            return Response({"OTP": otp}, status=200)  # Just for demonstration
         except Exception as e:
             raise APIException(detail=f"Please try again {e}")
-        return Response({"OTP": otp}, status=200)  # Just for demonstration
 
     def post(self, request, *args, **kwargs):
         serializer = OTPSerializer(data=request.data)

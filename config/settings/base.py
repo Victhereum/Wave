@@ -323,7 +323,7 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-SIMPLE_JWT = {"AUTH_HEADER_TYPES": ("Bearer",), "ACCESS_TOKEN_LIFETIME": timedelta(days=1)}
+SIMPLE_JWT = {"AUTH_HEADER_TYPES": ("Bearer",), "ACCESS_TOKEN_LIFETIME": timedelta(days=30)}
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
 
@@ -344,3 +344,4 @@ TWILIO_PHONE = env("TWILIO_PHONE", default="xxx")
 MOYASAR_API_KEY = env("MOYASAR_API_KEY", default="xxx")
 MAX_VIDEO_SIZE = 25_000_000
 OPEN_AI_KEY = env("OPEN_AI_KEY", default="xxx")
+USE_TWILIO = env("USE_TWILIO", default=True)
