@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.conf import settings
 from django.db.models.query import QuerySet
 from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
@@ -125,6 +126,12 @@ class PaymentViewSet(ModelViewSet):
         self.check_object_permissions(self.request, instance)
         return instance
 
+    def get_plan_amount(self, plan):
+        if plan == PaymentPlans.MONTHLY:
+            return settings.MONTHLY_PLAN_PRICE
+        else:
+            return settings.ANNUAL_PLAN_PRICE
+
     @atomic
     def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
@@ -141,8 +148,8 @@ class PaymentViewSet(ModelViewSet):
         user = request.user
         serializer = PaymentSerializers.CreatePayment(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            amount = serializer.validated_data.get("amount", None)
             plan = serializer.validated_data.get("plan", None)
+            amount = self.get_plan_amount(plan=plan)
             currency = serializer.validated_data.get("currency", "SAR")
             month_text = self.month_number_to_text(month_number=int(datetime.now().date().month))
             plan_description = month_text if plan == PaymentPlans.MONTHLY else datetime.now().date().year

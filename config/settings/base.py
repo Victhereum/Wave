@@ -345,3 +345,5 @@ MOYASAR_API_KEY = env("MOYASAR_API_KEY", default="xxx")
 MAX_VIDEO_SIZE = 25_000_000
 OPEN_AI_KEY = env("OPEN_AI_KEY", default="xxx")
 USE_TWILIO = env("USE_TWILIO", default=True)
+MONTHLY_PLAN_PRICE = env.int("MONTHLY_PLAN_PRICE", default=1)
+ANNUAL_PLAN_PRICE = env.int("ANNUAL_PLAN_PRICE", default=1)

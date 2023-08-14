@@ -8,11 +8,10 @@ class PaymentSerializers:
     class CreatePayment(serializers.Serializer):
         currency = serializers.CharField(required=False, write_only=True)
         source = serializers.JSONField(required=True)
-        amount = serializers.CharField(required=True)
         plan = serializers.ChoiceField(choices=PaymentPlans.choices, required=True)
 
         class Meta:
-            fields = ("id", "plan", "amount", "currency", "source")
+            fields = ("id", "plan", "currency", "source")
 
     class GetPayment(serializers.ModelSerializer):
         # status = serializers.ReadOnlyField()
