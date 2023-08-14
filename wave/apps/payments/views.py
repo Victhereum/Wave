@@ -39,10 +39,10 @@ class PaymentViewSet(ModelViewSet):
       Command: /payments/create
 
       Quest Tips:
-      Channel your inner spellcaster to define the amount and payment plan. Our payment wizards
+      Channel your inner spellcaster to defining your payment plan. Our payment wizards
       will craft a seamless journey, complete with callbacks that align with your heroic quest.
 
-    - list: Embark on a treasure hunt that reveals the riches of your VideoVerse accomplishments,
+    - list: Embark on a treasure hunt that reveals the riches of your WaveVerse accomplishments,
       guarded by loyal pagination guardians! 🗺️📜
       Explorer's Scroll: GET
       Command: /payments
