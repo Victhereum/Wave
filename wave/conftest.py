@@ -1,7 +1,7 @@
 import pytest
 
-from wave.users.models import User
-from wave.users.tests.factories import UserFactory
+from wave.apps.users.models import User
+from wave.apps.users.tests.factories import UserFactory
 
 
 @pytest.fixture(autouse=True)

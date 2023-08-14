@@ -2,7 +2,6 @@ import base64
 
 import pyotp
 from django.utils.timezone import datetime
-from knox.models import AuthToken
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException, NotFound, PermissionDenied
@@ -10,8 +9,10 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
+
+# from knox.models import AuthToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from wave.apps.users.api.serializers import CreateUserSerializer, GetUserSerializer, OTPSerializer, PhoneSerializer
 from wave.apps.users.models import PhoneModel, User
@@ -66,10 +67,15 @@ class generateKey:
         return str(phone) + str(datetime.date(datetime.now())) + "Some Random Secret Key"
 
 
-class PhoneNumberView(APIView):
+class PhoneNumberView(GenericAPIView):
     # authentication_classes = None
     permission_classes = [AllowAny]
+
     # Get to Create a call for OTP
+    def get_serializer_class(self):
+        if self.request.method.lower() == "post":
+            return OTPSerializer
+        return PhoneSerializer
 
     def get(self, request, *args, **kwargs):
         serializer = PhoneSerializer(data=request.data)
@@ -116,7 +122,7 @@ class PhoneNumberView(APIView):
             mobile.is_verified = True
             mobile.counter += 1
             mobile.save()
-            token = AuthToken.objects.create(user)[1]
-            response = {"token": token}
+            token = RefreshToken.for_user(user)
+            response = {"refresh": str(token), "access": str(token.access_token)}
             return Response(response, status=200)
         raise CustomError.BadRequest(detail="Wrong OTP")

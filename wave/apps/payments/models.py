@@ -13,13 +13,13 @@ class Payments(UIDTimeBasedModel):
     plan = models.CharField(max_length=15, choices=PaymentPlans.choices, default=PaymentPlans.MONTHLY)
 
     @property
-    def metadata(self):
+    def metadata(self) -> dict:
         if self.id:
             return payment.get_payment(self.id)
         return {}
 
     @property
-    def status(self):
+    def status(self) -> str:
         if self.metadata:
             return self.metadata.get("status", None)
 

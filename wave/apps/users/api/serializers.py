@@ -34,7 +34,7 @@ class CustomUserSerializer(serializers.ModelSerializer[UserType]):
         fields = ["phone_no", "name", "url"]
 
         extra_kwargs = {
-            "url": {"view_name": "api:user-detail", "lookup_field": "username"},
+            "url": {"view_name": "api:user-detail", "lookup_field": "id"},
         }
 
 
@@ -60,9 +60,9 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class GetUserSerializer(serializers.ModelSerializer):
-    has_active_subscription = serializers.ReadOnlyField()
-    free_mode_status = serializers.ReadOnlyField()
-    can_download = serializers.ReadOnlyField()
+    has_active_subscription: bool = serializers.BooleanField()
+    free_mode_status: str = serializers.CharField()
+    can_download: bool = serializers.BooleanField()
 
     class Meta:
         model = User

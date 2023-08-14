@@ -22,16 +22,16 @@ class TestUserAdmin:
         response = admin_client.post(
             url,
             data={
-                "username": "test",
+                "phone_no": "+123456799",
                 "password1": "My_R@ndom-P@ssw0rd",
                 "password2": "My_R@ndom-P@ssw0rd",
             },
         )
         assert response.status_code == 302
-        assert User.objects.filter(username="test").exists()
+        assert User.objects.filter(phone_no="+123456799").exists()
 
     def test_view_user(self, admin_client):
-        user = User.objects.get(username="admin")
+        user = User.objects.first()
         url = reverse("admin:users_user_change", kwargs={"object_id": user.pk})
         response = admin_client.get(url)
         assert response.status_code == 200

@@ -23,8 +23,17 @@ class UserAdmin(auth_admin.UserAdmin):
                 ),
             },
         ),
-        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+        (_("Important dates"), {"fields": ("last_login",)}),
     )
     list_display = ["name", "is_superuser"]
     search_fields = ["name"]
     ordering = ["name"]
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("phone_no", "password1", "password2"),
+            },
+        ),
+    )

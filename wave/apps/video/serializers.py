@@ -5,7 +5,7 @@ from wave.utils.choices import LanguageChoices, TaskLiterals
 
 
 class VideoSerializer:
-    class Create(serializers.ModelSerializer):
+    class CreateVideo(serializers.ModelSerializer):
         task = serializers.ChoiceField(choices=TaskLiterals.choices)
         language = serializers.ChoiceField(choices=LanguageChoices.choices, default=LanguageChoices.OTHERS)
 
@@ -16,22 +16,22 @@ class VideoSerializer:
                 "task",
             )
 
-    class Get(serializers.ModelSerializer):
+    class GetVideo(serializers.ModelSerializer):
         class Meta:
             model = Video
-            exclude = ("visible", "user")
+            fields = ("media_path", "was_captioned", "captions")
 
-    class List(serializers.ModelSerializer):
+    class ListVideo(serializers.ModelSerializer):
         class Meta:
             model = Video
             exclude = ("visible", "user", "captions")
 
-    class Fetch(serializers.ModelSerializer):
+    class FetchVideo(serializers.ModelSerializer):
         class Meta:
             model = Video
             exclude = ("visible",)
 
-    class Update(serializers.ModelSerializer):
+    class UpdateVideo(serializers.ModelSerializer):
         media_path = serializers.CharField(required=True)
         captions = serializers.JSONField(required=False)
 

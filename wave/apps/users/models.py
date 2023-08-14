@@ -43,6 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = BooleanField(default=False)
     free_mode_activated = BooleanField(default=False)
     free_mode_activated_at = DateTimeField(null=True)
+    date_joined = DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
@@ -51,7 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             str: URL for user detail.
 
         """
-        return reverse("users:detail", kwargs={"username": self.phone_no})
+        return reverse("api:user-detail", kwargs={"id": self.pk})
 
     USERNAME_FIELD = "phone_no"
     REQUIRED_FIELDS = []
