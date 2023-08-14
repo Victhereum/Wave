@@ -4,6 +4,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models.query import QuerySet
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
@@ -11,6 +12,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from wave.apps.video.models import Video
 from wave.apps.video.paginations import CustomPagination
+from wave.apps.video.permissions import CanCreateVideo
 from wave.apps.video.serializers import VideoSerializer
 from wave.utils.translator import OpenAIWhisper
 
@@ -84,6 +86,7 @@ class VideoViewSet(ModelViewSet):
     serializer_class: VideoSerializer = VideoSerializer
     pagination_class = CustomPagination
     lookup_field = "id"
+    permission_classes = [IsAuthenticated, CanCreateVideo]
 
     def get_serializer(self, *args, **kwargs) -> BaseSerializer:
         if self.action == "create":

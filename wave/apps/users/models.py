@@ -6,6 +6,7 @@ from django.db.models import BooleanField, CharField, DateTimeField, IntegerFiel
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from rest_framework.exceptions import PermissionDenied
 
 from wave.apps.payments.models import Payments
 from wave.apps.users.managers import CustomUserManager
@@ -128,3 +129,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         except PhoneModel.DoesNotExist:
             pass
         return super().delete(using, keep_parents)
+
+    def has_permission(self) -> bool:
+        if not self.can_download:
+            raise PermissionDenied(detail="You do not have an active subscription, kindly create a payment plan")
+        return True
