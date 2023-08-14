@@ -1,7 +1,0 @@
-# PostgreSQL
-# ------------------------------------------------------------------------------
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_DB=wave
-POSTGRES_USER=RPFTnaJYwNTcaBDOXClkVcZFOptqhTvI
-POSTGRES_PASSWORD=7biIHneOJ6NzLQ1LBJ5QOKCjR4ZcMM5Wbc9f8HwbcjHCPRwkxUDceYI3XW3oajl0
