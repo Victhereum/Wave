@@ -19,10 +19,10 @@ from wave.utils.translator import OpenAIWhisper
 
 class VideoViewSet(ModelViewSet):
     """
-    VideoViewSet: Taming Videos with Swagger Swagger
+    VideoViewSet: Taming Videos with AI
 
     Whether you're a frontend developer, backend wizard, or a unicorn enthusiast, welcome to the realm
-    of VideoViewSet! 🎥✨ Let's dive into the epic saga of handling videos in a way that even Gandalf
+    of Wave video endpoints! 🎥✨ Let's dive into the epic saga of handling videos in a way that even Gandalf
     would be proud of.
 
     Description:

@@ -3,12 +3,14 @@ import base64
 import pyotp
 from django.conf import settings
 from django.utils.timezone import datetime
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException, NotFound, PermissionDenied
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.permissions import AllowAny
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -69,6 +71,7 @@ class generateKey:
 class PhoneNumberView(GenericAPIView):
     # authentication_classes = None
     permission_classes = [AllowAny]
+    serializer_class = PhoneSerializer
 
     # Get to Create a call for OTP
     def get_serializer_class(self):
@@ -76,10 +79,9 @@ class PhoneNumberView(GenericAPIView):
             return OTPSerializer
         return PhoneSerializer
 
-    def get(self, request, *args, **kwargs):
-        serializer = PhoneSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            phone = serializer.validated_data.get("phone_no", None)
+    @extend_schema(parameters=[PhoneSerializer])
+    def get(self, request: Request, *args, **kwargs):
+        phone = request.query_params.get("phone_no")
         try:
             user = User.objects.get(phone_no=phone)
         except User.DoesNotExist:
@@ -99,12 +101,12 @@ class PhoneNumberView(GenericAPIView):
         otp = OTP.at(mobile.counter)
         try:
             if settings.DEBUG:
-                return Response({"OTP": otp}, status=200)  # Just for demonstration
+                return Response({"detail": otp}, status=200)  # Just for demonstration
 
             if settings.USE_TWILIO:
                 send_otp(mobile.mobile, otp)
                 return Response({"detail": "OTP sent"}, status=status.HTTP_200_OK)  # Just for demonstration
-            return Response({"OTP": otp}, status=200)  # Just for demonstration
+            return Response({"detail": otp}, status=200)  # Just for demonstration
         except Exception as e:
             raise APIException(detail=f"Please try again {e}")
 

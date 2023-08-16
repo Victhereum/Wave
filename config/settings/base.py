@@ -347,3 +347,14 @@ OPEN_AI_KEY = env("OPEN_AI_KEY", default="xxx")
 USE_TWILIO = env("USE_TWILIO", default=True)
 MONTHLY_PLAN_PRICE = env.int("MONTHLY_PLAN_PRICE", default=1)
 ANNUAL_PLAN_PRICE = env.int("ANNUAL_PLAN_PRICE", default=1)
+
+ACCESS_STRUCTURE = {
+    "TRIAL": {
+        "COUNT": env.int("TRIAL_COUNT", default=2),
+        "LIMIT": timedelta(minutes=env.int("TRIAL_LIMIT", default=1)).total_seconds(),
+    },
+    "PAID": {
+        "COUNT": env.int("PAID_COUNT", default=10),
+        "LIMIT": timedelta(minutes=env.int("PAID_LIMIT", default=5)).total_seconds(),
+    },
+}
