@@ -1,6 +1,6 @@
 set -o errexit  # exit on error
 
-sudo apt-get update && \
+apt-get update && \
     apt-get install -y ffmpeg
 
 pip install -r requirements/production.txt
