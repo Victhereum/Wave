@@ -81,7 +81,22 @@ class PhoneNumberView(GenericAPIView):
 
     @extend_schema(parameters=[PhoneSerializer])
     def get(self, request: Request, *args, **kwargs):
-        phone = request.query_params.get("phone_no")
+        """
+        Retrieves a user based on the provided phone number and generates an OTP for authentication.
+
+        Parameters:
+            - request (Request): The HTTP request object.
+            - args: Variable-length argument list.
+            - kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            - Response: The HTTP response containing the generated OTP.
+
+        Raises:
+            - PermissionDenied: If the user or phone number does not exist.
+            - APIException: If an error occurs during OTP generation or sending.
+        """
+        phone = "+" + request.query_params.get("phone_no")
         try:
             user = User.objects.get(phone_no=phone)
         except User.DoesNotExist:

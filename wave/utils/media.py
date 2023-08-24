@@ -1,16 +1,15 @@
 import os
 import shutil
-from io import BytesIO
+import subprocess
 from time import time
 
 from celery.utils.log import get_task_logger
 from django.conf import settings
-from django.core.files.base import File
 from django.core.files.storage import FileSystemStorage
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.timezone import now
-from PIL import Image
+from rest_framework.exceptions import ValidationError
 
 from wave.utils.validators import _VALID_AUDIO_EXTENSIONS, _VALID_IMAGE_EXTENSIONS, _VALID_VIDEO_EXTENSIONS
 
@@ -88,41 +87,24 @@ class MediaHelper:
         else:
             return MediaHelper.get_document_upload_path(model, filename)
 
-    @staticmethod
-    def generate_image_file(name, ext="png", size=(50, 50), color=(256, 0, 0)) -> File:
-        """For testing purpose"""
-        file_obj = BytesIO()
-        image = Image.new("RGBA", size=size, color=color)
-        image.save(file_obj, ext)
-        file_obj.seek(0)
-        return File(file_obj, name=name)
-
-    @staticmethod
-    def handle_uploaded_media(f):
+    def get_video_duration(video_path):
         """
-        A helper function for breaking large files into chunks and assembling them
+        Get the duration of a video file.
+
+        Args:
+            video_path (str): The path to the video file.
+
+        Returns:
+            float or None: The duration of the video in seconds, or None if an error occurred.
         """
-        with open(f.name, "wb+") as destination:
-            for chunk in f.chunks():
-                destination.write(chunk)
-
-    @staticmethod
-    def get_test_audio_path():
-        root = settings.ROOT_DIR
-        audio_path = "/core/utils/test_files/audio_test.mp3"
-
-        full_path = str(root) + audio_path
-
-        return full_path
-
-    @staticmethod
-    def get_test_video_path():
-        root = settings.ROOT_DIR
-        video_path = "/core/utils/test_files/video_test.mp4"
-
-        full_path = str(root) + video_path
-
-        return full_path
+        command = ["ffprobe", "-i", video_path, "-show_entries", "format=duration", "-v", "quiet", "-of", "csv=p=0"]
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.returncode == 0:
+            duration = float(result.stdout.strip())
+            print(duration)
+            return duration
+        else:
+            raise ValidationError(detail="Could not determine the duration of the video.")
 
 
 class FolderDeletionHandler(FileSystemStorage):

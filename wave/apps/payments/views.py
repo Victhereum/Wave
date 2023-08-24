@@ -4,7 +4,6 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
-from django.utils.timezone import datetime
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.request import Request
@@ -87,8 +86,18 @@ class PaymentViewSet(ModelViewSet):
     pagination_class = CustomPagination
     payment = MoyasarAPIWrapper()
     lookup_field = "id"
+    http_method_names = ["get", "post"]
 
     def month_number_to_text(self, month_number: int):
+        """
+        Convert a month number to its corresponding month name.
+
+        Parameters:
+            month_number (int): The number of the month to be converted.
+
+        Returns:
+            str: The name of the month if the number is valid, otherwise "Invalid Month".
+        """
         months = {
             1: "January",
             2: "February",
@@ -112,6 +121,12 @@ class PaymentViewSet(ModelViewSet):
         return self.serializer_class.GetPayment
 
     def get_call_back(self):
+        """
+        Returns the callback URL for the current request.
+
+        :param self: The instance of the class.
+        :return: The callback URL as a string.
+        """
         return f"{self.request.build_absolute_uri('/')}"
 
     def get_queryset(self) -> QuerySet:
@@ -126,11 +141,30 @@ class PaymentViewSet(ModelViewSet):
         self.check_object_permissions(self.request, instance)
         return instance
 
-    def get_plan_amount(self, plan):
-        if plan == PaymentPlans.MONTHLY:
-            return settings.MONTHLY_PLAN_PRICE
-        else:
-            return settings.ANNUAL_PLAN_PRICE
+    def dollars_to_cents(self, dollars: float) -> int:
+        cents = int(dollars * 100)
+        return cents
+
+    def get_plan_amount(self, plan: str) -> int:
+        """
+        Calculates and returns the amount for a given payment plan.
+
+        Parameters:
+        - plan (PaymentPlans): The type of payment plan to calculate the amount for.
+
+        Returns:
+        - float: The amount for the given payment plan.
+
+        Raises:
+        - ValueError: If an invalid payment plan is provided.
+        """
+        if plan == PaymentPlans.BASIC:
+            return self.dollars_to_cents(settings.BASIC_PLAN_PRICE)
+        if plan == PaymentPlans.PRO:
+            return self.dollars_to_cents(settings.PRO_PLAN_PRICE)
+        if plan == PaymentPlans.ANNUAL:
+            return self.dollars_to_cents(settings.PREMIUM_PLAN_PRICE)
+        raise ValueError
 
     @atomic
     def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
@@ -151,9 +185,9 @@ class PaymentViewSet(ModelViewSet):
             plan = serializer.validated_data.get("plan", None)
             amount = self.get_plan_amount(plan=plan)
             currency = serializer.validated_data.get("currency", "SAR")
-            month_text = self.month_number_to_text(month_number=int(datetime.now().date().month))
-            plan_description = month_text if plan == PaymentPlans.MONTHLY else datetime.now().date().year
-            description = f"Wave payment from {user.name} for {plan_description}"
+            # month_text = self.month_number_to_text(month_number=int(datetime.now().date().month))
+            # plan_description = month_text if plan == PaymentPlans.MONTHLY else datetime.now().date().year
+            description = f"Wave payment from {user.name} for {plan} Plan"
             source = serializer.validated_data.pop("source", {})
             call_back = self.get_call_back()
             metadata = {"plan": plan}

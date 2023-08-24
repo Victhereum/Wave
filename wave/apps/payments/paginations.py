@@ -8,6 +8,21 @@ class CustomPagination(PageNumberPagination):
     max_page_size = 1
 
     def get_paginated_response(self, data):
+        """
+        Generates a paginated response containing the given data.
+
+        Parameters:
+            - data: The data to be included in the paginated response.
+
+        Returns:
+            - A Response object containing the paginated response with the following properties:
+                - count: The total count of items in the paginated response.
+                - next: The URL for the next page of results, or null if there is no next page.
+                - previous: The URL for the previous page of results, or null if there is no previous page.
+                - total_pages: The total number of pages in the paginated response.
+                - page: The current page number.
+                - results: The data included in the current page of the paginated response.
+        """
         count = self.page.paginator.count
         next_link = self.get_next_link()
         previous_link = self.get_previous_link()

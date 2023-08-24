@@ -18,6 +18,33 @@ Caption and Translation API
 
 ```localhost:8000/api/v1/docs```
 
+### CRITICAL ENVIRONMENT VARIABLES
+
+This project uses the following environment variables for configuration. Make sure to set these variables before running the application.
+
+- `API_VERSION`: The version of the API. Default value is `v1`.
+- `TWILIO_ACCOUNT_SID`: The Twilio account SID.
+- `TWILIO_AUTH_TOKEN`: The Twilio auth token.
+- `TWILIO_PHONE`: The Twilio phone number.
+- `MOYASAR_API_KEY`: The API key for Moyasar.
+
+- `OPEN_AI_KEY`: The API key for OpenAI.
+- `USE_TWILIO`: Whether to use Twilio for sending OTP. Default value is `True`.
+- `BASIC_PLAN_PRICE`: The price for the basic plan. Default value is `1.00`.
+- `PRO_PLAN_PRICE`: The price for the pro plan. Default value is `1.00`.
+- `PREMIUM_PLAN_PRICE`: The price for the premium plan. Default value is `1.00`.
+
+Access Structure:
+- `TRIAL_COUNT`: The number of trials allowed (default -> 2).
+- `TRIAL_LENGTH`: The length of the videos in trial in minutes (default -> 1).
+- `BASIC_COUNT`: The number of videos allowed in a single basic plan purchase in minutes(default -> 10).
+- `BASIC_LENGTH`: The length of the videos basic plan in minutes (default -> 5).
+- `PRO_COUNT`: The number of videos allowed in a single pro plan purchase (default -> 30).
+- `PRO_LENGTH`: The length of videos in the pro plan in minutes(default -> 5).
+- `PREMIUM_COUNT`: The number of videos allowed in a single premimum plan purchase(default -> 50).
+- `PREMIUM_LENGTH`: The length of the premium plan in minutes(default -> 5).
+
+
 # Endpoints
 
 ## VideoViewSet: Taming Video Captioning With The Help of AI

@@ -345,16 +345,25 @@ MOYASAR_API_KEY = env("MOYASAR_API_KEY", default="xxx")
 MAX_VIDEO_SIZE = 25_000_000
 OPEN_AI_KEY = env("OPEN_AI_KEY", default="xxx")
 USE_TWILIO = env("USE_TWILIO", default=True)
-MONTHLY_PLAN_PRICE = env.int("MONTHLY_PLAN_PRICE", default=1)
-ANNUAL_PLAN_PRICE = env.int("ANNUAL_PLAN_PRICE", default=1)
+BASIC_PLAN_PRICE = env.float("BASIC_PLAN_PRICE", default=1.00)
+PRO_PLAN_PRICE = env.float("PRO_PLAN_PRICE", default=1.00)
+PREMIUM_PLAN_PRICE = env.float("PREMIUM_PLAN_PRICE", default=1.00)
 
 ACCESS_STRUCTURE = {
     "TRIAL": {
         "COUNT": env.int("TRIAL_COUNT", default=2),
-        "LIMIT": timedelta(minutes=env.int("TRIAL_LIMIT", default=1)).total_seconds(),
+        "LENGTH": timedelta(minutes=env.int("TRIAL_LENGTH", default=1)).total_seconds(),
     },
-    "PAID": {
-        "COUNT": env.int("PAID_COUNT", default=10),
-        "LIMIT": timedelta(minutes=env.int("PAID_LIMIT", default=5)).total_seconds(),
+    "BASIC": {
+        "COUNT": env.int("BASIC_COUNT", default=10),
+        "LENGTH": timedelta(minutes=env.int("BASIC_LENGTH", default=5)).total_seconds(),
+    },
+    "PRO": {
+        "COUNT": env.int("PRO_COUNT", default=30),
+        "LENGTH": timedelta(minutes=env.int("PRO_LENGTH", default=5)).total_seconds(),
+    },
+    "PREMIUM": {
+        "COUNT": env.int("PREMIUM_COUNT", default=50),
+        "LENGTH": timedelta(minutes=env.int("PREMIUM_LENGTH", default=5)).total_seconds(),
     },
 }

@@ -11,14 +11,14 @@ class PaymentSerializers:
         plan = serializers.ChoiceField(choices=PaymentPlans.choices, required=True)
 
         class Meta:
-            fields = ("id", "plan", "currency", "source")
+            fields = ("plan", "currency", "source")
 
     class GetPayment(serializers.ModelSerializer):
-        # status = serializers.ReadOnlyField()
+        status = serializers.ReadOnlyField()
 
         class Meta:
             model = Payments
-            exclude = ("visible", "user")
+            exclude = ("visible", "user", "updated_at")
 
     class FetchPayment(serializers.ModelSerializer):
         metadata = serializers.ReadOnlyField()

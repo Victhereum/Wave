@@ -9,8 +9,9 @@ class CurrencyChoices(TextChoices):
 
 
 class PaymentPlans(TextChoices):
-    MONTHLY = ("MONTHLY", "MONTHLY")
-    YEARLY = ("YEARLY", "YEARLY")
+    BASIC = ("BASIC", "BASIC")
+    PRO = ("PRO", "PRO")
+    PREMIUM = ("PREMIUM", "PREMIUM")
 
 
 class FreeModeChoices(TextChoices):

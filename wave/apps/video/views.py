@@ -87,6 +87,7 @@ class VideoViewSet(ModelViewSet):
     pagination_class = CustomPagination
     lookup_field = "id"
     permission_classes = [IsAuthenticated, CanCreateVideo]
+    http_method_names = ["get", "post", "patch"]
 
     def get_serializer(self, *args, **kwargs) -> BaseSerializer:
         if self.action == "create":

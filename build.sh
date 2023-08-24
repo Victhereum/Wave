@@ -1,5 +1,8 @@
 set -o errexit  # exit on error
 
+RUN apt-get update && \
+    apt-get install -y ffmpeg
+
 pip install -r requirements/production.txt
 
 python manage.py collectstatic --noinput

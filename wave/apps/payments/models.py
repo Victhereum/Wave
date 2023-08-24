@@ -10,7 +10,7 @@ payment = MoyasarAPIWrapper()
 
 class Payments(UIDTimeBasedModel):
     user = auto_prefetch.ForeignKey("users.User", on_delete=models.CASCADE, related_name="user_payments")
-    plan = models.CharField(max_length=15, choices=PaymentPlans.choices, default=PaymentPlans.MONTHLY)
+    plan = models.CharField(max_length=15, choices=PaymentPlans.choices, default=PaymentPlans.BASIC)
 
     @property
     def metadata(self) -> dict:

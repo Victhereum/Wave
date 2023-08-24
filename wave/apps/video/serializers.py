@@ -8,11 +8,13 @@ class VideoSerializer:
     class CreateVideo(serializers.ModelSerializer):
         task = serializers.ChoiceField(choices=TaskLiterals.choices)
         language = serializers.ChoiceField(choices=LanguageChoices.choices, default=LanguageChoices.OTHERS)
+        media = serializers.FileField(required=True)
 
         class Meta:
             model = Video
             fields = (
                 "language",
+                "media",
                 "task",
             )
 
