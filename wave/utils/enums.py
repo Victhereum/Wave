@@ -35,6 +35,7 @@ class TaskLiterals(TextChoices):
 class LanguageChoices(TextChoices):
     AFRIKAANS = "af", "Afrikaans"
     ARABIC = "ar", "Arabic"
+    ARABIC_SA = "ar-SA", "(Arabic) Saudi Arabia"
     ARMENIAN = "hy", "Armenian"
     AZERBAIJANI = "az", "Azerbaijani"
     BELARUSIAN = "be", "Belarusian"
@@ -46,7 +47,8 @@ class LanguageChoices(TextChoices):
     CZECH = "cs", "Czech"
     DANISH = "da", "Danish"
     DUTCH = "nl", "Dutch"
-    ENGLISH = "en", "English"
+    ENGLISH_US = "en-US", "English"
+    ENGLISH_GB = "en-GB", "English"
     ESTONIAN = "et", "Estonian"
     FINNISH = "fi", "Finnish"
     FRENCH = "fr", "French"

@@ -10,7 +10,7 @@ from rest_framework.exceptions import PermissionDenied
 
 from wave.apps.payments.models import Payments
 from wave.apps.users.managers import CustomUserManager
-from wave.utils.choices import FreeModeChoices, PaymentPlans, PaymentStatus
+from wave.utils.enums import FreeModeChoices, PaymentPlans, PaymentStatus
 from wave.utils.models import UIDTimeBasedModel
 
 
@@ -20,6 +20,7 @@ def generate_id():
 
 class PhoneModel(UIDTimeBasedModel):
     mobile = CharField(blank=False, max_length=20, unique=True)
+
     is_verified = BooleanField(blank=False, default=False)
     counter = IntegerField(default=0, blank=False)
 
@@ -72,7 +73,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def _free_mode_status(self) -> str:
         if self.free_mode_activated:
             time_difference: timedelta = now() - self.free_mode_activated_at
-            if time_difference.days > 3:
+            if time_difference.days > 10:
                 return FreeModeChoices.EXPIRED
             return FreeModeChoices.ACTIVE
         return FreeModeChoices.NOT_USED

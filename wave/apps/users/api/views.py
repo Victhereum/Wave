@@ -131,7 +131,7 @@ class PhoneNumberView(GenericAPIView):
             phone = serializer.validated_data.get("phone_no", None)
             otp = serializer.validated_data.get("otp", None)
         try:
-            mobile = PhoneModel.objects.get(mobile=phone)
+            mobile: PhoneModel = PhoneModel.objects.get(mobile=phone)
         except PhoneModel.DoesNotExist:
             raise NotFound(detail="User does not exist")  # False Call
         user = User.objects.get(phone_no=phone)
@@ -141,8 +141,8 @@ class PhoneNumberView(GenericAPIView):
         OTP = pyotp.HOTP(key)  # HOTP Model
         if OTP.verify(otp, mobile.counter):  # Verifying the OTP
             mobile.is_verified = True
-            mobile.counter += 1
-            mobile.save()
+            mobile.counter += 1  # Update the counter after every verificaation
+            mobile.save(update_fields=["counter", "is_verified"])
             token = RefreshToken.for_user(user)
             response = {"refresh": str(token), "access": str(token.access_token)}
             return Response(response, status=200)

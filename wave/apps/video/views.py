@@ -14,7 +14,8 @@ from wave.apps.video.models import Video
 from wave.apps.video.paginations import CustomPagination
 from wave.apps.video.permissions import CanCreateVideo
 from wave.apps.video.serializers import VideoSerializer
-from wave.utils.translator import OpenAIWhisper
+from wave.apps.video.translator import AzureSpeachService
+from wave.utils.media import MediaHelper
 
 
 class VideoViewSet(ModelViewSet):
@@ -111,7 +112,11 @@ class VideoViewSet(ModelViewSet):
         self.queryset = Video.objects.filter(user=self.request.user)
         return self.queryset
 
-    @extend_schema(request=VideoSerializer.CreateVideo, responses={status.HTTP_200_OK: VideoSerializer.GetVideo})
+    @extend_schema(
+        request=VideoSerializer.CreateVideo,
+        parameters=["VideoSerializer.CreateVideoParams.Meta.fields"],
+        responses={status.HTTP_200_OK: VideoSerializer.GetVideo},
+    )
     def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
         - create:
@@ -124,21 +129,26 @@ class VideoViewSet(ModelViewSet):
         the scenes will transcribe your video and craft you a magic response.
         """
         serializer = self.serializer_class.CreateVideo(data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        serialized_params = self.serializer_class.CreateVideoParams(data=request.query_params)
+        if serializer.is_valid(raise_exception=True) and serialized_params.is_valid(raise_exception=True):
             media = request.FILES.get("media")
-            task = serializer.validated_data.pop("task")
-            language = serializer.validated_data.pop("language")
+            from_lang = serialized_params.validated_data.pop("from_lang")
+            to_lang = serialized_params.validated_data.pop("to_lang", "")
+            action = serialized_params.validated_data.pop("action")
             # Save the uploaded file to a temporary location
             fs = FileSystemStorage()
             filename = fs.save(media.name, media)
             file_path = fs.path(filename)
-
-            caption = OpenAIWhisper(file_path, task=task, lang=language)
-            captioned_data = caption.transcribe_media()
+            if "wave" not in media.content_type:
+                file_path, name = MediaHelper.convert_to_wav(file_path)
+            caption = AzureSpeachService(file_path, from_lang=from_lang, to_lang=to_lang)
+            captioned_data = caption.perform(action=action)
             # Delete the temporary file after processing
             fs.delete(filename)
-            media = Video.objects.create(user=request.user, captions=captioned_data, was_captioned=True)
-            response = self.serializer_class.GetVideo(media)
+            fs.delete(name)
+
+            video: Video = Video.objects.create(user=request.user, was_captioned=True, captions=captioned_data)
+            response = self.serializer_class.GetVideo(video)
             return Response(response.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

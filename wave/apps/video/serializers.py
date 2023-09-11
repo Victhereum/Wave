@@ -1,22 +1,29 @@
 from rest_framework import serializers
 
 from wave.apps.video.models import Video
-from wave.utils.choices import LanguageChoices, TaskLiterals
+from wave.utils.enums import LanguageChoices, TaskLiterals
 
 
 class VideoSerializer:
-    class CreateVideo(serializers.ModelSerializer):
-        task = serializers.ChoiceField(choices=TaskLiterals.choices)
-        language = serializers.ChoiceField(choices=LanguageChoices.choices, default=LanguageChoices.OTHERS)
+    class CreateVideo(serializers.Serializer):
         media = serializers.FileField(required=True)
 
         class Meta:
-            model = Video
-            fields = (
-                "language",
-                "media",
-                "task",
-            )
+            #     # model = Video
+            fields = ("media",)
+
+    class CreateVideoParams(serializers.Serializer):
+        from_lang = serializers.ChoiceField(choices=LanguageChoices.choices, default=LanguageChoices.OTHERS)
+        to_lang = serializers.ChoiceField(choices=LanguageChoices.choices, default=LanguageChoices.OTHERS)
+        action = serializers.ChoiceField(choices=TaskLiterals.choices, default=TaskLiterals.TRANSLATE)
+
+        class Meta:
+            #     # model = Video
+            fields = [
+                "from_lang",
+                "to_lang",
+                "action",
+            ]
 
     class GetVideo(serializers.ModelSerializer):
         class Meta:
@@ -40,3 +47,6 @@ class VideoSerializer:
         class Meta:
             model = Video
             fields = ("media_path", "captions")
+
+    class ResultSerializer(serializers.Serializer):
+        result = serializers.JSONField()

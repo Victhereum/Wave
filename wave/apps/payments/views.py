@@ -14,8 +14,8 @@ from rest_framework.viewsets import ModelViewSet
 from wave.apps.payments.models import Payments
 from wave.apps.payments.paginations import CustomPagination
 from wave.apps.payments.serializers import PaymentSerializers
-from wave.utils.choices import PaymentPlans
 from wave.utils.custom_exceptions import CustomError
+from wave.utils.enums import PaymentPlans
 from wave.utils.payments import MoyasarAPIWrapper
 
 
@@ -23,19 +23,19 @@ class PaymentViewSet(ModelViewSet):
     """
     PaymentViewSet: Level Up Your Video Quest with Payment Magic
 
-    Greetings, fellow adventurers of the VideoVerse! 🎮💰 Welcome to the realm of PaymentViewSet,
+    Greetings, fellow adventurers of the WaveVerse! 🎮💰 Welcome to the realm of Payments,
     where your heroic endeavors with videos are about to get a powerful upgrade. Gear up for an
     exhilarating journey as we blend the forces of videos and payments into one epic tale.
 
     The Chronicles Begin:
-    Get ready to step into a world where videos meet payments in perfect harmony. PaymentViewSet
-    emerges as your trusty guide, enhancing your VideoVerse experience like never before!
+    Get ready to step into a world where videos meet payments in perfect harmony. Payments
+    emerges as your trusty guide, enhancing your WaveVerse experience like never before!
 
     Payment Sorcery:
     - create: Prepare to wield the ultimate spell to conjure payments that seamlessly integrate with
       your video conquests! ✨🧙‍♂️
       Magic Scroll: POST
-      Command: /payments/create
+      Command: /payments/
 
       Quest Tips:
       Channel your inner spellcaster to defining your payment plan. Our payment wizards
@@ -44,7 +44,7 @@ class PaymentViewSet(ModelViewSet):
     - list: Embark on a treasure hunt that reveals the riches of your WaveVerse accomplishments,
       guarded by loyal pagination guardians! 🗺️📜
       Explorer's Scroll: GET
-      Command: /payments
+      Command: /payments/
 
       Quest Tips:
       Journey through the scrolls guided by our wise pagination guardians. Uncover your hard-earned
@@ -256,3 +256,9 @@ class PaymentViewSet(ModelViewSet):
         tread carefully. Forbidden: 403
         """
         raise PermissionDenied(detail="You can't delete a record")
+
+    def plans(self, request: Request, *args, **kwargs):
+        """
+        Returns all payment plans, their prices and descriptions
+        """
+        # TODO: List all payment plans, description, priviledges and prices

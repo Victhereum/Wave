@@ -20,6 +20,7 @@ if READ_DOT_ENV_FILE:
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool("DJANGO_DEBUG", False)
+TESTING = env.bool("TESTING", False)
 # Local time zone. Choices are
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
@@ -46,6 +47,7 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {"default": env.db("DATABASE_URL")}
+
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -163,7 +165,7 @@ STATICFILES_FINDERS = [
 MEDIA_ROOT = str(APPS_DIR / "media")
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "/media/"
-
+DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400
 # TEMPLATES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#templates
@@ -344,6 +346,8 @@ TWILIO_PHONE = env("TWILIO_PHONE", default="xxx")
 MOYASAR_API_KEY = env("MOYASAR_API_KEY", default="xxx")
 MAX_VIDEO_SIZE = 25_000_000
 OPEN_AI_KEY = env("OPEN_AI_KEY", default="xxx")
+AZURE_SERVICE_KEY = env("AZURE_SERVICE_KEY", default="xxx")
+AZURE_SERVICE_REGION = env("AZURE_SERVICE_REGION", default="xxx")
 USE_TWILIO = env("USE_TWILIO", default=True)
 BASIC_PLAN_PRICE = env.float("BASIC_PLAN_PRICE", default=1.00)
 PRO_PLAN_PRICE = env.float("PRO_PLAN_PRICE", default=1.00)

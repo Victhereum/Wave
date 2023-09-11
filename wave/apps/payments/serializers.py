@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from wave.apps.payments.models import Payments
-from wave.utils.choices import PaymentPlans
+from wave.utils.enums import PaymentPlans
 
 
 class PaymentSerializers:

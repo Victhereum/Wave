@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 from time import time
 
 from celery.utils.log import get_task_logger
@@ -104,6 +105,29 @@ class MediaHelper:
             return 172.60
         else:
             raise ValidationError(detail="Could not determine the duration of the video.")
+
+    @staticmethod
+    def convert_to_wav(media_path: str):
+        path = media_path.rsplit(".", 1)[0]
+        output = f"{path}.wav"
+        name = output.rsplit("/", 1)[1]
+        cmd = [
+            "ffmpeg",
+            "-i",
+            media_path,
+            "-ar",
+            "16000",  # Sample rate: 16 kHz
+            "-ac",
+            "1",  # Mono audio
+            "-sample_fmt",
+            "s16",  # 16-bit PCM
+            "-f",
+            "wav",
+            output,
+        ]
+        result = subprocess.run(cmd, check=True)
+        if result.returncode == 0:
+            return output, name
 
 
 class FolderDeletionHandler(FileSystemStorage):

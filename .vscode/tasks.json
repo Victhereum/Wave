@@ -1,0 +1,63 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "docker-build",
+			"label": "docker-build",
+			"platform": "python",
+			"dockerBuild": {
+				"tag": "vscodedjangodocker:latest",
+				"dockerfile": "${workspaceFolder}/compose/local/django/Dockerfile",
+				"context": "${workspaceFolder}",
+				"pull": true
+			},
+      "options": {
+				"env": {
+					"MY_ENV_VARIABLE": "my_value",
+					"ANOTHER_ENV_VARIABLE": "another_value"
+				}
+			}
+		},
+		// {
+		// 	"type": "docker-run",
+		// 	"label": "docker-run: debug",
+		// 	"dependsOn": [
+		// 		"docker-build"
+		// 	],
+		// 	"python": {
+		// 		"args": [
+		// 			"runserver",
+		// 			"0.0.0.0:8000",
+		// 			"--nothreading",
+		// 			"--noreload"
+		// 		],
+		// 		"file": "manage.py",
+		// 	}
+		// }
+		{
+			"type": "docker-compose",
+			"label": "docker-compose: debug",
+			"dependsOn": [
+				"docker-build"
+			],
+			// "command": "up", // Specify the Docker Compose command you want to run
+			// "args": ["-d"],  // Additional arguments if needed
+			"options": {
+				"cwd": "${workspaceFolder}",  // Set the working directory to your Docker Compose directory
+				"env": {
+					"DEBUG_ENV_VARIABLE": "true"
+				}
+			},
+      "dockerCompose": {
+        "up": {
+          "detached": true,
+          "build": false
+        },
+        "files": [
+          "${workspaceFolder}/docker-compose.yml"
+        ]
+      }
+		}
+
+	]
+}

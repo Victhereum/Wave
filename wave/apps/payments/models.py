@@ -1,7 +1,7 @@
 import auto_prefetch
 from django.db import models
 
-from wave.utils.choices import PaymentPlans
+from wave.utils.enums import PaymentPlans
 from wave.utils.models import UIDTimeBasedModel
 from wave.utils.payments import MoyasarAPIWrapper
 
@@ -24,3 +24,9 @@ class Payments(UIDTimeBasedModel):
             return self.metadata.get("status", None)
 
         return None
+
+
+# class PaymentPlansModel(UIDTimeBasedModel):
+#     name = models.CharField(max_length=10, choices=PaymentPlans.choices, unique=True)
+#     amount = models.PositiveIntegerField()
+#     description = models.TextField(null=True)
