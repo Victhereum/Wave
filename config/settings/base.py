@@ -348,6 +348,7 @@ MAX_VIDEO_SIZE = 25_000_000
 OPEN_AI_KEY = env("OPEN_AI_KEY", default="xxx")
 AZURE_SERVICE_KEY = env("AZURE_SERVICE_KEY", default="xxx")
 AZURE_SERVICE_REGION = env("AZURE_SERVICE_REGION", default="xxx")
+AZURE_SERVICE_ENDPOINT = env("AZURE_SERVICE_ENDPOINT", default="xxx")
 USE_TWILIO = env("USE_TWILIO", default=True)
 BASIC_PLAN_PRICE = env.float("BASIC_PLAN_PRICE", default=1.00)
 PRO_PLAN_PRICE = env.float("PRO_PLAN_PRICE", default=1.00)

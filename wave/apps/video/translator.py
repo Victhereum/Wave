@@ -10,7 +10,7 @@ from django.conf import settings
 from wave.apps.video.serializers import VideoSerializer
 from wave.utils.enums import LanguageChoices, TaskLiterals
 
-ENDPOINT = "https://eastus.api.cognitive.microsoft.com/sts/v1.0/issuetoken"
+ENDPOINT = settings.AZURE_SERVICE_ENDPOINT
 SERVICE_KEY = settings.AZURE_SERVICE_KEY
 SERVICE_REGION = settings.AZURE_SERVICE_REGION
 
@@ -113,8 +113,8 @@ def map_translations_to_audio_words(translations: str, words_with_timestamps: li
     new_words_with_timestamps = [
         {
             "Word": word,
-            "Offset": f'{timedelta(milliseconds=(current_word["Offset"]/1000))}',
-            "Duration": f'{timedelta(milliseconds=(current_word["Duration"]/1000))}',
+            "Offset": f'{timedelta(milliseconds=(current_word["Offset"]/10000))}',
+            "Duration": f'{timedelta(milliseconds=(current_word["Duration"]/10000))}',
         }
         for word, current_word in zip(translations, words_with_timestamps)
     ]
@@ -130,8 +130,8 @@ def to_representation(words_with_timestamps: list[dict]) -> list[dict]:
     new_words_with_timestamps = [
         {
             "Word": current_word["Word"],
-            "Offset": f'{timedelta(milliseconds=(current_word["Offset"]/1000))}',
-            "Duration": f'{timedelta(milliseconds=(current_word["Duration"]/1000))}',
+            "Offset": f'{timedelta(milliseconds=(current_word["Offset"]/10000))}',
+            "Duration": f'{timedelta(milliseconds=(current_word["Duration"]/10000))}',
         }
         for current_word in words_with_timestamps
     ]
