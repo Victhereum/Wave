@@ -4,6 +4,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models.query import QuerySet
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -15,6 +16,7 @@ from wave.apps.video.paginations import CustomPagination
 from wave.apps.video.permissions import CanCreateVideo
 from wave.apps.video.serializers import VideoSerializer
 from wave.apps.video.translator import AzureSpeachService
+from wave.utils.enums import FromLanguages, TaskLiterals, ToLanguages
 from wave.utils.media import MediaHelper
 
 
@@ -97,6 +99,10 @@ class VideoViewSet(ModelViewSet):
             return self.serializer_class.UpdateVideo(*args, **kwargs)
         elif self.action in ["list", "retrieve"]:
             return self.serializer_class.GetVideo(*args, **kwargs)
+        elif self.action in "to_languages":
+            return self.serializer_class.ToLanguageSerializer(*args, **kwargs)
+        elif self.action in "from_languages":
+            return self.serializer_class.FromLanguageSerializer(*args, **kwargs)
         return self.serializer_class.GetVideo(*args, **kwargs)
 
     def get_serializer_class(self) -> type[BaseSerializer]:
@@ -106,6 +112,10 @@ class VideoViewSet(ModelViewSet):
             return self.serializer_class.UpdateVideo
         elif self.action in ["list", "retrieve"]:
             return self.serializer_class.GetVideo
+        elif self.action in "to_languages":
+            return self.serializer_class.ToLanguageSerializer
+        elif self.action in "from_languages":
+            return self.serializer_class.FromLanguageSerializer
         return self.serializer_class.GetVideo
 
     def get_queryset(self) -> QuerySet:
@@ -129,7 +139,10 @@ class VideoViewSet(ModelViewSet):
         the scenes will transcribe your video and craft you a magic response.
         """
         serializer = self.serializer_class.CreateVideo(data=request.data)
-        serialized_params = self.serializer_class.CreateVideoParams(data=request.query_params)
+        if request.query_params.get("action", None) == TaskLiterals.TRANSLATE:
+            serialized_params = self.serializer_class.TranslateVideoParams(data=request.query_params)
+        else:
+            serialized_params = self.serializer_class.TranscribleVideoParams(data=request.query_params)
         if serializer.is_valid(raise_exception=True) and serialized_params.is_valid(raise_exception=True):
             media = request.FILES.get("media")
             from_lang = serialized_params.validated_data.pop("from_lang")
@@ -199,3 +212,13 @@ class VideoViewSet(ModelViewSet):
         """
         response = self.serializer_class.GetVideo(self.get_object())
         return Response(response.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["get"])
+    def from_languages(self, request, *args, **kwargs):
+        choices = ({"value": choice[0], "label": choice[1]} for choice in FromLanguages.choices)
+        return Response(choices)
+
+    @action(detail=False, methods=["get"])
+    def to_languages(self, request, *args, **kwargs):
+        choices = ({"value": choice[0], "label": choice[1]} for choice in ToLanguages.choices)
+        return Response(choices)

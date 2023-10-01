@@ -5,6 +5,7 @@ from django.db.models.query import QuerySet
 from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -15,7 +16,7 @@ from wave.apps.payments.models import Payments
 from wave.apps.payments.paginations import CustomPagination
 from wave.apps.payments.serializers import PaymentSerializers
 from wave.utils.custom_exceptions import CustomError
-from wave.utils.enums import PaymentPlans
+from wave.utils.enums import CurrencyChoices, PaymentPlans
 from wave.utils.payments import MoyasarAPIWrapper
 
 
@@ -262,3 +263,8 @@ class PaymentViewSet(ModelViewSet):
         Returns all payment plans, their prices and descriptions
         """
         # TODO: List all payment plans, description, priviledges and prices
+
+    @action(detail=False, methods=["get"])
+    def currencies(self, request, *args, **kwargs):
+        choices = ({"value": choice[0], "label": choice[1]} for choice in CurrencyChoices.choices)
+        return Response(choices)
