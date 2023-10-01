@@ -76,11 +76,6 @@ class PaymentViewSet(ModelViewSet):
     Fear not, brave developer! Your journey through the realms of videos and payments is about to
     reach new heights. May your callbacks resonate with victory and your code be as epic as the most
     legendary tales! 🌟🔮🚀
-    serializer_class: PaymentSerializers = PaymentSerializers
-    queryset = Payments.objects.all()
-    pagination_class = CustomPagination
-    payment = MoyasarAPIWrapper()
-    lookup_field = "id"
     """
 
     serializer_class: PaymentSerializers = PaymentSerializers
