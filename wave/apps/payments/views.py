@@ -194,10 +194,6 @@ class PaymentViewSet(ModelViewSet):
         # Check the card number against the patterns
         for card_type, pattern in card_patterns.items():
             if re.match(pattern, card_number):
-                print(card_type)
-                print(card_type)
-                print(card_type)
-                print(card_type)
                 return card_type
         raise ValidationError("Card company is invalid")
 
