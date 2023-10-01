@@ -1,7 +1,7 @@
 import auto_prefetch
 from django.db import models
 
-from wave.utils.enums import PaymentPlans
+from wave.utils.enums import PaymentPlans, PaymentStatus
 from wave.utils.models import UIDTimeBasedModel
 from wave.utils.payments import MoyasarAPIWrapper
 
@@ -23,7 +23,7 @@ class Payments(UIDTimeBasedModel):
         if self.metadata:
             return self.metadata.get("status", None)
 
-        return None
+        return PaymentStatus.INITIATED
 
 
 # class PaymentPlansModel(UIDTimeBasedModel):

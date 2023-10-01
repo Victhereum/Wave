@@ -124,7 +124,7 @@ class VideoViewSet(ModelViewSet):
 
     @extend_schema(
         request=VideoSerializer.CreateVideo,
-        parameters=["VideoSerializer.CreateVideoParams.Meta.fields"],
+        parameters=[VideoSerializer.TranscribleVideoParams, VideoSerializer.TranslateVideoParams],
         responses={status.HTTP_200_OK: VideoSerializer.GetVideo},
     )
     def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
@@ -215,10 +215,13 @@ class VideoViewSet(ModelViewSet):
 
     @action(detail=False, methods=["get"])
     def from_languages(self, request, *args, **kwargs):
+        """List of languages to be used in from_lang parameter"""
         choices = ({"value": choice[0], "label": choice[1]} for choice in FromLanguages.choices)
         return Response(choices)
 
     @action(detail=False, methods=["get"])
     def to_languages(self, request, *args, **kwargs):
+        """List of languages to be used in to_lang parameter"""
+
         choices = ({"value": choice[0], "label": choice[1]} for choice in ToLanguages.choices)
         return Response(choices)

@@ -10,7 +10,7 @@ from rest_framework.exceptions import PermissionDenied
 
 from wave.apps.payments.models import Payments
 from wave.apps.users.managers import CustomUserManager
-from wave.utils.enums import FreeModeChoices, PaymentPlans, PaymentStatus
+from wave.utils.enums import FreeModeChoices, PaymentStatus
 from wave.utils.models import UIDTimeBasedModel
 
 
@@ -87,22 +87,22 @@ class User(AbstractBaseUser, PermissionsMixin):
         # Get the time difference by year(365 days)
         if self._last_payment():
             last_payment = self._last_payment()
-            time_difference: timedelta = now() - last_payment.created_at
-            payment_type = last_payment.plan
+            # time_difference: timedelta = now() - last_payment.created_at
+            # payment_type = last_payment.plan
             # If the last payment status, didn't go through
             # return False
             if last_payment.status != PaymentStatus.PAID:
                 return False
-            if payment_type == PaymentPlans.MONTHLY:
-                if time_difference.days > 30:
-                    return False
-                return True
-            elif payment_type == PaymentPlans.YEARLY:
-                if time_difference.days > 365:
-                    return False
-                return True
+            # if payment_type == PaymentPlans.MONTHLY:
+            #     if time_difference.days > 30:
+            #         return False
+            #     return True
+            # elif payment_type == PaymentPlans.YEARLY:
+            #     if time_difference.days > 365:
+            #         return False
+            #     return True
             else:
-                return False
+                return True
         return False
 
     @property
