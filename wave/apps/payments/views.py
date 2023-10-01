@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 from django.conf import settings
@@ -6,7 +7,7 @@ from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
@@ -128,7 +129,7 @@ class PaymentViewSet(ModelViewSet):
         :param self: The instance of the class.
         :return: The callback URL as a string.
         """
-        return f"{self.request.build_absolute_uri('/')}"
+        return f"{self.request.build_absolute_uri()}"
 
     def get_queryset(self) -> QuerySet:
         self.queryset = self.queryset.filter(user=self.request.user)
@@ -167,6 +168,49 @@ class PaymentViewSet(ModelViewSet):
             return self.dollars_to_cents(settings.PREMIUM_PLAN_PRICE)
         raise ValueError
 
+    def get_card_type(self, card_number):
+        # Remove any spaces or non-digit characters from the card number
+        card_number = "".join(filter(str.isdigit, card_number))
+        mada_pattern = (
+            r"^(4(0(0861|1757|3024|6136|6996|7(197|395)|9201)|"
+            r"1(2565|0621|0685|7633|9593)|2(0132|1141|281(7|8|9)|689700|8(331|67(1|2|3)))|"
+            r"3(1361|2328|4107|9954)|4(0(533|647|795)|5564|6(393|404|672))|"
+            r"5(5(036|708)|7865|7997|8456)|6(2220|854(0|1|2|3))|7(4491)|"
+            r"8(301(0|1|2)|4783|609(4|5|6)|931(7|8|9))|93428)|"
+            r"5(0(4300|6968|8160)|13213|2(0058|1076|4(130|514)|9(415|741))|"
+            r"3(0(060|906)|1(095|196)|2013|5(825|989)|6023|7767|9931)|"
+            r"4(3(085|357)|9760)|5(4180|7606|8563|8848)|"
+            r"8(5265|8(8(4(5|6|7|8|9)|5(0|1))|98(2|3))|9(005|206)))|"
+            r"6(0(4906|5141)|36120)|9682(0(1|2|3|4|5|6|7|8|9)|1(0|1)))"
+        )
+        # Define regular expressions for card types and their patterns
+        card_patterns = {
+            "mada": mada_pattern,
+            "visa": r"^4[0-9]{12}(?:[0-9]{3})?$",
+            "mastercard": r"^(5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)\d{12}$",
+            "american_express": r"^3[47][0-9]{13}$",
+        }
+
+        # Check the card number against the patterns
+        for card_type, pattern in card_patterns.items():
+            if re.match(pattern, card_number):
+                print(card_type)
+                print(card_type)
+                print(card_type)
+                print(card_type)
+                return card_type
+        raise ValidationError("Card company is invalid")
+
+    def get_icon(self, company):
+        icons = {
+            "visa": "https://iconape.com/wp-content/files/de/370236/svg/370236.svg",
+            "mada": "https://iconape.com/wp-content/files/yo/366974/svg/366974.svg",
+            "mastercard": "https://iconape.com/wp-content/files/gt/371249/svg/371249.svg",
+            "american_express": "https://iconape.com/wp-content/files/im/184198/svg/184198.svg",
+        }
+
+        return icons.get(company)
+
     @atomic
     def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
@@ -189,7 +233,12 @@ class PaymentViewSet(ModelViewSet):
             # month_text = self.month_number_to_text(month_number=int(datetime.now().date().month))
             # plan_description = month_text if plan == PaymentPlans.MONTHLY else datetime.now().date().year
             description = f"Wave payment from {user.name} for {plan} Plan"
-            source = serializer.validated_data.pop("source", {})
+            source: dict = serializer.validated_data.pop("source", {})
+            source.update(
+                {
+                    "company": self.get_card_type(source.get("number", "")),
+                }
+            )
             call_back = self.get_call_back()
             metadata = {"plan": plan}
             payment: dict = self.payment.create_payment(
@@ -268,3 +317,19 @@ class PaymentViewSet(ModelViewSet):
     def currencies(self, request, *args, **kwargs):
         choices = ({"value": choice[0], "label": choice[1]} for choice in CurrencyChoices.choices)
         return Response(choices)
+
+    @action(detail=False, methods=["get"])
+    def card_type(self, request, *args, **kwargs):
+        serializer = self.serializer_class.CardType(data=request.query_params)
+        if serializer.is_valid(raise_exception=True):
+            company = self.get_card_type(serializer.validated_data.get("number", ""))
+            choices = {
+                "value": company,
+                "label": company.title().replace(
+                    "_",
+                    " ",
+                ),
+                "icon": self.get_icon(company),
+            }
+            return Response(choices)
+        return Response(serializer.errors)

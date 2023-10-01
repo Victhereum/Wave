@@ -26,3 +26,9 @@ class PaymentSerializers:
         class Meta:
             model = Payments
             fields = ("id", "user", "metadata")
+
+    class CardType(serializers.Serializer):
+        number = serializers.CharField(required=True)
+
+        class Meta:
+            fields = ("number",)

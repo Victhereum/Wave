@@ -15,8 +15,10 @@ class MoyasarAPIWrapper:
         headers = {
             "Content-Type": "application/json",
         }
-
-        response = requests.request(method, url, json=data, auth=(self.api_key, ""), headers=headers)
+        try:
+            response = requests.request(method, url, json=data, auth=(self.api_key, ""), headers=headers)
+        except requests.exceptions.ConnectionError:
+            raise APIException({"detail": "Payment not successful, please try again."})
         if not response.ok:
             raise APIException(
                 {"detail": response.json().get("message", {}), "errors": response.json().get("errors", {})}
