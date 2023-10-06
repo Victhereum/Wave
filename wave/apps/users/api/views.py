@@ -18,6 +18,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from wave.apps.users.api.serializers import CreateUserSerializer, GetUserSerializer, OTPSerializer, PhoneSerializer
 from wave.apps.users.models import PhoneModel, User
 from wave.utils.custom_exceptions import CustomError
+from wave.utils.enums import CountryEnum
 from wave.utils.twillio import send_otp
 
 
@@ -45,6 +46,11 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
             user.save()
             return Response(data={"detail": "free mode activated"}, status=status.HTTP_202_ACCEPTED)
         raise PermissionDenied(detail="You have exhausted your 3-day trial period")
+
+    @action(detail=False, methods=["get"], permission_classes=[AllowAny])
+    def dialing_code(self, request, *args, **kwargs):
+        choices = ({"code": choice[1], "flag": choice[0]} for choice in CountryEnum.choices)
+        return Response(choices)
 
 
 class RegistrationAPI(GenericAPIView):
