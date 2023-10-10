@@ -5,7 +5,7 @@ from django.db.models.query import QuerySet
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
@@ -213,15 +213,23 @@ class VideoViewSet(ModelViewSet):
         response = self.serializer_class.GetVideo(self.get_object())
         return Response(response.data, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=["get"])
+    @action(detail=False, methods=["get"], permission_classes=[AllowAny])
     def from_languages(self, request, *args, **kwargs):
         """List of languages to be used in from_lang parameter"""
         choices = ({"value": choice[0], "label": choice[1]} for choice in FromLanguages.choices)
         return Response(choices)
 
-    @action(detail=False, methods=["get"])
+    @action(detail=False, methods=["get"], permission_classes=[AllowAny])
     def to_languages(self, request, *args, **kwargs):
         """List of languages to be used in to_lang parameter"""
 
         choices = ({"value": choice[0], "label": choice[1]} for choice in ToLanguages.choices)
+        return Response(choices)
+
+    @action(detail=False, methods=["get"], permission_classes=[AllowAny])
+    def languages(self, request, *args, **kwargs):
+        choices = {
+            "from_languages": ({"value": choice[0], "label": choice[1]} for choice in FromLanguages.choices),
+            "to_languages": ({"value": choice[0], "label": choice[1]} for choice in ToLanguages.choices),
+        }
         return Response(choices)

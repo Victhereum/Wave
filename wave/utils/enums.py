@@ -585,250 +585,323 @@ class CountryEnum(TextChoices):
     ZW = ("https://flagcdn.com/w320/zw.png", "+263")
 
 
-# class CountryFullEnum(TextChoices):
-#     AF = ('AF', 'Afghanistan', '+93', 'https://flagcdn.com/w320/af.png')
-#     AX = ('AX', 'Åland Islands', '+358', 'https://flagcdn.com/w320/ax.png')
-#     AL = ('AL', 'Albania', '+355', 'https://flagcdn.com/w320/al.png')
-#     DZ = ('DZ', 'Algeria', '+213', 'https://flagcdn.com/w320/dz.png')
-#     AS = ('AS', 'American Samoa', '+1-684', 'https://flagcdn.com/w320/as.png')
-#     AD = ('AD', 'Andorra', '+376', 'https://flagcdn.com/w320/ad.png')
-#     AO = ('AO', 'Angola', '+244', 'https://flagcdn.com/w320/ao.png')
-#     AI = ('AI', 'Anguilla', '+1-264', 'https://flagcdn.com/w320/ai.png')
-#     AQ = ('AQ', 'Antarctica', None, 'https://flagcdn.com/w320/aq.png')
-#     AG = ('AG', 'Antigua and Barbuda', '+1-268', 'https://flagcdn.com/w320/ag.png')
-#     AR = ('AR', 'Argentina', '+54', 'https://flagcdn.com/w320/ar.png')
-#     AM = ('AM', 'Armenia', '+374', 'https://flagcdn.com/w320/am.png')
-#     AW = ('AW', 'Aruba', '+297', 'https://flagcdn.com/w320/aw.png')
-#     AU = ('AU', 'Australia', '+61', 'https://flagcdn.com/w320/au.png')
-#     AT = ('AT', 'Austria', '+43', 'https://flagcdn.com/w320/at.png')
-#     AZ = ('AZ', 'Azerbaijan', '+994', 'https://flagcdn.com/w320/az.png')
-#     BS = ('BS', 'Bahamas', '+1-242', 'https://flagcdn.com/w320/bs.png')
-#     BH = ('BH', 'Bahrain', '+973', 'https://flagcdn.com/w320/bh.png')
-#     BD = ('BD', 'Bangladesh', '+880', 'https://flagcdn.com/w320/bd.png')
-#     BB = ('BB', 'Barbados', '+1-246', 'https://flagcdn.com/w320/bb.png')
-#     BY = ('BY', 'Belarus', '+375', 'https://flagcdn.com/w320/by.png')
-#     BE = ('BE', 'Belgium', '+32', 'https://flagcdn.com/w320/be.png')
-#     BZ = ('BZ', 'Belize', '+501', 'https://flagcdn.com/w320/bz.png')
-#     BJ = ('BJ', 'Benin', '+229', 'https://flagcdn.com/w320/bj.png')
-#     BM = ('BM', 'Bermuda', '+1-441', 'https://flagcdn.com/w320/bm.png')
-#     BT = ('BT', 'Bhutan', '+975', 'https://flagcdn.com/w320/bt.png')
-#     BO = ('BO', 'Bolivia', '+591', 'https://flagcdn.com/w320/bo.png')
-#     BA = ('BA', 'Bosnia and Herzegovina', '+387', 'https://flagcdn.com/w320/ba.png')
-#     BW = ('BW', 'Botswana', '+267', 'https://flagcdn.com/w320/bw.png')
-#     BV = ('BV', 'Bouvet Island', None, 'https://flagcdn.com/w320/bv.png')
-#     BR = ('BR', 'Brazil', '+55', 'https://flagcdn.com/w320/br.png')
-#     IO = ('IO', 'British Indian Ocean Territory', '+246', 'https://flagcdn.com/w320/io.png')
-#     BN = ('BN', 'Brunei Darussalam', '+673', 'https://flagcdn.com/w320/bn.png')
-#     BG = ('BG', 'Bulgaria', '+359', 'https://flagcdn.com/w320/bg.png')
-#     BF = ('BF', 'Burkina Faso', '+226', 'https://flagcdn.com/w320/bf.png')
-#     BI = ('BI', 'Burundi', '+257', 'https://flagcdn.com/w320/bi.png')
-#     CV = ('CV', 'Cabo Verde', '+238', 'https://flagcdn.com/w320/cv.png')
-#     KH = ('KH', 'Cambodia', '+855', 'https://flagcdn.com/w320/kh.png')
-#     CM = ('CM', 'Cameroon', '+237', 'https://flagcdn.com/w320/cm.png')
-#     CA = ('CA', 'Canada', '+1', 'https://flagcdn.com/w320/ca.png')
-#     KY = ('KY', 'Cayman Islands', '+1-345', 'https://flagcdn.com/w320/ky.png')
-#     CF = ('CF', 'Central African Republic', '+236', 'https://flagcdn.com/w320/cf.png')
-#     TD = ('TD', 'Chad', '+235', 'https://flagcdn.com/w320/td.png')
-#     CL = ('CL', 'Chile', '+56', 'https://flagcdn.com/w320/cl.png')
-#     CN = ('CN', 'China', '+86', 'https://flagcdn.com/w320/cn.png')
-#     CX = ('CX', 'Christmas Island', '+61', 'https://flagcdn.com/w320/cx.png')
-#     CC = ('CC', 'Cocos (Keeling) Islands', '+61', 'https://flagcdn.com/w320/cc.png')
-#     CO = ('CO', 'Colombia', '+57', 'https://flagcdn.com/w320/co.png')
-#     KM = ('KM', 'Comoros', '+269', 'https://flagcdn.com/w320/km.png')
-#     CG = ('CG', 'Congo', '+242', 'https://flagcdn.com/w320/cg.png')
-#     CD = ('CD', 'Congo, Democratic Republic', '+243', 'https://flagcdn.com/w320/cd.png')
-#     CK = ('CK', 'Cook Islands', '+682', 'https://flagcdn.com/w320/ck.png')
-#     CR = ('CR', 'Costa Rica', '+506', 'https://flagcdn.com/w320/cr.png')
-#     HR = ('HR', 'Croatia', '+385', 'https://flagcdn.com/w320/hr.png')
-#     CU = ('CU', 'Cuba', '+53', 'https://flagcdn.com/w320/cu.png')
-#     CY = ('CY', 'Cyprus', '+357', 'https://flagcdn.com/w320/cy.png')
-#     CZ = ('CZ', 'Czech Republic', '+420', 'https://flagcdn.com/w320/cz.png')
-#     DK = ('DK', 'Denmark', '+45', 'https://flagcdn.com/w320/dk.png')
-#     DJ = ('DJ', 'Djibouti', '+253', 'https://flagcdn.com/w320/dj.png')
-#     DM = ('DM', 'Dominica', '+1-767', 'https://flagcdn.com/w320/dm.png')
-#     DO = ('DO', 'Dominican Republic', '+1-809', 'https://flagcdn.com/w320/do.png')
-#     EC = ('EC', 'Ecuador', '+593', 'https://flagcdn.com/w320/ec.png')
-#     EG = ('EG', 'Egypt', '+20', 'https://flagcdn.com/w320/eg.png')
-#     SV = ('SV', 'El Salvador', '+503', 'https://flagcdn.com/w320/sv.png')
-#     GQ = ('GQ', 'Equatorial Guinea', '+240', 'https://flagcdn.com/w320/gq.png')
-#     ER = ('ER', 'Eritrea', '+291', 'https://flagcdn.com/w320/er.png')
-#     EE = ('EE', 'Estonia', '+372', 'https://flagcdn.com/w320/ee.png')
-#     ET = ('ET', 'Ethiopia', '+251', 'https://flagcdn.com/w320/et.png')
-#     FK = ('FK', 'Falkland Islands (Malvinas)', '+500', 'https://flagcdn.com/w320/fk.png')
-#     FO = ('FO', 'Faroe Islands', '+298', 'https://flagcdn.com/w320/fo.png')
-#     FJ = ('FJ', 'Fiji', '+679', 'https://flagcdn.com/w320/fj.png')
-#     FI = ('FI', 'Finland', '+358', 'https://flagcdn.com/w320/fi.png')
-#     FR = ('FR', 'France', '+33', 'https://flagcdn.com/w320/fr.png')
-#     GF = ('GF', 'French Guiana', '+594', 'https://flagcdn.com/w320/gf.png')
-#     PF = ('PF', 'French Polynesia', '+689', 'https://flagcdn.com/w320/pf.png')
-#     TF = ('TF', 'French Southern Territories', None, 'https://flagcdn.com/w320/tf.png')
-#     GA = ('GA', 'Gabon', '+241', 'https://flagcdn.com/w320/ga.png')
-#     GM = ('GM', 'Gambia', '+220', 'https://flagcdn.com/w320/gm.png')
-#     GE = ('GE', 'Georgia', '+995', 'https://flagcdn.com/w320/ge.png')
-#     DE = ('DE', 'Germany', '+49', 'https://flagcdn.com/w320/de.png')
-#     GH = ('GH', 'Ghana', '+233', 'https://flagcdn.com/w320/gh.png')
-#     GI = ('GI', 'Gibraltar', '+350', 'https://flagcdn.com/w320/gi.png')
-#     GR = ('GR', 'Greece', '+30', 'https://flagcdn.com/w320/gr.png')
-#     GL = ('GL', 'Greenland', '+299', 'https://flagcdn.com/w320/gl.png')
-#     GD = ('GD', 'Grenada', '+1-473', 'https://flagcdn.com/w320/gd.png')
-#     GP = ('GP', 'Guadeloupe', '+590', 'https://flagcdn.com/w320/gp.png')
-#     GU = ('GU', 'Guam', '+1-671', 'https://flagcdn.com/w320/gu.png')
-#     GT = ('GT', 'Guatemala', '+502', 'https://flagcdn.com/w320/gt.png')
-#     GG = ('GG', 'Guernsey', '+44', 'https://flagcdn.com/w320/gg.png')
-#     GN = ('GN', 'Guinea', '+224', 'https://flagcdn.com/w320/gn.png')
-#     GW = ('GW', 'Guinea-Bissau', '+245', 'https://flagcdn.com/w320/gw.png')
-#     GY = ('GY', 'Guyana', '+592', 'https://flagcdn.com/w320/gy.png')
-#     HT = ('HT', 'Haiti', '+509', 'https://flagcdn.com/w320/ht.png')
-#     HM = ('HM', 'Heard Island and McDonald Islands', None, 'https://flagcdn.com/w320/hm.png')
-#     VA = ('VA', 'Holy See (Vatican City State)', '+379', 'https://flagcdn.com/w320/va.png')
-#     HN = ('HN', 'Honduras', '+504', 'https://flagcdn.com/w320/hn.png')
-#     HK = ('HK', 'Hong Kong', '+852', 'https://flagcdn.com/w320/hk.png')
-#     HU = ('HU', 'Hungary', '+36', 'https://flagcdn.com/w320/hu.png')
-#     IS = ('IS', 'Iceland', '+354', 'https://flagcdn.com/w320/is.png')
-#     IN = ('IN', 'India', '+91', 'https://flagcdn.com/w320/in.png')
-#     ID = ('ID', 'Indonesia', '+62', 'https://flagcdn.com/w320/id.png')
-#     IR = ('IR', 'Iran, Islamic Republic', '+98', 'https://flagcdn.com/w320/ir.png')
-#     IQ = ('IQ', 'Iraq', '+964', 'https://flagcdn.com/w320/iq.png')
-#     IE = ('IE', 'Ireland', '+353', 'https://flagcdn.com/w320/ie.png')
-#     IM = ('IM', 'Isle of Man', '+44', 'https://flagcdn.com/w320/im.png')
-#     IL = ('IL', 'Israel', '+972', 'https://flagcdn.com/w320/il.png')
-#     IT = ('IT', 'Italy', '+39', 'https://flagcdn.com/w320/it.png')
-#     JM = ('JM', 'Jamaica', '+1-876', 'https://flagcdn.com/w320/jm.png')
-#     JP = ('JP', 'Japan', '+81', 'https://flagcdn.com/w320/jp.png')
-#     JE = ('JE', 'Jersey', '+44', 'https://flagcdn.com/w320/je.png')
-#     JO = ('JO', 'Jordan', '+962', 'https://flagcdn.com/w320/jo.png')
-#     KZ = ('KZ', 'Kazakhstan', '+7', 'https://flagcdn.com/w320/kz.png')
-#     KE = ('KE', 'Kenya', '+254', 'https://flagcdn.com/w320/ke.png')
-#     KI = ('KI', 'Kiribati', '+686', 'https://flagcdn.com/w320/ki.png')
-#     KP = ('KP', 'Korea, Democratic People\'s Republic', '+850', 'https://flagcdn.com/w320/kp.png')
-#     KR = ('KR', 'Korea, Republic', '+82', 'https://flagcdn.com/w320/kr.png')
-#     KW = ('KW', 'Kuwait', '+965', 'https://flagcdn.com/w320/kw.png')
-#     KG = ('KG', 'Kyrgyzstan', '+996', 'https://flagcdn.com/w320/kg.png')
-#     LA = ('LA', 'Lao People\'s Democratic Republic', '+856', 'https://flagcdn.com/w320/la.png')
-#     LV = ('LV', 'Latvia', '+371', 'https://flagcdn.com/w320/lv.png')
-#     LB = ('LB', 'Lebanon', '+961', 'https://flagcdn.com/w320/lb.png')
-#     LS = ('LS', 'Lesotho', '+266', 'https://flagcdn.com/w320/ls.png')
-#     LR = ('LR', 'Liberia', '+231', 'https://flagcdn.com/w320/lr.png')
-#     LY = ('LY', 'Libya', '+218', 'https://flagcdn.com/w320/ly.png')
-#     LI = ('LI', 'Liechtenstein', '+423', 'https://flagcdn.com/w320/li.png')
-#     LT = ('LT', 'Lithuania', '+370', 'https://flagcdn.com/w320/lt.png')
-#     LU = ('LU', 'Luxembourg', '+352', 'https://flagcdn.com/w320/lu.png')
-#     MO = ('MO', 'Macao', '+853', 'https://flagcdn.com/w320/mo.png')
-#     MK = ('MK', 'Macedonia, the former Yugoslav Republic', '+389', 'https://flagcdn.com/w320/mk.png')
-#     MG = ('MG', 'Madagascar', '+261', 'https://flagcdn.com/w320/mg.png')
-#     MW = ('MW', 'Malawi', '+265', 'https://flagcdn.com/w320/mw.png')
-#     MY = ('MY', 'Malaysia', '+60', 'https://flagcdn.com/w320/my.png')
-#     MV = ('MV', 'Maldives', '+960', 'https://flagcdn.com/w320/mv.png')
-#     ML = ('ML', 'Mali', '+223', 'https://flagcdn.com/w320/ml.png')
-#     MT = ('MT', 'Malta', '+356', 'https://flagcdn.com/w320/mt.png')
-#     MH = ('MH', 'Marshall Islands', '+692', 'https://flagcdn.com/w320/mh.png')
-#     MQ = ('MQ', 'Martinique', '+596', 'https://flagcdn.com/w320/mq.png')
-#     MR = ('MR', 'Mauritania', '+222', 'https://flagcdn.com/w320/mr.png')
-#     MU = ('MU', 'Mauritius', '+230', 'https://flagcdn.com/w320/mu.png')
-#     YT = ('YT', 'Mayotte', '+262', 'https://flagcdn.com/w320/yt.png')
-#     MX = ('MX', 'Mexico', '+52', 'https://flagcdn.com/w320/mx.png')
-#     FM = ('FM', 'Micronesia, Federated States', '+691', 'https://flagcdn.com/w320/fm.png')
-#     MD = ('MD', 'Moldova', '+373', 'https://flagcdn.com/w320/md.png')
-#     MC = ('MC', 'Monaco', '+377', 'https://flagcdn.com/w320/mc.png')
-#     MN = ('MN', 'Mongolia', '+976', 'https://flagcdn.com/w320/mn.png')
-#     ME = ('ME', 'Montenegro', '+382', 'https://flagcdn.com/w320/me.png')
-#     MS = ('MS', 'Montserrat', '+1-664', 'https://flagcdn.com/w320/ms.png')
-#     MA = ('MA', 'Morocco', '+212', 'https://flagcdn.com/w320/ma.png')
-#     MZ = ('MZ', 'Mozambique', '+258', 'https://flagcdn.com/w320/mz.png')
-#     MM = ('MM', 'Myanmar', '+95', 'https://flagcdn.com/w320/mm.png')
-#     NA = ('NA', 'Namibia', '+264', 'https://flagcdn.com/w320/na.png')
-#     NR = ('NR', 'Nauru', '+674', 'https://flagcdn.com/w320/nr.png')
-#     NP = ('NP', 'Nepal', '+977', 'https://flagcdn.com/w320/np.png')
-#     NL = ('NL', 'Netherlands', '+31', 'https://flagcdn.com/w320/nl.png')
-#     NC = ('NC', 'New Caledonia', '+687', 'https://flagcdn.com/w320/nc.png')
-#     NZ = ('NZ', 'New Zealand', '+64', 'https://flagcdn.com/w320/nz.png')
-#     NI = ('NI', 'Nicaragua', '+505', 'https://flagcdn.com/w320/ni.png')
-#     NE = ('NE', 'Niger', '+227', 'https://flagcdn.com/w320/ne.png')
-#     NG = ('NG', 'Nigeria', '+234', 'https://flagcdn.com/w320/ng.png')
-#     NU = ('NU', 'Niue', '+683', 'https://flagcdn.com/w320/nu.png')
-#     NF = ('NF', 'Norfolk Island', '+672', 'https://flagcdn.com/w320/nf.png')
-#     MP = ('MP', 'Northern Mariana Islands', '+1-670', 'https://flagcdn.com/w320/mp.png')
-#     NO = ('NO', 'Norway', '+47', 'https://flagcdn.com/w320/no.png')
-#     OM = ('OM', 'Oman', '+968', 'https://flagcdn.com/w320/om.png')
-#     PK = ('PK', 'Pakistan', '+92', 'https://flagcdn.com/w320/pk.png')
-#     PW = ('PW', 'Palau', '+680', 'https://flagcdn.com/w320/pw.png')
-#     PS = ('PS', 'Palestine, State of', '+970', 'https://flagcdn.com/w320/ps.png')
-#     PA = ('PA', 'Panama', '+507', 'https://flagcdn.com/w320/pa.png')
-#     PG = ('PG', 'Papua New Guinea', '+675', 'https://flagcdn.com/w320/pg.png')
-#     PY = ('PY', 'Paraguay', '+595', 'https://flagcdn.com/w320/py.png')
-#     PE = ('PE', 'Peru', '+51', 'https://flagcdn.com/w320/pe.png')
-#     PH = ('PH', 'Philippines', '+63', 'https://flagcdn.com/w320/ph.png')
-#     PN = ('PN', 'Pitcairn', None, 'https://flagcdn.com/w320/pn.png')
-#     PL = ('PL', 'Poland', '+48', 'https://flagcdn.com/w320/pl.png')
-#     PT = ('PT', 'Portugal', '+351', 'https://flagcdn.com/w320/pt.png')
-#     PR = ('PR', 'Puerto Rico', '+1-787', 'https://flagcdn.com/w320/pr.png')
-#     QA = ('QA', 'Qatar', '+974', 'https://flagcdn.com/w320/qa.png')
-#     RE = ('RE', 'Réunion', '+262', 'https://flagcdn.com/w320/re.png')
-#     RO = ('RO', 'Romania', '+40', 'https://flagcdn.com/w320/ro.png')
-#     RU = ('RU', 'Russian Federation', '+7', 'https://flagcdn.com/w320/ru.png')
-#     RW = ('RW', 'Rwanda', '+250', 'https://flagcdn.com/w320/rw.png')
-#     BL = ('BL', 'Saint Barthélemy', '+590', 'https://flagcdn.com/w320/bl.png')
-#     SH = ('SH', 'Saint Helena, Ascension and Tristan da Cunha', '+290', 'https://flagcdn.com/w320/sh.png')
-#     KN = ('KN', 'Saint Kitts and Nevis', '+1-869', 'https://flagcdn.com/w320/kn.png')
-#     LC = ('LC', 'Saint Lucia', '+1-758', 'https://flagcdn.com/w320/lc.png')
-#     MF = ('MF', 'Saint Martin (French part)', '+590', 'https://flagcdn.com/w320/mf.png')
-#     PM = ('PM', 'Saint Pierre and Miquelon', '+508', 'https://flagcdn.com/w320/pm.png')
-#     VC = ('VC', 'Saint Vincent and the Grenadines', '+1-784', 'https://flagcdn.com/w320/vc.png')
-#     WS = ('WS', 'Samoa', '+685', 'https://flagcdn.com/w320/ws.png')
-#     SM = ('SM', 'San Marino', '+378', 'https://flagcdn.com/w320/sm.png')
-#     ST = ('ST', 'Sao Tome and Principe', '+239', 'https://flagcdn.com/w320/st.png')
-#     SA = ('SA', 'Saudi Arabia', '+966', 'https://flagcdn.com/w320/sa.png')
-#     SN = ('SN', 'Senegal', '+221', 'https://flagcdn.com/w320/sn.png')
-#     RS = ('RS', 'Serbia', '+381', 'https://flagcdn.com/w320/rs.png')
-#     SC = ('SC', 'Seychelles', '+248', 'https://flagcdn.com/w320/sc.png')
-#     SL = ('SL', 'Sierra Leone', '+232', 'https://flagcdn.com/w320/sl.png')
-#     SG = ('SG', 'Singapore', '+65', 'https://flagcdn.com/w320/sg.png')
-#     SX = ('SX', 'Sint Maarten (Dutch part)', '+1-721', 'https://flagcdn.com/w320/sx.png')
-#     SK = ('SK', 'Slovakia', '+421', 'https://flagcdn.com/w320/sk.png')
-#     SI = ('SI', 'Slovenia', '+386', 'https://flagcdn.com/w320/si.png')
-#     SB = ('SB', 'Solomon Islands', '+677', 'https://flagcdn.com/w320/sb.png')
-#     SO = ('SO', 'Somalia', '+252', 'https://flagcdn.com/w320/so.png')
-#     ZA = ('ZA', 'South Africa', '+27', 'https://flagcdn.com/w320/za.png')
-#     GS = ('GS', 'South Georgia and the South Sandwich Islands', None, 'https://flagcdn.com/w320/gs.png')
-#     SS = ('SS', 'South Sudan', '+211', 'https://flagcdn.com/w320/ss.png')
-#     ES = ('ES', 'Spain', '+34', 'https://flagcdn.com/w320/es.png')
-#     LK = ('LK', 'Sri Lanka', '+94', 'https://flagcdn.com/w320/lk.png')
-#     SD = ('SD', 'Sudan', '+249', 'https://flagcdn.com/w320/sd.png')
-#     SR = ('SR', 'Suriname', '+597', 'https://flagcdn.com/w320/sr.png')
-#     SJ = ('SJ', 'Svalbard and Jan Mayen', '+47', 'https://flagcdn.com/w320/sj.png')
-#     SZ = ('SZ', 'Swaziland', '+268', 'https://flagcdn.com/w320/sz.png')
-#     SE = ('SE', 'Sweden', '+46', 'https://flagcdn.com/w320/se.png')
-#     CH = ('CH', 'Switzerland', '+41', 'https://flagcdn.com/w320/ch.png')
-#     SY = ('SY', 'Syrian Arab Republic', '+963', 'https://flagcdn.com/w320/sy.png')
-#     TW = ('TW', 'Taiwan, Province of China', '+886', 'https://flagcdn.com/w320/tw.png')
-#     TJ = ('TJ', 'Tajikistan', '+992', 'https://flagcdn.com/w320/tj.png')
-#     TZ = ('TZ', 'Tanzania, United Republic', '+255', 'https://flagcdn.com/w320/tz.png')
-#     TH = ('TH', 'Thailand', '+66', 'https://flagcdn.com/w320/th.png')
-#     TL = ('TL', 'Timor-Leste', '+670', 'https://flagcdn.com/w320/tl.png')
-#     TG = ('TG', 'Togo', '+228', 'https://flagcdn.com/w320/tg.png')
-#     TK = ('TK', 'Tokelau', '+690', 'https://flagcdn.com/w320/tk.png')
-#     TO = ('TO', 'Tonga', '+676', 'https://flagcdn.com/w320/to.png')
-#     TT = ('TT', 'Trinidad and Tobago', '+1-868', 'https://flagcdn.com/w320/tt.png')
-#     TN = ('TN', 'Tunisia', '+216', 'https://flagcdn.com/w320/tn.png')
-#     TR = ('TR', 'Turkey', '+90', 'https://flagcdn.com/w320/tr.png')
-#     TM = ('TM', 'Turkmenistan', '+993', 'https://flagcdn.com/w320/tm.png')
-#     TC = ('TC', 'Turks and Caicos Islands', '+1-649', 'https://flagcdn.com/w320/tc.png')
-#     TV = ('TV', 'Tuvalu', '+688', 'https://flagcdn.com/w320/tv.png')
-#     UG = ('UG', 'Uganda', '+256', 'https://flagcdn.com/w320/ug.png')
-#     UA = ('UA', 'Ukraine', '+380', 'https://flagcdn.com/w320/ua.png')
-#     AE = ('AE', 'United Arab Emirates', '+971', 'https://flagcdn.com/w320/ae.png')
-#     GB = ('GB', 'United Kingdom', '+44', 'https://flagcdn.com/w320/gb.png')
-#     US = ('US', 'United States', '+1', 'https://flagcdn.com/w320/us.png')
-#     UM = ('UM', 'United States Minor Outlying Islands', None, 'https://flagcdn.com/w320/um.png')
-#     UY = ('UY', 'Uruguay', '+598', 'https://flagcdn.com/w320/uy.png')
-#     UZ = ('UZ', 'Uzbekistan', '+998', 'https://flagcdn.com/w320/uz.png')
-#     VU = ('VU', 'Vanuatu', '+678', 'https://flagcdn.com/w320/vu.png')
-#     VE = ('VE', 'Venezuela', '+58', 'https://flagcdn.com/w320/ve.png')
-#     VN = ('VN', 'Viet Nam', '+84', 'https://flagcdn.com/w320/vn.png')
-#     VG = ('VG', 'Virgin Islands, British', '+1-284', 'https://flagcdn.com/w320/vg.png')
-#     VI = ('VI', 'Virgin Islands, U.S.', '+1-340', 'https://flagcdn.com/w320/vi.png')
-#     WF = ('WF', 'Wallis and Futuna', '+681', 'https://flagcdn.com/w320/wf.png')
-#     EH = ('EH', 'Western Sahara', '+212', 'https://flagcdn.com/w320/eh.png')
-#     YE = ('YE', 'Yemen', '+967', 'https://flagcdn.com/w320/ye.png')
-#     ZM = ('ZM', 'Zambia', '+260', 'https://flagcdn.com/w320/zm.png')
-#     ZW = ('ZW', 'Zimbabwe', '+263', 'https://flagcdn.com/w320/zw.png')
+CountryName = [
+    ("AF", "Afghanistan"),
+    ("AX", "Åland Islands"),
+    ("AL", "Albania"),
+    ("DZ", "Algeria"),
+    ("AS", "American Samoa"),
+    ("AD", "Andorra"),
+    ("AO", "Angola"),
+    ("AI", "Anguilla"),
+    ("AQ", "Antarctica"),
+    ("AG", "Antigua and Barbuda"),
+    ("AR", "Argentina"),
+    ("AM", "Armenia"),
+    ("AW", "Aruba"),
+    ("AU", "Australia"),
+    ("AT", "Austria"),
+    ("AZ", "Azerbaijan"),
+    ("BS", "Bahamas"),
+    ("BH", "Bahrain"),
+    ("BD", "Bangladesh"),
+    ("BB", "Barbados"),
+    ("BY", "Belarus"),
+    ("BE", "Belgium"),
+    ("BZ", "Belize"),
+    ("BJ", "Benin"),
+    ("BM", "Bermuda"),
+    (
+        "BT",
+        "Bhutan",
+    ),
+    (
+        "BO",
+        "Bolivia",
+    ),
+    ("BA", "Bosnia and Herzegovina"),
+    (
+        "BW",
+        "Botswana",
+    ),
+    (
+        "BV",
+        "Bouvet Island",
+    ),
+    (
+        "BR",
+        "Brazil",
+    ),
+    (
+        "IO",
+        "British Indian Ocean Territory",
+    ),
+    (
+        "BN",
+        "Brunei Darussalam",
+    ),
+    (
+        "BG",
+        "Bulgaria",
+    ),
+    (
+        "BF",
+        "Burkina Faso",
+    ),
+    (
+        "BI",
+        "Burundi",
+    ),
+    (
+        "CV",
+        "Cabo Verde",
+    ),
+    (
+        "KH",
+        "Cambodia",
+    ),
+    (
+        "CM",
+        "Cameroon",
+    ),
+    (
+        "CA",
+        "Canada",
+    ),
+    (
+        "KY",
+        "Cayman Islands",
+    ),
+    (
+        "CF",
+        "Central African Republic",
+    ),
+    (
+        "TD",
+        "Chad",
+    ),
+    (
+        "CL",
+        "Chile",
+    ),
+    (
+        "CN",
+        "China",
+    ),
+    (
+        "CX",
+        "Christmas Island",
+    ),
+    (
+        "CC",
+        "Cocos (Keeling) Islands",
+    ),
+    ("CO", "Colombia"),
+    ("KM", "Comoros"),
+    ("CG", "Congo"),
+    (
+        "CD",
+        "Congo, Democratic Republic",
+    ),
+    (
+        "CK",
+        "Cook Islands",
+    ),
+    (
+        "CR",
+        "Costa Rica",
+    ),
+    ("HR", "Croatia"),
+    ("CU", "Cuba"),
+    ("CY", "Cyprus"),
+    ("CZ", "Czech Republic"),
+    ("DK", "Denmark"),
+    ("DJ", "Djibouti"),
+    ("DM", "Dominica"),
+    ("DO", "Dominican Republic"),
+    ("EC", "Ecuador"),
+    ("EG", "Egypt"),
+    ("SV", "El Salvador"),
+    ("GQ", "Equatorial Guinea"),
+    ("ER", "Eritrea"),
+    ("EE", "Estonia"),
+    ("ET", "Ethiopia"),
+    ("FK", "Falkland Islands (Malvinas)"),
+    ("FO", "Faroe Islands"),
+    ("FJ", "Fiji"),
+    ("FI", "Finland"),
+    ("FR", "France"),
+    ("GF", "French Guiana"),
+    ("PF", "French Polynesia"),
+    ("TF", "French Southern Territories"),
+    ("GA", "Gabon"),
+    ("GM", "Gambia"),
+    ("GE", "Georgia"),
+    ("DE", "Germany"),
+    ("GH", "Ghana"),
+    ("GI", "Gibraltar"),
+    ("GR", "Greece"),
+    ("GL", "Greenland"),
+    ("GD", "Grenada"),
+    ("GP", "Guadeloupe"),
+    ("GU", "Guam"),
+    ("GT", "Guatemala"),
+    ("GG", "Guernsey"),
+    ("GN", "Guinea"),
+    ("GW", "Guinea-Bissau"),
+    ("GY", "Guyana"),
+    ("HT", "Haiti"),
+    ("HM", "Heard Island and McDonald Islands"),
+    ("VA", "Holy See (Vatican City State)"),
+    ("HN", "Honduras"),
+    ("HK", "Hong Kong"),
+    ("HU", "Hungary"),
+    ("IS", "Iceland"),
+    ("IN", "India"),
+    ("ID", "Indonesia"),
+    ("IR", "Iran, Islamic Republic"),
+    ("IQ", "Iraq"),
+    ("IE", "Ireland"),
+    ("IM", "Isle of Man"),
+    ("IL", "Israel"),
+    ("IT", "Italy"),
+    ("JM", "Jamaica"),
+    ("JP", "Japan"),
+    ("JE", "Jersey"),
+    ("JO", "Jordan"),
+    ("KZ", "Kazakhstan"),
+    ("KE", "Kenya"),
+    ("KI", "Kiribati"),
+    ("KP", "Korea, Democratic People's Republic"),
+    ("KR", "Korea, Republic"),
+    ("KW", "Kuwait", "+965"),
+    ("KG", "Kyrgyzstan"),
+    ("LA", "Lao People's Democratic Republic"),
+    ("LV", "Latvia"),
+    ("LB", "Lebanon"),
+    ("LS", "Lesotho"),
+    ("LR", "Liberia"),
+    ("LY", "Libya"),
+    ("LI", "Liechtenstein"),
+    ("LT", "Lithuania"),
+    ("LU", "Luxembourg"),
+    ("MO", "Macao"),
+    ("MK", "Macedonia, the former Yugoslav Republic"),
+    ("MG", "Madagascar"),
+    ("MW", "Malawi"),
+    ("MY", "Malaysia"),
+    ("MV", "Maldives"),
+    ("ML", "Mali"),
+    ("MT", "Malta"),
+    ("MH", "Marshall Islands"),
+    ("MQ", "Martinique"),
+    ("MR", "Mauritania"),
+    ("MU", "Mauritius"),
+    ("YT", "Mayotte"),
+    ("MX", "Mexico"),
+    ("FM", "Micronesia, Federated States"),
+    ("MD", "Moldova"),
+    ("MC", "Monaco"),
+    ("MN", "Mongolia"),
+    ("ME", "Montenegro"),
+    ("MS", "Montserrat"),
+    ("MA", "Morocco"),
+    ("MZ", "Mozambique"),
+    ("MM", "Myanmar"),
+    ("NA", "Namibia"),
+    ("NR", "Nauru"),
+    ("NP", "Nepal"),
+    ("NL", "Netherlands"),
+    ("NC", "New Caledonia"),
+    ("NZ", "New Zealand"),
+    ("NI", "Nicaragua"),
+    ("NE", "Niger"),
+    ("NG", "Nigeria"),
+    ("NU", "Niue"),
+    ("NF", "Norfolk Island"),
+    ("MP", "Northern Mariana Islands"),
+    ("NO", "Norway"),
+    ("OM", "Oman"),
+    ("PK", "Pakistan"),
+    ("PW", "Palau"),
+    ("PS", "Palestine, State of"),
+    ("PA", "Panama"),
+    ("PG", "Papua New Guinea"),
+    ("PY", "Paraguay"),
+    ("PE", "Peru"),
+    ("PH", "Philippines"),
+    ("PN", "Pitcairn"),
+    ("PL", "Poland"),
+    ("PT", "Portugal"),
+    ("PR", "Puerto Rico"),
+    ("QA", "Qatar"),
+    ("RE", "Réunion"),
+    ("RO", "Romania"),
+    ("RU", "Russian Federation"),
+    ("RW", "Rwanda"),
+    ("BL", "Saint Barthélemy"),
+    ("SH", "Saint Helena, Ascension and Tristan da Cunha"),
+    ("KN", "Saint Kitts and Nevis"),
+    ("LC", "Saint Lucia"),
+    ("MF", "Saint Martin (French part)"),
+    ("PM", "Saint Pierre and Miquelon"),
+    ("VC", "Saint Vincent and the Grenadines"),
+    ("WS", "Samoa"),
+    ("SM", "San Marino"),
+    ("ST", "Sao Tome and Principe"),
+    ("SA", "Saudi Arabia"),
+    ("SN", "Senegal"),
+    ("RS", "Serbia"),
+    ("SC", "Seychelles"),
+    ("SL", "Sierra Leone"),
+    ("SG", "Singapore"),
+    ("SX", "Sint Maarten (Dutch part)"),
+    ("SK", "Slovakia"),
+    ("SI", "Slovenia"),
+    ("SB", "Solomon Islands"),
+    ("SO", "Somalia"),
+    ("ZA", "South Africa"),
+    ("GS", "South Georgia and the South Sandwich Islands"),
+    ("SS", "South Sudan"),
+    ("ES", "Spain"),
+    ("LK", "Sri Lanka"),
+    ("SD", "Sudan"),
+    ("SR", "Suriname"),
+    ("SJ", "Svalbard and Jan Mayen"),
+    ("SZ", "Swaziland"),
+    ("SE", "Sweden"),
+    ("CH", "Switzerland"),
+    ("SY", "Syrian Arab Republic"),
+    ("TW", "Taiwan, Province of China"),
+    ("TJ", "Tajikistan"),
+    ("TZ", "Tanzania, United Republic"),
+    ("TH", "Thailand"),
+    ("TL", "Timor-Leste"),
+    ("TG", "Togo"),
+    ("TK", "Tokelau"),
+    ("TO", "Tonga"),
+    ("TT", "Trinidad and Tobago"),
+    ("TN", "Tunisia"),
+    ("TR", "Turkey"),
+    ("TM", "Turkmenistan"),
+    ("TC", "Turks and Caicos Islands"),
+    ("TV", "Tuvalu"),
+    ("UG", "Uganda"),
+    ("UA", "Ukraine"),
+    ("AE", "United Arab Emirates"),
+    ("GB", "United Kingdom"),
+    ("US", "United States"),
+    ("UM", "United States Minor Outlying Islands"),
+    ("UY", "Uruguay"),
+    ("UZ", "Uzbekistan"),
+    ("VU", "Vanuatu"),
+    ("VE", "Venezuela"),
+    ("VN", "Viet Nam"),
+    ("VG", "Virgin Islands, British"),
+    ("VI", "Virgin Islands, U.S."),
+    ("WF", "Wallis and Futuna"),
+    ("EH", "Western Sahara"),
+    ("YE", "Yemen"),
+    ("ZM", "Zambia"),
+    ("ZW", "Zimbabwe"),
+]
