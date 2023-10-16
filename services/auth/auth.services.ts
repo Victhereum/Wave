@@ -11,7 +11,7 @@ interface IAuthRegister {
 
 class Auth {
     async login({ phone_no, otp }: IAuthLogin) {
-        return await axiosClient.post('/ausers/phone/otp/', {
+        return await axiosClient.post('/users/phone/otp/', {
             phone_no,
             otp
         })
@@ -25,6 +25,7 @@ class Auth {
     }
 
     async sendOtp({ phone_no }: { phone_no: string }) {
+        console.log(`/users/phone/otp?phone_no=${phone_no}`)
         return await axiosClient.get(`/users/phone/otp?phone_no=${phone_no}`)
     }
 

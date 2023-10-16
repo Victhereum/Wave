@@ -8,12 +8,10 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { useRoute, useFocusEffect } from "@react-navigation/native";
 import SelectDropdown from "react-native-select-dropdown";
 import { StatusBar } from "expo-status-bar";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { NavigationContext } from "../context/NavigationContext";
 import { styles } from "../css/stylesheet";
 import authService from "../services/auth/auth.services";
 import Alert from "../helpers/alert";
@@ -73,8 +71,10 @@ function AuthScreen({ navigation }: any) {
     }
 
     setisLoading(true)
+    const code = couuntryCode.replace('+', '')
+    console.log(code)
     try {
-      const response = await authService.sendOtp({ phone_no: `${couuntryCode}${phone}` })
+      const response = await authService.sendOtp({ phone_no: `${code}${phone}` })
       console.log(response.data)
       Alert.success(`An otp has been sent to the phone above, ${response.data.detail}`)
       setisLoading(false)
@@ -96,8 +96,10 @@ function AuthScreen({ navigation }: any) {
       const response = await authService.login({ phone_no: `${couuntryCode}${phone}`,otp:password })
       console.log(response.data)
       setIsAuthenticated(true)
-      Alert.success(`An otp has been sent to the phone above ${response.data.detail}`)
-      setisLoading(false)      
+      setToken(response.data.access)
+      Alert.success(`login successful`)
+      setisLoading(false)   
+      navigation.navigate("Payment");
     } catch (error: any) {
       Alert.error(error?.response?.data?.detail)
       console.log(error?.response.data)
@@ -184,9 +186,7 @@ function AuthScreen({ navigation }: any) {
                       {selectedItem ? (
                         <Image
                           source={{
-                            uri: selectedItem.flag,
-                            cache: "only-if-cached",
-                            method: "GET",
+                            uri: selectedItem.flag
                           }}
                           style={styless.dropdown3BtnImage}
                         />
