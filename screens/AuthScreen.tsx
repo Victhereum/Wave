@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import { useRoute, useFocusEffect } from "@react-navigation/native";
 import SelectDropdown from "react-native-select-dropdown";
@@ -13,203 +14,97 @@ import { StatusBar } from "expo-status-bar";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { NavigationContext } from "../context/NavigationContext";
-import { AuthService } from "../services/AuthService";
 import { styles } from "../css/stylesheet";
+import authService from "../services/auth/auth.services";
+import Alert from "../helpers/alert";
+import countries from "../constants/countries.json"
+import useAuthenticationState from "../states/zustandStore/authentication";
 
-function AuthScreen({ navigation }) {
+function AuthScreen({ navigation }: any) {
   const [isSignIn, setIsSignIn] = useState(false);
-  const [countriess, setCountries] = useState([{}]);
-  const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [couuntryCode, setcouuntryCode] = useState("");
   const [password, setPassword] = useState("");
 
-  const { setCurrentScreen } = React.useContext(NavigationContext);
-
-  const route = useRoute();
-  const currentScreenName = route.name;
-
-  const victor = [
-    {
-      code: "+93",
-      flag: "https://flagcdn.com/w320/af.png",
-      name: "Afghanistan",
-      iso: "AF",
-    },
-    {
-      code: "+358",
-      flag: "https://flagcdn.com/w320/ax.png",
-      name: "Åland Islands",
-      iso: "AX",
-    },
-    {
-      code: "+355",
-      flag: "https://flagcdn.com/w320/al.png",
-      name: "Albania",
-      iso: "AL",
-    },
-    {
-      code: "+213",
-      flag: "https://flagcdn.com/w320/dz.png",
-      name: "Algeria",
-      iso: "DZ",
-    },
-    {
-      code: "+1-684",
-      flag: "https://flagcdn.com/w320/as.png",
-      name: "American Samoa",
-      iso: "AS",
-    },
-    {
-      code: "+376",
-      flag: "https://flagcdn.com/w320/ad.png",
-      name: "Andorra",
-      iso: "AD",
-    },
-    {
-      code: "+244",
-      flag: "https://flagcdn.com/w320/ao.png",
-      name: "Angola",
-      iso: "AO",
-    },
-    {
-      code: "+1-264",
-      flag: "https://flagcdn.com/w320/ai.png",
-      name: "Anguilla",
-      iso: "AI",
-    },
-    {
-      code: "+1-268",
-      flag: "https://flagcdn.com/w320/ag.png",
-      name: "Antarctica",
-      iso: "AQ",
-    },
-    {
-      code: "+54",
-      flag: "https://flagcdn.com/w320/ar.png",
-      name: "Antigua and Barbuda",
-      iso: "AG",
-    },
-    {
-      code: "+374",
-      flag: "https://flagcdn.com/w320/am.png",
-      name: "Argentina",
-      iso: "AR",
-    },
-    {
-      code: "+297",
-      flag: "https://flagcdn.com/w320/aw.png",
-      name: "Armenia",
-      iso: "AM",
-    },
-    {
-      code: "+61",
-      flag: "https://flagcdn.com/w320/au.png",
-      name: "Aruba",
-      iso: "AW",
-    },
-    {
-      code: "+43",
-      flag: "https://flagcdn.com/w320/at.png",
-      name: "Australia",
-      iso: "AU",
-    },
-    {
-      code: "+994",
-      flag: "https://flagcdn.com/w320/az.png",
-      name: "Austria",
-      iso: "AT",
-    },
-    {
-      code: "+1-242",
-      flag: "https://flagcdn.com/w320/bs.png",
-      name: "Bahamas",
-      iso: "BS",
-    },
-    {
-      code: "+880",
-      flag: "https://flagcdn.com/w320/bd.png",
-      name: "Bahrain",
-      iso: "BH",
-    },
-    {
-      code: "+1-246",
-      flag: "https://flagcdn.com/w320/bb.png",
-      name: "Bangladesh",
-      iso: "BD",
-    },
-    {
-      code: "+375",
-      flag: "https://flagcdn.com/w320/by.png",
-      name: "Barbados",
-      iso: "BB",
-    },
-    {
-      code: "+32",
-      flag: "https://flagcdn.com/w320/be.png",
-      name: "Belarus",
-      iso: "BY",
-    },
-    {
-      code: "+501",
-      flag: "https://flagcdn.com/w320/bz.png",
-      name: "Belgium",
-      iso: "BE",
-    },
-    {
-      code: "+229",
-      flag: "https://flagcdn.com/w320/bj.png",
-      name: "Belize",
-      iso: "BZ",
-    },
-    {
-      code: "+1-441",
-      flag: "https://flagcdn.com/w320/bm.png",
-      name: "Benin",
-      iso: "BJ",
-    },
-    {
-      code: "+975",
-      flag: "https://flagcdn.com/w320/bt.png",
-      name: "Bermuda",
-      iso: "BM",
-    },
-  ];
-
-  const countriesWithFlags = [
-    { title: "Egypt", image: require("./Images/Egypt.png"), code: "+122" },
-    { title: "Canada", image: require("./Images/Canada.png"), code: "+232" },
-    {
-      title: "Australia",
-      image: require("./Images/Australia.png"),
-      code: "+555",
-    },
-    { title: "Ireland", image: require("./Images/Ireland.png"), code: "+71" },
-  ];
-
-  useFocusEffect(
-    React.useCallback(() => {
-      // This code will run when the screen is in focus
-      setCurrentScreen(currentScreenName);
-      const fetchData = async () => {
-        await AuthService.getCountries();
-      };
-      // fetchData();
-    }, [])
-  );
+  const [isLoading, setisLoading] = useState(false)
 
   const toggleSignIn = () => {
     // Toggle between sign-in and sign-up forms
     setIsSignIn(!isSignIn);
   };
 
-  const handleSignIn = () => {
-    // toggleSignIn();
-    navigation.navigate("Payment");
-  };
+  // const handleSignIn = () => {
+  //   // toggleSignIn();
+  //   navigation.navigate("Payment");
+  // };
+
+  const setUser = useAuthenticationState((state: any) => state.setUser);
+  const setIsAuthenticated = useAuthenticationState((state: any) => state.setIsAuthenticated);
+  const setToken = useAuthenticationState((state: any) => state.setToken);
 
   const handleSignUp = async () => {
-    toggleSignIn();
+    if (!phone || !fullName || !couuntryCode && !isLoading) {
+      Alert.error("please enter your phone and fullname")
+      return;
+    }
+
+    setisLoading(true)
+    try {
+      const response = await authService.register({ phone_no: `${couuntryCode}${phone}`, name: fullName })
+      console.log(response.data)
+      setUser(response.data.detail)
+      Alert.success('Account created sucessfully.you can login now')
+      toggleSignIn()
+      setisLoading(false)
+
+    } catch (error: any) {
+      Alert.error(error?.response?.data?.detail)
+      console.log(error?.response.data)
+      setisLoading(false)
+
+    }
+  };
+
+  const handleSendOtp = async () => {
+    if (!phone || !couuntryCode && !isLoading) {
+      Alert.error("please enter your phone ")
+      return;
+    }
+
+    setisLoading(true)
+    try {
+      const response = await authService.sendOtp({ phone_no: `${couuntryCode}${phone}` })
+      console.log(response.data)
+      Alert.success(`An otp has been sent to the phone above, ${response.data.detail}`)
+      setisLoading(false)
+    } catch (error: any) {
+      Alert.error(error?.response?.data?.detail)
+      console.log(error?.response.data)
+      setisLoading(false)
+    }
+
+  };
+  const handleLogin = async () => {
+    if (!phone || !couuntryCode || !password  && !isLoading) {
+      Alert.error("please enter your phone correctly and enter the otp  ")
+      return;
+    }
+
+    setisLoading(true)
+    try {
+      const response = await authService.login({ phone_no: `${couuntryCode}${phone}`,otp:password })
+      console.log(response.data)
+      setIsAuthenticated(true)
+      Alert.success(`An otp has been sent to the phone above ${response.data.detail}`)
+      setisLoading(false)      
+    } catch (error: any) {
+      Alert.error(error?.response?.data?.detail)
+      console.log(error?.response.data)
+      setisLoading(false)
+
+    }
+
   };
 
   const handleForgotPassword = () => {
@@ -258,8 +153,9 @@ function AuthScreen({ navigation }) {
           <View style={{ display: "flex", flexDirection: "row", gap: 0 }}>
             <View style={styles.countryDropDown}>
               <SelectDropdown
-                data={victor}
+                data={countries}
                 onSelect={(selectedItem, index) => {
+                  setcouuntryCode(selectedItem?.code)
                   console.log(selectedItem, index);
                 }}
                 buttonStyle={{
@@ -319,9 +215,12 @@ function AuthScreen({ navigation }) {
                   return (
                     <View style={styless.dropdown3RowChildStyle}>
                       <Image
-                        source={item.image}
+                        source={item.flag}
                         style={styless.dropdownRowImage}
                       />
+                      <Text style={{ color: "white" }}>
+                        {item.code}
+                      </Text>
                     </View>
                   );
                 }}
@@ -344,7 +243,11 @@ function AuthScreen({ navigation }) {
             }}
             onPress={handleSignUp}
           >
-            <Text style={styles.mediumText}>Sign Up</Text>
+            {
+              isLoading ? <ActivityIndicator />
+                :
+                <Text style={styles.mediumText}>Sign Up</Text>
+            }
           </TouchableOpacity>
           <Text style={styles.smallText}>Already have an account?</Text>
           <TouchableOpacity
@@ -353,7 +256,6 @@ function AuthScreen({ navigation }) {
               backgroundColor: "black",
               borderWidth: 1,
               width: "40%",
-              borderColor: styles.secondaryColor,
               marginTop: 20,
             }}
             onPress={() => setIsSignIn(true)}
@@ -378,8 +280,9 @@ function AuthScreen({ navigation }) {
           <View style={{ display: "flex", flexDirection: "row", gap: 0 }}>
             <View style={styles.countryDropDown}>
               <SelectDropdown
-                data={victor}
+                data={countries}
                 onSelect={(selectedItem, index) => {
+                  setcouuntryCode(selectedItem?.code)
                   console.log(selectedItem, index);
                 }}
                 buttonStyle={{
@@ -439,9 +342,12 @@ function AuthScreen({ navigation }) {
                   return (
                     <View style={styless.dropdown3RowChildStyle}>
                       <Image
-                        source={item.image}
+                        source={item.flag}
                         style={styless.dropdownRowImage}
                       />
+                      <Text style={{ color: "white" }}>
+                        {item.code}
+                      </Text>
                     </View>
                   );
                 }}
@@ -472,7 +378,7 @@ function AuthScreen({ navigation }) {
               placeholderTextColor={"gray"}
             />
             <TouchableOpacity
-              // onPress={() => setSecureTextEntry(!secureTextEntry)}
+              onPress={handleSendOtp}
               style={styles.passwordToggle}
             >
               <Text style={styles.smallText}>Get OTP</Text>
@@ -484,9 +390,13 @@ function AuthScreen({ navigation }) {
               width: "90%",
               marginVertical: 20,
             }}
-            onPress={handleSignIn}
+            onPress={handleLogin}
           >
-            <Text style={styles.mediumText}>Sign In</Text>
+            {
+              isLoading ? <ActivityIndicator />
+                :
+                <Text style={styles.mediumText}>Login</Text>
+            }
           </TouchableOpacity>
           <Text style={styles.smallText}>Don't have an account?</Text>
           <TouchableOpacity
@@ -495,7 +405,6 @@ function AuthScreen({ navigation }) {
               backgroundColor: "black",
               borderWidth: 1,
               width: "40%",
-              borderColor: styles.secondaryColor,
               marginTop: 20,
             }}
             onPress={() => setIsSignIn(false)}
