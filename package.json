@@ -1,5 +1,5 @@
 {
-  "name": "expo-ffmpeg-kit-example",
+  "name": "wave",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",
@@ -17,7 +17,7 @@
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
-    "expo": "~48.0.15",
+    "expo": "~48.0.18",
     "expo-asset": "~8.9.1",
     "expo-av": "~13.2.1",
     "expo-build-properties": "~0.6.0",
@@ -33,16 +33,33 @@
     "ffmpeg-kit-react-native": "^5.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.71.7",
-    "react-native-safe-area-context": "4.5.1",
-    "react-native-screens": "~3.20.0",
-    "react-native-web": "~0.19.4"
+    "react-native-web": "~0.18.10",
+    "@react-native-community/masked-view": "^0.1.11",
+    "@react-native-community/viewpager": "^5.0.11",
+    "@react-navigation/drawer": "^6.6.3",
+    "@react-navigation/stack": "^6.3.17",
+    "antd-mobile": "^5.32.4",
+    "axios": "^1.5.1",
+    "expo-camera": "~13.4.4",
+    "expo-navigation-bar": "~2.3.0",
+    "react-native": "0.71.13",
+    "react-native-animatable": "^1.3.3",
+    "react-native-camera": "^4.2.1",
+    "react-native-gesture-handler": "^2.12.1",
+    "react-native-navigation-bar-color": "^2.0.2",
+    "react-native-reanimated": "^3.5.1",
+    "react-native-safe-area-context": "^4.7.2",
+    "react-native-screens": "~3.22.0",
+    "react-native-select-dropdown": "^3.4.0",
+    "react-native-vector-icons": "^10.0.0",
+    "react-native-video": "^5.2.1",
+    "react-native-videoeditorsdk": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@types/react": "~18.2.0",
+    "@types/react": "~18.0.27",
     "@types/react-native": "~0.71.6",
-    "typescript": "^5.0.4"
+    "typescript": "^4.9.4"
   },
   "private": true
 }

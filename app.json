@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "expo-ffmpeg-kit-example",
-    "slug": "expo-ffmpeg-kit-example",
-    "owner": "dpolyakov",
+    "name": "wave",
+    "slug": "wave",
+    "owner": "raldweb",
     "scheme": "dpolyakovapp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/convert.png",
+    "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -30,7 +30,21 @@
       "package": "com.dpolyakov.expoffmpegkitexample"
     },
     "plugins": [
-
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos so you can share them with friends."
+        }
+      ],
+      [
+        "react-native-imglysdk"
+      ],
       [
         "expo-build-properties",
         {
@@ -53,11 +67,6 @@
           }
         }
       ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "00ac904b-1e51-4234-b10a-5ec57ed1364d"
-      }
-    }
+    ]
   }
 }
