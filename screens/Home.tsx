@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, TouchableOpacity, View, StatusBar, ScrollView } from "react-native";
+import { Text, TouchableOpacity, View, Platform, ScrollView } from "react-native";
 import { styles as style } from "../css/stylesheet";
 import { NavigationContext } from "../context/NavigationContext";
 import { StyleSheet, Button, ActivityIndicator } from 'react-native';
@@ -9,6 +9,7 @@ import { makeDirectoryAsync, getInfoAsync, cacheDirectory } from 'expo-file-syst
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import { Video, AVPlaybackStatus } from 'expo-av';
 import videoApiSdk from "../services/video/video.service";
+import useCreateSrtFile from "../hooks/useCreateSrtFile";
 
 const getResultPath = async () => {
   const videoDir = `${cacheDirectory}video/`;
@@ -72,28 +73,40 @@ const Home = ({ navigation }: any) => {
       console.error(result);
     }
 
-    translateVideo({uri: sourceVideo})
+    translateVideo({ uri: sourceVideo })
     // console.log(sourceVideo)
   }
 
   const translateVideo = async ({ uri }: { uri: string }) => {
     try {
-      const response = await videoApiSdk.getVideoAudioTranslationTranscription({ uri })
-      console.log("translateVideo success",response.data)
+      let formdata = new FormData();
+      let uriArray = uri.split(".");
+      let fileType = uriArray[uriArray.length - 1];
+
+      formdata.append('media', {
+        name: `${new Date()}.${fileType}`,
+        type: 'video/*',
+        uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
+      } as any);
+
+      const response = await videoApiSdk.getVideoAudioTranslationTranscription({ uri: formdata })
+      console.log("translateVideo success", response.data.captions)
+      const getsrt = useCreateSrtFile(response?.data?.captions, "")
+      console.log(getsrt)
     } catch (error: any) {
       console.log("translateVideo failure", error?.response?.data)
     }
   }
 
   return (
-    <ScrollView style={{ flex: 1, height: '100%' }} contentContainerStyle={[{ margin: 0, backgroundColor: "#000000" }, { paddingVertical: 50 }]}>
+    <ScrollView style={{ flex: 1, height: '100%', backgroundColor: "#000000" }} contentContainerStyle={[{ margin: 0, backgroundColor: "#000000" }, { paddingVertical: 50 }]}>
       <View style={{
         height: "100%", alignItems: "center",
         justifyContent: "center",
       }}>
         <Text style={style.headerText}>No Projects</Text>
         <Text
-          style={[style.mediumText, { textAlign: "center", marginBottom: 20 }]}
+          style={[style.smallText, { textAlign: "center", marginBottom: 20 }]}
         >
           To upload your first projects and witness some magic, click the button
           below.
@@ -103,7 +116,10 @@ const Home = ({ navigation }: any) => {
         </TouchableOpacity>
 
         {isLoading && <ActivityIndicator size="large" color="#ff0033" />}
-        <Plyr uri={source} title={'Source'} />
+        {
+          source &&
+          <Plyr uri={source} title={'Source'} />
+        }
         {result &&
           <Plyr uri={result} title={'Result'} />
         }
