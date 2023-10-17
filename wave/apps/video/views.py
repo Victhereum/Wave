@@ -150,19 +150,22 @@ class VideoViewSet(ModelViewSet):
             action = serialized_params.validated_data.pop("action")
             # Save the uploaded file to a temporary location
             fs = FileSystemStorage()
-            filename = fs.save(media.name, media)
-            file_path = fs.path(filename)
-            if "wave" not in media.content_type:
-                file_path, name = MediaHelper.convert_to_wav(file_path)
-            caption = AzureSpeachService(file_path, from_lang=from_lang, to_lang=to_lang)
-            captioned_data = caption.perform(action=action)
-            # Delete the temporary file after processing
-            fs.delete(filename)
-            fs.delete(name)
+            try:
+                filename = fs.save(media.name, media)
+                file_path = fs.path(filename)
+                if "wave" not in media.content_type:
+                    file_path, name = MediaHelper.convert_to_wav(file_path)
+                caption = AzureSpeachService(file_path, from_lang=from_lang, to_lang=to_lang)
+                captioned_data = caption.perform(action=action)
+                # Delete the temporary file after processing
+                fs.delete(filename)
+                fs.delete(name)
 
-            video: Video = Video.objects.create(user=request.user, was_captioned=True, captions=captioned_data)
-            response = self.serializer_class.GetVideo(video)
-            return Response(response.data, status=status.HTTP_200_OK)
+                video: Video = Video.objects.create(user=request.user, was_captioned=True, captions=captioned_data)
+                response = self.serializer_class.GetVideo(video)
+                return Response(response.data, status=status.HTTP_200_OK)
+            except AttributeError:
+                return Response({"media": "The video seems to be corrupted"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
