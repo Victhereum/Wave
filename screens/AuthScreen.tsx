@@ -22,7 +22,7 @@ import { setToken } from "../states/asyncStore/token";
 function AuthScreen({ navigation }: any) {
   const [isSignIn, setIsSignIn] = useState(false);
   const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("70886396721");
   const [couuntryCode, setcouuntryCode] = useState("");
   const [password, setPassword] = useState("");
 

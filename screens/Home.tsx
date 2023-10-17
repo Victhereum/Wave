@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Text, TouchableOpacity, View, Platform, ScrollView } from "react-native";
 import { styles as style } from "../css/stylesheet";
-import { NavigationContext } from "../context/NavigationContext";
 import { StyleSheet, Button, ActivityIndicator } from 'react-native';
-
+import RNFS from 'react-native-fs';
 import { FFmpegKit, FFmpegKitConfig, ReturnCode } from 'ffmpeg-kit-react-native';
 import { makeDirectoryAsync, getInfoAsync, cacheDirectory } from 'expo-file-system';
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
@@ -59,42 +58,50 @@ const Home = ({ navigation }: any) => {
       return;
     }
     setSource(() => sourceVideo)
+    setLoading(() => false);
 
-    const ffmpegSession = await FFmpegKit
-      .execute(`-i ${sourceVideo} -c:v mpeg4 -y ${resultVideo}`);
+    // const ffmpegSession = await FFmpegKit
+    //   .execute(`-i ${sourceVideo} -c:v mpeg4 -y ${resultVideo}`);
 
-    const result = await ffmpegSession.getReturnCode();
+    // const result = await ffmpegSession.getReturnCode();
 
-    if (ReturnCode.isSuccess(result)) {
-      setLoading(() => false);
-      setResult(() => resultVideo);
-    } else {
-      setLoading(() => false);
-      console.error(result);
-    }
+    // if (ReturnCode.isSuccess(result)) {
+    //   setLoading(() => false);
+    //   setResult(() => resultVideo);
+    // } else {
+    //   setLoading(() => false);
+    //   console.error(result);
+    // }
 
     translateVideo({ uri: sourceVideo })
     // console.log(sourceVideo)
   }
 
+
   const translateVideo = async ({ uri }: { uri: string }) => {
+    console.log(uri)
     try {
       let formdata = new FormData();
       let uriArray = uri.split(".");
       let fileType = uriArray[uriArray.length - 1];
 
+      const videoFilename = `${new Date()}.${fileType}`
+
       formdata.append('media', {
-        name: `${new Date()}.${fileType}`,
+        name: videoFilename,
         type: 'video/*',
         uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
       } as any);
 
       const response = await videoApiSdk.getVideoAudioTranslationTranscription({ uri: formdata })
-      console.log("translateVideo success", response.data.captions)
-      const getsrt = useCreateSrtFile(response?.data?.captions, "")
+      // console.log("translateVideo success", response.data.captions)
+      const ed = videoFilename.replace('.mp4', ' ')
+
+      const getsrt = useCreateSrtFile(response?.data?.captions, ed)
       console.log(getsrt)
+
     } catch (error: any) {
-      console.log("translateVideo failure", error?.response?.data)
+      console.log("translateVideo failure", error?.response?.data || error)
     }
   }
 

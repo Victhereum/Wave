@@ -1,17 +1,16 @@
-import RNFS from 'react-native-fs';
 import { useEffect } from 'react';
+import { cacheDirectory, makeDirectoryAsync, writeAsStringAsync } from 'expo-file-system';
 
 interface Ifile {
-    Offset: string,
-    Duration: string,
-    Word: string
+    Offset: string;
+    Duration: string;
+    Word: string;
 }
 
-const useCreateSrtFile = async (srtData: Ifile[], filePath: string) => {
-    console.log("transpilation started  ---")
+const useCreateSrtFile = async (srtData: Ifile[], videoFilename: string) => {
     const srtContent = srtData
         .map((item, index) => {
-            const endTime =  addDurations(item?.Duration,item?.Offset);
+            const endTime = addDurations(item?.Duration, item?.Offset);
             const entry = [
                 (index + 1).toString(),
                 `${item.Offset} --> ${endTime}`,
@@ -20,18 +19,30 @@ const useCreateSrtFile = async (srtData: Ifile[], filePath: string) => {
             return entry.join('\n');
         })
         .join('\n\n');
-    console.log({ srtContent });
-    console.log("transpilation done  ---")
-    return srtContent
+    
+    let filepath =""
 
-    // try {
-    //     const success = await RNFS.writeFile(filePath, srtContent, 'utf8');
-    //     console.log('Success writing SRT file: ', success);
-    //     return true;
-    // } catch (error) {
-    //     console.error('Error writing SRT file: ', error);
-    //     return false;
-    // }
+    try {
+        // Create the directory if it doesn't exist.
+        const srtFolderPath = `${cacheDirectory}${videoFilename}`;
+        await makeDirectoryAsync(srtFolderPath, { intermediates: true });
+
+        // Define the SRT file path.
+        const srtFilePath = `${srtFolderPath}/${videoFilename}.srt`.replace(/ /g, ''); // Remove spaces in the filename.
+
+        filepath = srtFilePath
+        // Write the SRT content to the file.
+        await writeAsStringAsync(srtFilePath, srtContent);
+
+        console.log('SRT file saved successfully at:', srtFilePath);
+    } catch (error) {
+        console.error('Error writing or creating SRT file:', error);
+    }
+
+    return {
+        srtContent,
+        path: filepath,
+    };
 };
 
 function addDurations(duration1: string, offset: string): string {

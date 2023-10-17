@@ -21,7 +21,7 @@ class VideoApiSdk {
         return await axiosClient.post('/videos/languages/')
     }
 
-    async getVideoAudioTranslationTranscription({ uri, from_lang = 'en-US', to_lang = 'ar', action = 'translate' }: IVideoAudioTranslateTranscribe) {
+    async getVideoAudioTranslationTranscription({ uri, from_lang = 'en-US', to_lang = 'fr', action = 'translate' }: IVideoAudioTranslateTranscribe) {
         return await videoApiClient.post(`/videos/?from_lang=${from_lang}&to_lang=${to_lang}&action=${action}`,uri)
     }
 
