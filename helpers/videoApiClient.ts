@@ -2,15 +2,15 @@ import axios from 'axios'
 import globalBaseUrl from './globalBaseUrl'
 import { getToken } from '../states/asyncStore/token'
 
-const axiosClient = axios.create({
+const videoApiClient = axios.create({
     baseURL: globalBaseUrl,
     headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': ' multipart/form-data'
     }
 })
 
-axiosClient.interceptors.request.use(
+videoApiClient.interceptors.request.use(
     async (config) => {
         const token = await getToken()
         if (token) {
@@ -24,4 +24,4 @@ axiosClient.interceptors.request.use(
     }
 )
 
-export default axiosClient
+export default videoApiClient

@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, ActivityIndicator } from 'react-native';
 import * as React from 'react';
 
@@ -75,7 +74,6 @@ const Converter = () => {
 
     return (
         <View style={styles.container}>
-            <StatusBar style="auto" />
             <Button
                 onPress={onPress}
                 title="Select video"

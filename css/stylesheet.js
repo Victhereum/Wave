@@ -119,8 +119,9 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 0,
+    height:"100%",
     alignItems: "center",
-    justifyContent: "center",
+    // justifyContent: "center",
     backgroundColor: "#000000",
   },
 

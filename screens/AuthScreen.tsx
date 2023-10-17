@@ -13,10 +13,11 @@ import { StatusBar } from "expo-status-bar";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { styles } from "../css/stylesheet";
-import authService from "../services/auth/auth.services";
+import authService from "../services/auth/auth.service";
 import Alert from "../helpers/alert";
 import countries from "../constants/countries.json"
 import useAuthenticationState from "../states/zustandStore/authentication";
+import { setToken } from "../states/asyncStore/token";
 
 function AuthScreen({ navigation }: any) {
   const [isSignIn, setIsSignIn] = useState(false);
@@ -32,14 +33,9 @@ function AuthScreen({ navigation }: any) {
     setIsSignIn(!isSignIn);
   };
 
-  // const handleSignIn = () => {
-  //   // toggleSignIn();
-  //   navigation.navigate("Payment");
-  // };
-
   const setUser = useAuthenticationState((state: any) => state.setUser);
   const setIsAuthenticated = useAuthenticationState((state: any) => state.setIsAuthenticated);
-  const setToken = useAuthenticationState((state: any) => state.setToken);
+  // const setToken = useAuthenticationState((state: any) => state.setToken);
 
   const handleSignUp = async () => {
     if (!phone || !fullName || !couuntryCode && !isLoading) {
