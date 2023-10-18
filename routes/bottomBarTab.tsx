@@ -1,8 +1,10 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Entypo from "react-native-vector-icons/Entypo";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import React from "react"; // Don't forget to import React
 
-import { View, Text } from "react-native"; // Replace Image with Text
+import { View, Text, Button } from "react-native"; // Replace Image with Text
 import Colors from "../theme/colors";
 import Projects from "../screens/Home/Projects";
 import Home from "../screens/Home/Home";
@@ -13,31 +15,29 @@ const Tab = createMaterialBottomTabNavigator();
 function BottomTab() {
     return (
         <Tab.Navigator
-            activeColor={Colors.primary}
-            inactiveColor={Colors.black}
+            activeColor={Colors.white}
+            inactiveColor={Colors.grey}
             barStyle={{ backgroundColor: Colors.black }}
         >
-            <Tab.Screen
+            {/* <Tab.Screen
                 name="Projects"
                 component={Projects}
                 options={{
                     headerShown: false,
-                    tabBarLabel: "Home",
+                    tabBarLabel: "Projects",
                     tabBarIcon: ({ color }: any) => (
-                        <Entypo name="home" color={color} size={20} />
+                        <AntDesign name="inbox" color={color} size={20} />
                     ),
                 } as never}
-            />
+            /> */}
             <Tab.Screen
                 name="Create"
                 component={Home} // You may need to replace this with your create component
                 options={({ navigation }) => ({ // Use options to customize the tab button
                     headerShown: false,
                     tabBarLabel: "Create",
-                    tabBarButton: () => (
-                        <View style={{ flex: 1, justifyContent: "center", alignItems: "center",backgroundColor:Colors.primary }}>
-                            <Text style={{ color: Colors.white, fontSize: 16 }}>Create</Text>
-                        </View>
+                    tabBarIcon: ({ color }: any) => (
+                        <AntDesign name="inbox" color={color} size={20} />
                     ),
                 })}
             />
@@ -46,9 +46,9 @@ function BottomTab() {
                 component={Profile}
                 options={{
                     headerShown: false,
-                    tabBarLabel: "Home",
+                    tabBarLabel: "Profile",
                     tabBarIcon: ({ color }: any) => (
-                        <Entypo name="home" color={color} size={20} />
+                        <FontAwesome name="user-o" color={color} size={20} />
                     ),
                 } as never}
             />

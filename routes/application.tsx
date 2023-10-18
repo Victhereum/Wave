@@ -10,7 +10,6 @@ import Home from "../screens/Home/Home";
 import Workshop from "../screens/Workshop";
 
 import { styles } from "../css/stylesheet";
-import { NavigationContext } from "../context/NavigationContext";
 import BottomTab from "./bottomBarTab";
 
 const Stack = createNativeStackNavigator();

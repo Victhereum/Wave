@@ -11,14 +11,11 @@ import Home from "../screens/Home";
 import Workshop from "../screens/Workshop";
 
 import { styles } from "../css/stylesheet";
-import { NavigationContext } from "../context/NavigationContext";
 
 const Stack = createNativeStackNavigator();
 
 export default function Routes() {
-  const { currentScreen, setCurrentScreen } =
-    React.useContext(NavigationContext);
-  setCurrentScreen(() => currentScreen);
+
 
   return (
     <NavigationContainer>

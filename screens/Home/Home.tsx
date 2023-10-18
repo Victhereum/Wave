@@ -2,13 +2,18 @@ import React, { useState } from "react";
 import { Text, TouchableOpacity, View, Platform, ScrollView } from "react-native";
 import { styles as style } from "../../css/stylesheet";
 import { StyleSheet, Button, ActivityIndicator } from 'react-native';
-import RNFS from 'react-native-fs';
 import { FFmpegKit, FFmpegKitConfig, ReturnCode } from 'ffmpeg-kit-react-native';
 import { makeDirectoryAsync, getInfoAsync, cacheDirectory } from 'expo-file-system';
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import { Video, AVPlaybackStatus } from 'expo-av';
 import videoApiSdk from "../../services/video/video.service";
 import useCreateSrtFile from "../../hooks/useCreateSrtFile";
+import Empty from "../../components/home/Empty";
+import CustomHeader from "../../components/common/customHeader";
+import Colors from "../../theme/colors";
+import Feather from 'react-native-vector-icons/Feather';
+
+
 
 const getResultPath = async () => {
   const videoDir = `${cacheDirectory}video/`;
@@ -106,21 +111,18 @@ const Home = ({ navigation }: any) => {
   }
 
   return (
-    <ScrollView style={{ flex: 1, height: '100%', backgroundColor: "#000000" }} contentContainerStyle={[{ margin: 0, backgroundColor: "#000000" }, { paddingVertical: 50 }]}>
+    <ScrollView style={{ flex: 1, height: '100%', backgroundColor: "#000000" }} contentContainerStyle={[{ margin: 0, backgroundColor: "#000000" }]}>
+      <CustomHeader title="Projects" titleStyle={{fontWeight:'600',fontSize:20}} rightIcon={<View style={{backgroundColor:Colors.primary,height:30,width:30,borderRadius:100,flexDirection:"column",alignItems:"center",justifyContent:'center'}}><Feather name="plus" size={20} color="#fff" style={{marginTop:2}}/></View>} onRightPress={onPress}/>
       <View style={{
-        height: "100%", alignItems: "center",
+        height: "100%",
+        alignItems: "center",
         justifyContent: "center",
+        backgroundColor: "#000000"
       }}>
-        <Text style={style.headerText}>No Projects</Text>
-        <Text
-          style={[style.smallText, { textAlign: "center", marginBottom: 20 }]}
-        >
-          To upload your first projects and witness some magic, click the button
-          below.
-        </Text>
-        <TouchableOpacity style={style.primaryButton} onPress={onPress}>
-          <Text style={style.mediumText}>Create</Text>
-        </TouchableOpacity>
+
+        {
+          !source && <Empty onPress={onPress} />
+        }
 
         {isLoading && <ActivityIndicator size="large" color="#ff0033" />}
         {
@@ -198,5 +200,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
+  headTitle: { color: "#CFD8D8", fontSize: 28, marginBottom: 20 }
 });
 

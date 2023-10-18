@@ -4,7 +4,6 @@ import { Video, ResizeMode } from "expo-av";
 import { styles } from "../css/stylesheet";
 import { useFocusEffect } from "@react-navigation/native";
 import { VideoService } from "../services/VideoService";
-import { NavigationContext } from "../context/NavigationContext";
 import { FFmpegKit } from "ffmpeg-kit-react-native";
 import {
   VESDK,
@@ -30,7 +29,6 @@ const Workshop = ({ navigation, route }) => {
   ];
 
   const { setFromLanguages, setToLanguages } =
-    React.useContext(NavigationContext);
 
   useFocusEffect(
     React.useCallback(() => {

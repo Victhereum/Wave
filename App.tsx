@@ -1,5 +1,8 @@
-import React,{useState,useEffect} from "react";
-import Routes from "./routes/route";
+import React, { useState, useEffect } from "react";
+import {
+  MD3LightTheme as DefaultTheme,
+  Provider as PaperProvider,
+} from "react-native-paper";
 import FlashMessage from "react-native-flash-message";
 import { NavigationContainer } from "@react-navigation/native";
 import useAuthenticationState from "./states/zustandStore/authentication";
@@ -20,15 +23,25 @@ export default function App() {
     }
   }, [isAuthenticated])
 
+  const theme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      secondaryContainer: "none",
+    },
+  };
+
   return (
     <NavigationContainer>
-      {
-        !islogged ?
-          <AuthStack />
-          :
-          <MainStack />
-      }
+      <PaperProvider theme={theme}>
 
+        {
+          !islogged ?
+            <AuthStack />
+            :
+            <MainStack />
+        }
+      </PaperProvider>
       <FlashMessage position="bottom" />
     </NavigationContainer>
   );

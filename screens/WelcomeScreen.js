@@ -8,14 +8,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { NavigationContext } from "../context/NavigationContext";
 
 import { styles } from "../css/stylesheet";
 import { useRoute } from "@react-navigation/native";
 // import CustomModal from "../components/Modal";
 
 function WelcomeScreen({ navigation, route }) {
-  const { setCurrentScreen } = React.useContext(NavigationContext);
 
   const [modalVisible, setModalVisible] = React.useState(false);
 
@@ -28,9 +26,7 @@ function WelcomeScreen({ navigation, route }) {
   };
 
   const routename = useRoute();
-  const currentScreenName = routename.name;
 
-  setCurrentScreen(currentScreenName);
 
   React.useEffect(() => {
     navigation.setOptions({

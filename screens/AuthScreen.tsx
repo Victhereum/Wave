@@ -249,7 +249,7 @@ function AuthScreen({ navigation }: any) {
                 }}
                 onPress={() => setIsSignIn(true)}
               >
-                <Text style={{ color: "#CFD8D8", fontSize: 16, textAlign: "left" }}>Sign Up</Text>
+                <Text style={{ color: "#CFD8D8", fontSize: 16, textAlign: "left" }}>Login</Text>
               </TouchableOpacity>
             </View>
             <TouchableOpacity
@@ -416,7 +416,7 @@ function AuthScreen({ navigation }: any) {
               {
                 isLoading ? <ActivityIndicator />
                   :
-                  <Text style={styles.mediumText}>Login</Text>
+                  <Text style={{ color: "#CFD8D8", fontSize: 16 }}>Login</Text>
               }
             </TouchableOpacity>
           </>
