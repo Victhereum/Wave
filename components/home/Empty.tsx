@@ -9,7 +9,7 @@ import Colors from "../../theme/colors";
 const Empty = ({ onPress }: { onPress: () => void }) => {
     const { height } = useWindowDimensions()
     return (
-        <View style={{ width: "53%", height: height/ 1.3, flexDirection: 'column', justifyContent: "center", alignItems: "center" }}>
+        <View style={{ width: "53%", height: height/ 1.5, flexDirection: 'column', justifyContent: "center", alignItems: "center" }}>
             <AntDesign name="folderopen" color={Colors.grey} size={100} />
             <Text style={[styles.headTitle, { fontWeight: "700" }]}>No Projects yet</Text>
             <Text
