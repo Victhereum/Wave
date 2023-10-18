@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Text, TouchableOpacity, View, Platform, ScrollView } from "react-native";
-import { styles as style } from "../css/stylesheet";
+import { styles as style } from "../../css/stylesheet";
 import { StyleSheet, Button, ActivityIndicator } from 'react-native';
 import RNFS from 'react-native-fs';
 import { FFmpegKit, FFmpegKitConfig, ReturnCode } from 'ffmpeg-kit-react-native';
 import { makeDirectoryAsync, getInfoAsync, cacheDirectory } from 'expo-file-system';
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import { Video, AVPlaybackStatus } from 'expo-av';
-import videoApiSdk from "../services/video/video.service";
-import useCreateSrtFile from "../hooks/useCreateSrtFile";
+import videoApiSdk from "../../services/video/video.service";
+import useCreateSrtFile from "../../hooks/useCreateSrtFile";
 
 const getResultPath = async () => {
   const videoDir = `${cacheDirectory}video/`;

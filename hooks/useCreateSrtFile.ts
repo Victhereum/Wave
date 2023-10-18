@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
-import { cacheDirectory, makeDirectoryAsync, writeAsStringAsync } from 'expo-file-system';
+import RNFS from 'react-native-fs';
+
+import { cacheDirectory, makeDirectoryAsync, writeAsStringAsync, documentDirectory } from 'expo-file-system';
 
 interface Ifile {
     Offset: string;
@@ -24,7 +26,7 @@ const useCreateSrtFile = async (srtData: Ifile[], videoFilename: string) => {
 
     try {
         // Create the directory if it doesn't exist.
-        const srtFolderPath = `${cacheDirectory}${videoFilename}`;
+        const srtFolderPath = `${documentDirectory}/wave`;
         await makeDirectoryAsync(srtFolderPath, { intermediates: true });
 
         // Define the SRT file path.
@@ -38,6 +40,7 @@ const useCreateSrtFile = async (srtData: Ifile[], videoFilename: string) => {
     } catch (error) {
         console.error('Error writing or creating SRT file:', error);
     }
+    console.log(filepath)
 
     return {
         srtContent,

@@ -76,12 +76,13 @@ export const styles = StyleSheet.create({
     color: "#CFD8D8",
     fontSize: 12,
     textTransform: "capitalize",
-    person: {
-      color: "#CFD8D8",
-      fontSize: 16,
-      fontWeight: "bold",
-      textTransform: "capitalize",
-    },
+  },
+
+  person: {
+    color: "#CFD8D8",
+    fontSize: 16,
+    fontWeight: "bold",
+    textTransform: "capitalize",
   },
 
   hamburger: {

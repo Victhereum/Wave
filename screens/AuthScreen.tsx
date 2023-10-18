@@ -7,6 +7,7 @@ import {
   Image,
   StyleSheet,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import { StatusBar } from "expo-status-bar";
@@ -82,19 +83,19 @@ function AuthScreen({ navigation }: any) {
 
   };
   const handleLogin = async () => {
-    if (!phone || !couuntryCode || !password  && !isLoading) {
+    if (!phone || !couuntryCode || !password && !isLoading) {
       Alert.error("please enter your phone correctly and enter the otp  ")
       return;
     }
 
     setisLoading(true)
     try {
-      const response = await authService.login({ phone_no: `${couuntryCode}${phone}`,otp:password })
+      const response = await authService.login({ phone_no: `${couuntryCode}${phone}`, otp: password })
       console.log(response.data)
       setIsAuthenticated(true)
       setToken(response.data.access)
       Alert.success(`login successful`)
-      setisLoading(false)   
+      setisLoading(false)
       navigation.navigate("Payment");
     } catch (error: any) {
       Alert.error(error?.response?.data?.detail)
@@ -111,305 +112,317 @@ function AuthScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="light" backgroundColor="#000000" />
-      <Text style={styles.headerText}>Wave</Text>
-      <Text
-        style={[
-          styles.smallText,
-          {
-            marginBottom: 40,
-            textAlign: "center",
-            width: "80%",
-            color: "gray",
-          },
-        ]}
-      >
-        Transform Your Videos with our Editing Magic, make the best captions
-      </Text>
+    <ScrollView style={{ flex: 1, height: '100%', backgroundColor: "#000000" }} contentContainerStyle={[{ margin: 0, backgroundColor: "#000000" }, { paddingVertical: 50 }]}>
+      <View style={{
+        height: "100%", alignItems: "center",
+        justifyContent: "center",
+      }}>
+        <StatusBar style="light" backgroundColor="#000000" />
+        <Image source={require('./../assets/icon.png')} style={{ height: 130, width: 130 }} />
+        <Text
+          style={[
+            styles.smallText,
+            {
+              marginBottom: 40,
+              textAlign: "center",
+              width: "80%",
+              color: "gray",
+            },
+          ]}
+        >
+          Transform Your Videos with our Editing Magic, make the best captions
+        </Text>
 
-      {/* Conditional Rendering Based on isSignIn */}
-      {!isSignIn && (
-        <>
-          <Text
-            style={{ ...styles.smallText, textAlign: "left", width: "90%" }}
-          >
-            Full Name
-          </Text>
-          <TextInput
-            placeholder="John Doe"
-            onChangeText={(text) => setFullName(text)}
-            value={fullName}
-            style={styles.input}
-            placeholderTextColor={"gray"}
-          />
-          <Text
-            style={{ ...styles.smallText, textAlign: "left", width: "90%" }}
-          >
-            Phone Number
-          </Text>
-          <View style={{ display: "flex", flexDirection: "row", gap: 0 }}>
-            <View style={styles.countryDropDown}>
-              <SelectDropdown
-                data={countries}
-                onSelect={(selectedItem, index) => {
-                  setcouuntryCode(selectedItem?.code)
-                  console.log(selectedItem, index);
-                }}
-                buttonStyle={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  backgroundColor: "#000",
-                  width: "100%",
-                  height: 30,
-                  padding: 0,
-                  margin: 0,
-                }}
-                renderCustomizedButtonChild={(selectedItem, index) => {
-                  return (
-                    <View
-                      key={index}
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        width: "100%",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      {selectedItem ? (
-                        <Image
-                          source={{
-                            uri: selectedItem.flag
-                          }}
-                          style={styless.dropdown3BtnImage}
-                        />
-                      ) : (
-                        <Ionicons
-                          name="md-earth-sharp"
+        {/* Conditional Rendering Based on isSignIn */}
+        {!isSignIn && (
+          <>
+            <Text
+              style={{ ...styles.smallText, textAlign: "left", width: "90%" }}
+            >
+              Full Name
+            </Text>
+            <TextInput
+              placeholder="John Doe"
+              onChangeText={(text) => setFullName(text)}
+              value={fullName}
+              style={styles.input}
+              placeholderTextColor={"gray"}
+            />
+            <Text
+              style={{ ...styles.smallText, textAlign: "left", width: "90%" }}
+            >
+              Phone Number
+            </Text>
+            <View style={{ display: "flex", flexDirection: "row", gap: 0 }}>
+              <View style={styles.countryDropDown}>
+                <SelectDropdown
+                  data={countries}
+                  onSelect={(selectedItem, index) => {
+                    setcouuntryCode(selectedItem?.code)
+                    console.log(selectedItem, index);
+                  }}
+                  buttonStyle={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    backgroundColor: "#000",
+                    width: "100%",
+                    height: 30,
+                    padding: 0,
+                    margin: 0,
+                  }}
+                  renderCustomizedButtonChild={(selectedItem, index) => {
+                    return (
+                      <View
+                        key={index}
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          width: "100%",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        {selectedItem ? (
+                          <Image
+                            source={{
+                              uri: selectedItem.flag
+                            }}
+                            style={styless.dropdown3BtnImage}
+                          />
+                        ) : (
+                          <Ionicons
+                            name="md-earth-sharp"
+                            color={"#777"}
+                            size={15}
+                          />
+                        )}
+                        <Text style={{ color: "white" }}>
+                          {selectedItem ? selectedItem.code : ""}
+                        </Text>
+                        <FontAwesome
+                          name="chevron-down"
                           color={"#777"}
                           size={15}
                         />
-                      )}
-                      <Text style={{ color: "white" }}>
-                        {selectedItem ? selectedItem.code : ""}
-                      </Text>
-                      <FontAwesome
-                        name="chevron-down"
-                        color={"#777"}
-                        size={15}
-                      />
-                    </View>
-                  );
-                }}
-                dropdownStyle={styless.dropdown3DropdownStyle}
-                rowStyle={styless.dropdown3RowStyle}
-                selectedRowStyle={styless.dropdown1SelectedRowStyle}
-                renderCustomizedRowChild={(item, index) => {
-                  return (
-                    <View style={styless.dropdown3RowChildStyle}>
-                      <Image
-                        source={item.flag}
-                        style={styless.dropdownRowImage}
-                      />
-                      <Text style={{ color: "white" }}>
-                        {item.code}
-                      </Text>
-                    </View>
-                  );
-                }}
+                      </View>
+                    );
+                  }}
+                  dropdownStyle={styless.dropdown3DropdownStyle}
+                  rowStyle={styless.dropdown3RowStyle}
+                  selectedRowStyle={styless.dropdown1SelectedRowStyle}
+                  renderCustomizedRowChild={(item, index) => {
+                    return (
+                      <View style={styless.dropdown3RowChildStyle}>
+                        <Image
+                          source={item.flag}
+                          style={styless.dropdownRowImage}
+                        />
+                        <Text style={{ color: "white" }}>
+                          {item.code}
+                        </Text>
+                      </View>
+                    );
+                  }}
+                />
+              </View>
+              <TextInput
+                keyboardType="numeric"
+                placeholder="Phone number"
+                onChangeText={(text) => setPhone(text)}
+                value={phone}
+                style={styles.phoneInput}
+                placeholderTextColor={"gray"}
               />
             </View>
-            <TextInput
-              keyboardType="numeric"
-              placeholder="Phone number"
-              onChangeText={(text) => setPhone(text)}
-              value={phone}
-              style={styles.phoneInput}
-              placeholderTextColor={"gray"}
-            />
-          </View>
-          <TouchableOpacity
-            style={{
-              ...styles.primaryButton,
-              width: "90%",
-              marginVertical: 20,
-            }}
-            onPress={handleSignUp}
-          >
-            {
-              isLoading ? <ActivityIndicator />
-                :
-                <Text style={styles.mediumText}>Sign Up</Text>
-            }
-          </TouchableOpacity>
-          <Text style={styles.smallText}>Already have an account?</Text>
-          <TouchableOpacity
-            style={{
-              ...styles.primaryButton,
-              backgroundColor: "black",
-              borderWidth: 1,
-              width: "40%",
-              marginTop: 20,
-            }}
-            onPress={() => setIsSignIn(true)}
-          >
-            <Text style={styles.mediumText}>Sign In</Text>
-          </TouchableOpacity>
-        </>
-      )}
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'flex-start', width: "100%", paddingHorizontal: 30 }}>
+              <TouchableOpacity
+                onPress={() => setIsSignIn(true)}
+              >
+                <Text style={styles.smallText}>Already have an account?</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "black",
+                  borderWidth: 1,
+                }}
+                onPress={() => setIsSignIn(true)}
+              >
+                <Text style={{ color: "#CFD8D8", fontSize: 16, textAlign: "left" }}>Sign Up</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={{
+                ...styles.primaryButton,
+                width: "90%",
+                marginVertical: 20,
+              }}
+              onPress={handleSignUp}
+            >
+              {
+                isLoading ? <ActivityIndicator />
+                  :
+                  <Text style={{ color: "#CFD8D8", fontSize: 16 }}>Sign Up</Text>
+              }
+            </TouchableOpacity>
 
-      {isSignIn && (
-        <>
-          {/* <Text
+          </>
+        )}
+
+        {isSignIn && (
+          <>
+            {/* <Text
             style={{ ...styles.smallText, textAlign: "left", width: "90%" }}
           >
             Select your country
           </Text> */}
-          <Text
-            style={{ ...styles.smallText, textAlign: "left", width: "90%" }}
-          >
-            Phone Number
-          </Text>
-          <View style={{ display: "flex", flexDirection: "row", gap: 0 }}>
-            <View style={styles.countryDropDown}>
-              <SelectDropdown
-                data={countries}
-                onSelect={(selectedItem, index) => {
-                  setcouuntryCode(selectedItem?.code)
-                  console.log(selectedItem, index);
-                }}
-                buttonStyle={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  backgroundColor: "#000",
-                  width: "100%",
-                  height: 30,
-                  padding: 0,
-                  margin: 0,
-                }}
-                renderCustomizedButtonChild={(selectedItem, index) => {
-                  return (
-                    <View
-                      key={index}
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        width: "100%",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      {selectedItem ? (
-                        <Image
-                          source={{
-                            uri: selectedItem.flag,
-                            cache: "only-if-cached",
-                            method: "GET",
-                          }}
-                          style={styless.dropdown3BtnImage}
-                        />
-                      ) : (
-                        <Ionicons
-                          name="md-earth-sharp"
+            <Text
+              style={{ ...styles.smallText, textAlign: "left", width: "90%" }}
+            >
+              Phone Number
+            </Text>
+            <View style={{ display: "flex", flexDirection: "row", gap: 0 }}>
+              <View style={styles.countryDropDown}>
+                <SelectDropdown
+                  data={countries}
+                  onSelect={(selectedItem, index) => {
+                    setcouuntryCode(selectedItem?.code)
+                    console.log(selectedItem, index);
+                  }}
+                  buttonStyle={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    backgroundColor: "#000",
+                    width: "100%",
+                    height: 30,
+                    padding: 0,
+                    margin: 0,
+                  }}
+                  renderCustomizedButtonChild={(selectedItem, index) => {
+                    return (
+                      <View
+                        key={index}
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          width: "100%",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        {selectedItem ? (
+                          <Image
+                            source={{
+                              uri: selectedItem.flag,
+                              cache: "only-if-cached",
+                              method: "GET",
+                            }}
+                            style={styless.dropdown3BtnImage}
+                          />
+                        ) : (
+                          <Ionicons
+                            name="md-earth-sharp"
+                            color={"#777"}
+                            size={15}
+                          />
+                        )}
+                        <Text style={{ color: "white" }}>
+                          {selectedItem ? selectedItem.code : ""}
+                        </Text>
+                        <FontAwesome
+                          name="chevron-down"
                           color={"#777"}
                           size={15}
                         />
-                      )}
-                      <Text style={{ color: "white" }}>
-                        {selectedItem ? selectedItem.code : ""}
-                      </Text>
-                      <FontAwesome
-                        name="chevron-down"
-                        color={"#777"}
-                        size={15}
-                      />
-                    </View>
-                  );
-                }}
-                dropdownStyle={styless.dropdown3DropdownStyle}
-                rowStyle={styless.dropdown3RowStyle}
-                selectedRowStyle={styless.dropdown1SelectedRowStyle}
-                renderCustomizedRowChild={(item, index) => {
-                  return (
-                    <View style={styless.dropdown3RowChildStyle}>
-                      <Image
-                        source={item.flag}
-                        style={styless.dropdownRowImage}
-                      />
-                      <Text style={{ color: "white" }}>
-                        {item.code}
-                      </Text>
-                    </View>
-                  );
-                }}
+                      </View>
+                    );
+                  }}
+                  dropdownStyle={styless.dropdown3DropdownStyle}
+                  rowStyle={styless.dropdown3RowStyle}
+                  selectedRowStyle={styless.dropdown1SelectedRowStyle}
+                  renderCustomizedRowChild={(item, index) => {
+                    return (
+                      <View style={styless.dropdown3RowChildStyle}>
+                        <Image
+                          source={item.flag}
+                          style={styless.dropdownRowImage}
+                        />
+                        <Text style={{ color: "white" }}>
+                          {item.code}
+                        </Text>
+                      </View>
+                    );
+                  }}
+                />
+              </View>
+              <TextInput
+                keyboardType="numeric"
+                placeholder="Phone number"
+                onChangeText={(text) => setPhone(text)}
+                value={phone}
+                style={styles.phoneInput}
+                placeholderTextColor={"gray"}
               />
             </View>
-            <TextInput
-              keyboardType="numeric"
-              placeholder="Phone number"
-              onChangeText={(text) => setPhone(text)}
-              value={phone}
-              style={styles.phoneInput}
-              placeholderTextColor={"gray"}
-            />
-          </View>
-          <Text
-            style={{ ...styles.smallText, textAlign: "left", width: "90%" }}
-          >
-            One-Time-Password
-          </Text>
-          <View style={{ display: "flex", flexDirection: "row", gap: 0 }}>
-            <TextInput
-              placeholder="Enter the OTP you recieved"
-              onChangeText={(text) => setPassword(text)}
-              value={password}
-              keyboardType="numeric"
-              maxLength={6}
-              style={styles.passwordInput}
-              placeholderTextColor={"gray"}
-            />
-            <TouchableOpacity
-              onPress={handleSendOtp}
-              style={styles.passwordToggle}
+            <Text
+              style={{ ...styles.smallText, textAlign: "left", width: "90%" }}
             >
-              <Text style={styles.smallText}>Get OTP</Text>
+              One-Time-Password
+            </Text>
+            <View style={{ display: "flex", flexDirection: "row", gap: 0 }}>
+              <TextInput
+                placeholder="Enter the OTP you recieved"
+                onChangeText={(text) => setPassword(text)}
+                value={password}
+                keyboardType="numeric"
+                maxLength={6}
+                style={styles.passwordInput}
+                placeholderTextColor={"gray"}
+              />
+              <TouchableOpacity
+                onPress={handleSendOtp}
+                style={styles.passwordToggle}
+              >
+                <Text style={styles.smallText}>Get OTP</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'flex-start', width: "100%", paddingHorizontal: 30 }}>
+              <TouchableOpacity
+                onPress={() => setIsSignIn(false)}
+              >
+                <Text style={styles.smallText}>Don't have an account?</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "black",
+                  borderWidth: 1,
+                }}
+                onPress={() => setIsSignIn(false)}
+              >
+                <Text style={{ color: "#CFD8D8", fontSize: 16, textAlign: "left" }}>Sign Up</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={{
+                ...styles.primaryButton,
+                width: "90%",
+                marginVertical: 20,
+              }}
+              onPress={handleLogin}
+            >
+              {
+                isLoading ? <ActivityIndicator />
+                  :
+                  <Text style={styles.mediumText}>Login</Text>
+              }
             </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            style={{
-              ...styles.primaryButton,
-              width: "90%",
-              marginVertical: 20,
-            }}
-            onPress={handleLogin}
-          >
-            {
-              isLoading ? <ActivityIndicator />
-                :
-                <Text style={styles.mediumText}>Login</Text>
-            }
-          </TouchableOpacity>
-          <Text style={styles.smallText}>Don't have an account?</Text>
-          <TouchableOpacity
-            style={{
-              ...styles.primaryButton,
-              backgroundColor: "black",
-              borderWidth: 1,
-              width: "40%",
-              marginTop: 20,
-            }}
-            onPress={() => setIsSignIn(false)}
-          >
-            <Text style={styles.mediumText}>Sign Up</Text>
-          </TouchableOpacity>
-        </>
-      )}
-    </View>
+          </>
+        )}
+      </View>
+    </ScrollView>
   );
 }
 
