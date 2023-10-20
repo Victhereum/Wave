@@ -134,7 +134,7 @@ function AuthScreen({ navigation }: any) {
         </Text>
 
         {/* Conditional Rendering Based on isSignIn */}
-        {!isSignIn && (
+        {isSignIn && (
           <>
             <Text
               style={{ ...styles.smallText, textAlign: "left", width: "90%" }}
@@ -238,7 +238,7 @@ function AuthScreen({ navigation }: any) {
             </View>
             <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'flex-start', width: "100%", paddingHorizontal: 30 }}>
               <TouchableOpacity
-                onPress={() => setIsSignIn(true)}
+                onPress={() => setIsSignIn(false)}
               >
                 <Text style={styles.smallText}>Already have an account?</Text>
               </TouchableOpacity>
@@ -270,7 +270,7 @@ function AuthScreen({ navigation }: any) {
           </>
         )}
 
-        {isSignIn && (
+        {!isSignIn && (
           <>
             {/* <Text
             style={{ ...styles.smallText, textAlign: "left", width: "90%" }}
@@ -391,7 +391,7 @@ function AuthScreen({ navigation }: any) {
             </View>
             <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'flex-start', width: "100%", paddingHorizontal: 30 }}>
               <TouchableOpacity
-                onPress={() => setIsSignIn(false)}
+                onPress={() => setIsSignIn(true)}
               >
                 <Text style={styles.smallText}>Don't have an account?</Text>
               </TouchableOpacity>

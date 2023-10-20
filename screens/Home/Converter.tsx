@@ -1,27 +1,24 @@
-import { StyleSheet, Text, View, Button, ActivityIndicator } from 'react-native';
-import * as React from 'react';
-
+import React, { useRef } from "react";
+import { Text, TouchableOpacity, View, Platform, ScrollView, useWindowDimensions } from "react-native";
+import { styles as style } from "../../css/stylesheet";
+import { StyleSheet, Button, ActivityIndicator } from 'react-native';
 import { FFmpegKit, FFmpegKitConfig, ReturnCode } from 'ffmpeg-kit-react-native';
 import { makeDirectoryAsync, getInfoAsync, cacheDirectory } from 'expo-file-system';
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import { Video, AVPlaybackStatus } from 'expo-av';
+import videoApiSdk from "../../services/video/video.service";
+import useCreateSrtFile from "../../hooks/useCreateSrtFile";
+import Empty from "../../components/home/Empty";
+import CustomHeader from "../../components/common/customHeader";
+import Colors from "../../theme/colors";
+import Feather from 'react-native-vector-icons/Feather';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const getResultPath = async () => {
-    const videoDir = `${cacheDirectory}video/`;
+import RBSheet from "react-native-raw-bottom-sheet";
+import ActionCard from "../../components/home/ActionCard";
 
-    // Checks if gif directory exists. If not, creates it
-    async function ensureDirExists() {
-        const dirInfo = await getInfoAsync(videoDir);
-        if (!dirInfo.exists) {
-            console.log("tmp directory doesn't exist, creating...");
-            await makeDirectoryAsync(videoDir, { intermediates: true });
-        }
-    }
 
-    await ensureDirExists();
-
-    return `${videoDir}file2.mp4`;
-}
 
 const getSourceVideo = async () => {
     console.log('select video')
@@ -45,7 +42,7 @@ const Converter = () => {
         setLoading(() => true);
         setResult(() => '');
 
-        const resultVideo = await getResultPath();
+        // const resultVideo = await getResultPath();
         const sourceVideo = await getSourceVideo();
 
         if (!sourceVideo) {
@@ -53,43 +50,83 @@ const Converter = () => {
             return;
         }
         setSource(() => sourceVideo)
+        setLoading(() => false);
 
-        const ffmpegSession = await FFmpegKit
-            .execute(`-i ${sourceVideo} -c:v mpeg4 -y ${resultVideo}`);
+        // const ffmpegSession = await FFmpegKit
+        //   .execute(`-i ${sourceVideo} -c:v mpeg4 -y ${resultVideo}`);
 
-        const result = await ffmpegSession.getReturnCode();
+        // const result = await ffmpegSession.getReturnCode();
 
-        console.log({ result })
+        // if (ReturnCode.isSuccess(result)) {
+        //   setLoading(() => false);
+        //   setResult(() => resultVideo);
+        // } else {
+        //   setLoading(() => false);
+        //   console.error(result);
+        // }
 
-        if (ReturnCode.isSuccess(result)) {
-            setLoading(() => false);
-            setResult(() => resultVideo);
-        } else {
-            setLoading(() => false);
-            console.error(result);
+        translateVideo({ uri: sourceVideo })
+        // console.log(sourceVideo)
+    }
+
+
+    const translateVideo = async ({ uri }: { uri: string }) => {
+        console.log(uri)
+        try {
+            let formdata = new FormData();
+            let uriArray = uri.split(".");
+            let fileType = uriArray[uriArray.length - 1];
+
+            const videoFilename = `${new Date()}.${fileType}`
+
+            formdata.append('media', {
+                name: videoFilename,
+                type: 'video/*',
+                uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
+            } as any);
+
+            const response = await videoApiSdk.getVideoAudioTranslationTranscription({ uri: formdata })
+            // console.log("translateVideo success", response.data.captions)
+            const ed = videoFilename.replace('.mp4', ' ')
+
+            const getsrt = useCreateSrtFile(response?.data?.captions, ed)
+            console.log(getsrt)
+
+        } catch (error: any) {
+            console.log("translateVideo failure", error?.response?.data || error)
         }
-
-        console.log(sourceVideo)
     }
 
     return (
-        <View style={styles.container}>
-            <Button
-                onPress={onPress}
-                title="Select video"
-                color="#841584"
-            />
+        <ScrollView style={{ flex: 1, height: '100%', backgroundColor: "#000000" }} contentContainerStyle={[{ margin: 0, backgroundColor: "#000000" }]}>
+            {/* <CustomHeader title="Projects" titleStyle={{ fontWeight: '600', fontSize: 20 }} rightIcon={<View style={{ backgroundColor: Colors.primary, height: 30, width: 30, borderRadius: 100, flexDirection: "column", alignItems: "center", justifyContent: 'center' }}><Feather name="plus" size={20} color="#fff" style={{ marginTop: 2 }} /></View>} onRightPress={() => refRBSheet.current.open()} /> */}
+            <View style={{
+                height: "100%",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#000000"
+            }}>
 
-            {isLoading && <ActivityIndicator size="large" color="#ff0033" />}
-            <Plyr uri={source} title={'Source'} />
-            {result &&
-                <Plyr uri={result} title={'Result'} />
-            }
-        </View>
+                
+                {
+                    !source && <Empty onPress={onPress} />
+                }
+
+                {isLoading && <ActivityIndicator size="large" color="#ff0033" />}
+                {
+                    source &&
+                    <Plyr uri={source} title={'Source'} />
+                }
+                {/* {result &&
+          <Plyr uri={result} title={'Result'} />
+        } */}
+            </View>
+        </ScrollView>
     );
 }
 
 export default Converter
+
 
 const Plyr = (props: {
     title: string,
@@ -126,6 +163,7 @@ const Plyr = (props: {
 }
 
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -148,6 +186,13 @@ const styles = StyleSheet.create({
     buttons: {
         flexDirection: 'row',
         justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    headTitle: { color: "#CFD8D8", fontSize: 28, marginBottom: 20 },
+
+    contentContainer: {
+        flex: 1,
         alignItems: 'center',
     },
 });

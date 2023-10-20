@@ -20,14 +20,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dpolyakov.expoffmpegkitexample"
+      "bundleIdentifier": "com.wave.caption"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/convert.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.dpolyakov.expoffmpegkitexample"
+      "package": "com.wave.caption"
     },
     "plugins": [
       [
