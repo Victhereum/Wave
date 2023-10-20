@@ -98,9 +98,9 @@ function AuthScreen({ navigation }: any) {
       setisLoading(false)
       navigation.navigate("Payment");
     } catch (error: any) {
+      setisLoading(false)
       Alert.error(error?.response?.data?.detail)
       console.log(error?.response.data)
-      setisLoading(false)
 
     }
 

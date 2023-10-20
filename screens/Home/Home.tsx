@@ -20,103 +20,16 @@ import ActionCard from "../../components/home/ActionCard";
 
 
 
-// const getResultPath = async () => {
-//   const videoDir = `${cacheDirectory}video/`;
-
-//   // Checks if gif directory exists. If not, creates it
-//   async function ensureDirExists() {
-//     const dirInfo = await getInfoAsync(videoDir);
-//     if (!dirInfo.exists) {
-//       console.log("tmp directory doesn't exist, creating...");
-//       await makeDirectoryAsync(videoDir, { intermediates: true });
-//     }
-//   }
-
-//   await ensureDirExists();
-
-//   return `${videoDir}file2.mp4`;
-// }
-
-const getSourceVideo = async () => {
-  console.log('select video')
-  const result = await launchImageLibraryAsync({
-    mediaTypes: MediaTypeOptions.Videos
-  })
-
-  return (result.canceled) ? null : result.assets[0].uri
-}
-
-
 const Home = ({ navigation }: any) => {
-  const [result, setResult] = React.useState('');
-  const [source, setSource] = React.useState('');
-  const [isLoading, setLoading] = React.useState(false);
+ 
 
-  React.useEffect(() => {
-    FFmpegKitConfig.init();
-  }, []);
-
-  const onPress = async () => {
-    setLoading(() => true);
-    setResult(() => '');
-
-    // const resultVideo = await getResultPath();
-    const sourceVideo = await getSourceVideo();
-
-    if (!sourceVideo) {
-      setLoading(() => false);
-      return;
-    }
-    setSource(() => sourceVideo)
-    setLoading(() => false);
-
-    // const ffmpegSession = await FFmpegKit
-    //   .execute(`-i ${sourceVideo} -c:v mpeg4 -y ${resultVideo}`);
-
-    // const result = await ffmpegSession.getReturnCode();
-
-    // if (ReturnCode.isSuccess(result)) {
-    //   setLoading(() => false);
-    //   setResult(() => resultVideo);
-    // } else {
-    //   setLoading(() => false);
-    //   console.error(result);
-    // }
-
-    translateVideo({ uri: sourceVideo })
-    // console.log(sourceVideo)
+  const refRBSheet = useRef<any>();
+  const { width } = useWindowDimensions()
+  
+  const handleNextPage = (pageName:string) => {
+    navigation.navigate(pageName)
+    refRBSheet.current.close()
   }
-
-
-  const translateVideo = async ({ uri }: { uri: string }) => {
-    console.log(uri)
-    try {
-      let formdata = new FormData();
-      let uriArray = uri.split(".");
-      let fileType = uriArray[uriArray.length - 1];
-
-      const videoFilename = `${new Date()}.${fileType}`
-
-      formdata.append('media', {
-        name: videoFilename,
-        type: 'video/*',
-        uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
-      } as any);
-
-      const response = await videoApiSdk.getVideoAudioTranslationTranscription({ uri: formdata })
-      // console.log("translateVideo success", response.data.captions)
-      const ed = videoFilename.replace('.mp4', ' ')
-
-      const getsrt = useCreateSrtFile(response?.data?.captions, ed)
-      console.log(getsrt)
-
-    } catch (error: any) {
-      console.log("translateVideo failure", error?.response?.data || error)
-    }
-  }
-
-  const refRBSheet = useRef();
-  const {width} = useWindowDimensions()
 
   return (
     <ScrollView style={{ flex: 1, height: '100%', backgroundColor: "#000000" }} contentContainerStyle={[{ margin: 0, backgroundColor: "#000000" }]}>
@@ -148,7 +61,7 @@ const Home = ({ navigation }: any) => {
           <ScrollView>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center",width,paddingHorizontal:20,flexWrap:"wrap"}}>
               <View style={{ width: "46%" }}>
-                <ActionCard icon={<AntDesign name="clouduploado" size={26} color={Colors.primary} style={{marginBottom:5}} />} title={"Import"} subtext={"Upload your footage"} onPress={undefined} />
+                <ActionCard icon={<AntDesign name="clouduploado" size={26} color={Colors.primary} style={{ marginBottom: 5 }} />} title={"Import"} subtext={"Upload your footage"} onPress={() => handleNextPage("converter")} />
               </View>
               <View style={{ width: "46%" }}>
                 <ActionCard icon={<MaterialIcons name="online-prediction" size={26} color={Colors.primary} style={{ marginBottom: 5 }} />} title={"AI Dubbing"} subtext={"Translate your voice"} onPress={undefined} />
@@ -157,16 +70,7 @@ const Home = ({ navigation }: any) => {
             </View>
           </ScrollView>
         </RBSheet>
-        {
-          !source && <Empty onPress={onPress} />
-        }
-
-        {isLoading && <ActivityIndicator size="large" color="#ff0033" />}
-        {
-          source &&
-          <Plyr uri={source} title={'Source'} />
-        }
-
+        <Empty onPress={()=>{}} />
       </View>
     </ScrollView>
 
@@ -175,40 +79,6 @@ const Home = ({ navigation }: any) => {
 
 export default Home;
 
-
-const Plyr = (props: {
-  title: string,
-  uri: string,
-}) => {
-  const video = React.useRef(null);
-  const [status, setStatus] = React.useState<AVPlaybackStatus | {}>({});
-
-  return (
-    <View style={styles.videoContainer}>
-      <Text>{props.title}</Text>
-      <Video
-        ref={video}
-        style={styles.video}
-        source={{
-          uri: props.uri,
-        }}
-        useNativeControls
-        resizeMode="contain"
-        isLooping
-        onPlaybackStatusUpdate={(status: AVPlaybackStatus) => setStatus(() => status)}
-      />
-      <View style={styles.buttons}>
-        <Button
-          title={status?.isPlaying ? 'Pause' : 'Play'}
-          disabled={(props.uri == '')}
-          onPress={() =>
-            status.isPlaying ? video?.current.pauseAsync() : video?.current.playAsync()
-          }
-        />
-      </View>
-    </View>
-  );
-}
 
 
 const styles = StyleSheet.create({

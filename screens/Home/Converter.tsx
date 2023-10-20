@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Text, TouchableOpacity, View, Platform, ScrollView, useWindowDimensions } from "react-native";
 import { styles as style } from "../../css/stylesheet";
 import { StyleSheet, Button, ActivityIndicator } from 'react-native';
@@ -11,14 +11,9 @@ import useCreateSrtFile from "../../hooks/useCreateSrtFile";
 import Empty from "../../components/home/Empty";
 import CustomHeader from "../../components/common/customHeader";
 import Colors from "../../theme/colors";
-import Feather from 'react-native-vector-icons/Feather';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
-import RBSheet from "react-native-raw-bottom-sheet";
-import ActionCard from "../../components/home/ActionCard";
-
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import SubtitleEditor from "../../components/home/SubtitleEditor";
 
 const getSourceVideo = async () => {
     console.log('select video')
@@ -29,8 +24,8 @@ const getSourceVideo = async () => {
     return (result.canceled) ? null : result.assets[0].uri
 }
 
-const Converter = () => {
-    const [result, setResult] = React.useState('');
+const Converter = ({navigation}:any) => {
+    const [subtitles, setsubtitles] = React.useState([]);
     const [source, setSource] = React.useState('');
     const [isLoading, setLoading] = React.useState(false);
 
@@ -40,9 +35,7 @@ const Converter = () => {
 
     const onPress = async () => {
         setLoading(() => true);
-        setResult(() => '');
 
-        // const resultVideo = await getResultPath();
         const sourceVideo = await getSourceVideo();
 
         if (!sourceVideo) {
@@ -66,19 +59,23 @@ const Converter = () => {
         // }
 
         translateVideo({ uri: sourceVideo })
-        // console.log(sourceVideo)
     }
 
 
+    useEffect(() => {
+        onPress()
+    }, [])
+
+
+    let uriArray = source.split(".");
+    let fileType = uriArray[uriArray.length - 1];
+    const videoFilename = `${new Date()}.${fileType}`
+    const videoFilenameed = videoFilename.replace('.mp4', ' ')
+
+
     const translateVideo = async ({ uri }: { uri: string }) => {
-        console.log(uri)
         try {
             let formdata = new FormData();
-            let uriArray = uri.split(".");
-            let fileType = uriArray[uriArray.length - 1];
-
-            const videoFilename = `${new Date()}.${fileType}`
-
             formdata.append('media', {
                 name: videoFilename,
                 type: 'video/*',
@@ -86,20 +83,22 @@ const Converter = () => {
             } as any);
 
             const response = await videoApiSdk.getVideoAudioTranslationTranscription({ uri: formdata })
-            // console.log("translateVideo success", response.data.captions)
-            const ed = videoFilename.replace('.mp4', ' ')
 
-            const getsrt = useCreateSrtFile(response?.data?.captions, ed)
-            console.log(getsrt)
-
+            setsubtitles(response?.data?.captions)
+            console.log(response?.data?.captions)
         } catch (error: any) {
             console.log("translateVideo failure", error?.response?.data || error)
         }
     }
 
+    const handleCompile = () => {
+        const getsrt = useCreateSrtFile(subtitles, videoFilenameed)
+        console.log(getsrt)
+    }
+
     return (
         <ScrollView style={{ flex: 1, height: '100%', backgroundColor: "#000000" }} contentContainerStyle={[{ margin: 0, backgroundColor: "#000000" }]}>
-            {/* <CustomHeader title="Projects" titleStyle={{ fontWeight: '600', fontSize: 20 }} rightIcon={<View style={{ backgroundColor: Colors.primary, height: 30, width: 30, borderRadius: 100, flexDirection: "column", alignItems: "center", justifyContent: 'center' }}><Feather name="plus" size={20} color="#fff" style={{ marginTop: 2 }} /></View>} onRightPress={() => refRBSheet.current.open()} /> */}
+            <CustomHeader title=" " titleStyle={{ fontWeight: '600', fontSize: 20 }} rightIcon={<View style={{ backgroundColor: Colors.primary, height: 30, width: 30, borderRadius: 100, flexDirection: "column", alignItems: "center", justifyContent: 'center' }}><MaterialCommunityIcons name="database-export" size={20} color="#fff" style={{ marginTop: 2 }} /></View>} onRightPress={handleCompile} leftIcon={<View style={{ height: 30, width: 30, borderRadius: 100, flexDirection: "column", alignItems: "center", justifyContent: 'center' }}><Ionicons name="arrow-back" size={20} color="#fff" style={{ marginTop: 2 }} /></View>} onLeftPress={()=> navigation.goBack()} />
             <View style={{
                 height: "100%",
                 alignItems: "center",
@@ -107,19 +106,19 @@ const Converter = () => {
                 backgroundColor: "#000000"
             }}>
 
-                
-                {
-                    !source && <Empty onPress={onPress} />
-                }
-
                 {isLoading && <ActivityIndicator size="large" color="#ff0033" />}
                 {
                     source &&
-                    <Plyr uri={source} title={'Source'} />
+                    <>
+                    <Plyr uri={source} />
+                    {
+                        subtitles.length > 0 && subtitles.map((item)=>
+                        <SubtitleEditor subtitle={item?.Word} onSubtitleChange={()=>{}} onSaveSubtitle={()=>{}} />
+                        )
+                    }
+                    </>
                 }
-                {/* {result &&
-          <Plyr uri={result} title={'Result'} />
-        } */}
+
             </View>
         </ScrollView>
     );
@@ -129,15 +128,12 @@ export default Converter
 
 
 const Plyr = (props: {
-    title: string,
-    uri: string,
+    uri: string
 }) => {
     const video = React.useRef(null);
     const [status, setStatus] = React.useState<AVPlaybackStatus | {}>({});
 
     return (
-        <View style={styles.videoContainer}>
-            <Text>{props.title}</Text>
             <Video
                 ref={video}
                 style={styles.video}
@@ -146,19 +142,17 @@ const Plyr = (props: {
                 }}
                 useNativeControls
                 resizeMode="contain"
-                isLooping
                 onPlaybackStatusUpdate={(status: AVPlaybackStatus) => setStatus(() => status)}
             />
-            <View style={styles.buttons}>
-                <Button
-                    title={status?.isPlaying ? 'Pause' : 'Play'}
-                    disabled={(props.uri == '')}
-                    onPress={() =>
-                        status.isPlaying ? video?.current.pauseAsync() : video?.current.playAsync()
-                    }
-                />
-            </View>
-        </View>
+            // <View style={styles.buttons}>
+            //     <Button
+            //         title={status?.isPlaying ? 'Pause' : 'Play'}
+            //         disabled={(props.uri == '')}
+            //         onPress={() =>
+            //             status.isPlaying ? video?.current.pauseAsync() : video?.current.playAsync()
+            //         }
+            //     />
+            // </View>
     );
 }
 
@@ -171,17 +165,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    videoContainer: {
-        backgroundColor: '#ecf0f1',
-        marginTop: 20,
-        textAlign: 'center',
-        padding: 10,
-
-    },
     video: {
         alignSelf: 'center',
-        width: 320,
-        height: 200,
+        width: "100%",
+        height:300,
     },
     buttons: {
         flexDirection: 'row',

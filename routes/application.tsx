@@ -11,6 +11,7 @@ import Workshop from "../screens/Workshop";
 
 import { styles } from "../css/stylesheet";
 import BottomTab from "./bottomBarTab";
+import Converter from "../screens/Home/Converter";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,11 @@ export default function MainStack() {
                 options={{ headerShown: false }}
                 name="Home"
                 component={BottomTab}
+            />
+            <Stack.Screen
+                options={{ headerShown: false }}
+                name="converter"
+                component={Converter}
             />
             <Stack.Screen
                 options={{ headerShown: false }}
