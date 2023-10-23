@@ -61,7 +61,6 @@ const Converter = ({ navigation }: any) => {
     const videoFilename = `${new Date()}.${fileType}`
     const videoFilenameed = videoFilename.replace('.mp4', ' ')
 
-
     const translateVideo = async ({ uri }: { uri: string }) => {
         setLoading(true)
         try {
