@@ -3,17 +3,17 @@ import { Text, TouchableOpacity, View, Platform, ScrollView, useWindowDimensions
 import { styles as style } from "../../css/stylesheet";
 import { StyleSheet, Button, ActivityIndicator } from 'react-native';
 import { FFmpegKit, FFmpegKitConfig, ReturnCode } from 'ffmpeg-kit-react-native';
-import { makeDirectoryAsync, getInfoAsync, cacheDirectory } from 'expo-file-system';
 import { launchImageLibraryAsync, MediaTypeOptions } from 'expo-image-picker';
 import { Video, AVPlaybackStatus } from 'expo-av';
 import videoApiSdk from "../../services/video/video.service";
 import useCreateSrtFile from "../../hooks/useCreateSrtFile";
-import Empty from "../../components/home/Empty";
 import CustomHeader from "../../components/common/customHeader";
 import Colors from "../../theme/colors";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SubtitleEditor from "../../components/home/SubtitleEditor";
+import createFolder from "../../helpers/createFolder";
+
 
 const getSourceVideo = async () => {
     console.log('select video')
@@ -24,9 +24,13 @@ const getSourceVideo = async () => {
     return (result.canceled) ? null : result.assets[0].uri
 }
 
-const Converter = ({navigation}:any) => {
-    const [subtitles, setsubtitles] = React.useState([]);
+const Converter = ({ navigation }: any) => {
+    const [subtitles, setsubtitles] = React.useState<{ Word: string, Duration: string, Offset: string }[]>([]);
     const [source, setSource] = React.useState('');
+
+    // result gotten from adding translation
+    const [result, setResult] = React.useState('');
+
     const [isLoading, setLoading] = React.useState(false);
 
     React.useEffect(() => {
@@ -34,7 +38,6 @@ const Converter = ({navigation}:any) => {
     }, []);
 
     const onPress = async () => {
-        setLoading(() => true);
 
         const sourceVideo = await getSourceVideo();
 
@@ -43,20 +46,6 @@ const Converter = ({navigation}:any) => {
             return;
         }
         setSource(() => sourceVideo)
-        setLoading(() => false);
-
-        // const ffmpegSession = await FFmpegKit
-        //   .execute(`-i ${sourceVideo} -c:v mpeg4 -y ${resultVideo}`);
-
-        // const result = await ffmpegSession.getReturnCode();
-
-        // if (ReturnCode.isSuccess(result)) {
-        //   setLoading(() => false);
-        //   setResult(() => resultVideo);
-        // } else {
-        //   setLoading(() => false);
-        //   console.error(result);
-        // }
 
         translateVideo({ uri: sourceVideo })
     }
@@ -74,6 +63,7 @@ const Converter = ({navigation}:any) => {
 
 
     const translateVideo = async ({ uri }: { uri: string }) => {
+        setLoading(true)
         try {
             let formdata = new FormData();
             formdata.append('media', {
@@ -86,19 +76,80 @@ const Converter = ({navigation}:any) => {
 
             setsubtitles(response?.data?.captions)
             console.log(response?.data?.captions)
+            setLoading(false)
+
         } catch (error: any) {
+            setLoading(false)
             console.log("translateVideo failure", error?.response?.data || error)
         }
     }
 
-    const handleCompile = () => {
-        const getsrt = useCreateSrtFile(subtitles, videoFilenameed)
-        console.log(getsrt)
+
+    const handleCompile = async () => {
+        try {
+            console.log("Compilation started...");
+
+            // Generate the SRT file
+            const getsrt = await useCreateSrtFile(subtitles, videoFilenameed);
+            console.log("Generating SRT in progress...");
+
+            // Create the video path
+            const resultVideo = createFolder() + videoFilename;
+            console.log("Creating video path...");
+
+            if (resultVideo) {
+                console.log("Loading video with SRT...");
+
+                // Get the SRT file path
+                const path = getsrt.path;
+
+                // Construct the FFmpeg command
+                const ffmpegCommand = `-i ${source} -vf "subtitles='${path}'" ${resultVideo}`;
+
+
+                console.log({ ffmpegCommand });
+
+
+                // Execute the FFmpeg command
+                const ffmpegSession = await FFmpegKit.execute(ffmpegCommand);
+
+                const output = await ffmpegSession.getOutput();
+                console.log("FFmpeg Session Output:", output);
+
+
+                if (ffmpegSession) {
+                    const returnCode = await ffmpegSession.getReturnCode();
+
+                    if (ReturnCode.isSuccess(returnCode)) {
+                        console.log("Loading video with SRT successful...");
+                        setLoading(false);
+                        setResult(resultVideo);
+                        console.log("Result stored here:", { resultVideo });
+                    } else {
+                        setLoading(false);
+                        console.error("Error in FFmpeg command execution. ReturnCode:", returnCode);
+                    }
+                } else {
+                    console.error("FFmpeg execution failed. ffmpegSession is null.");
+                }
+            }
+        } catch (error) {
+            console.error("An error occurred:", error);
+        }
+    };
+
+
+    const handleSubtitleEditing = (index: number, text: string) => {
+        // Make a copy of the subtitles array to avoid mutating the state directly
+        const updatedSubtitles = [...subtitles];
+        updatedSubtitles[index].Word = text;
+        setsubtitles(updatedSubtitles);
+
     }
 
     return (
         <ScrollView style={{ flex: 1, height: '100%', backgroundColor: "#000000" }} contentContainerStyle={[{ margin: 0, backgroundColor: "#000000" }]}>
-            <CustomHeader title=" " titleStyle={{ fontWeight: '600', fontSize: 20 }} rightIcon={<View style={{ backgroundColor: Colors.primary, height: 30, width: 30, borderRadius: 100, flexDirection: "column", alignItems: "center", justifyContent: 'center' }}><MaterialCommunityIcons name="database-export" size={20} color="#fff" style={{ marginTop: 2 }} /></View>} onRightPress={handleCompile} leftIcon={<View style={{ height: 30, width: 30, borderRadius: 100, flexDirection: "column", alignItems: "center", justifyContent: 'center' }}><Ionicons name="arrow-back" size={20} color="#fff" style={{ marginTop: 2 }} /></View>} onLeftPress={()=> navigation.goBack()} />
+            <CustomHeader title=" " titleStyle={{ fontWeight: '600', fontSize: 20 }} rightIcon={<View style={{ backgroundColor: Colors.primary, height: 30, width: 30, borderRadius: 100, flexDirection: "column", alignItems: "center", justifyContent: 'center' }}><MaterialCommunityIcons name="database-export" size={20} color="#fff" style={{ marginTop: 2 }} /></View>} onRightPress={handleCompile} leftIcon={<View style={{ height: 30, width: 30, borderRadius: 100, flexDirection: "column", alignItems: "center", justifyContent: 'center' }}><Ionicons name="arrow-back" size={20} color="#fff" style={{ marginTop: 2 }} /></View>} onLeftPress={() => navigation.goBack()} />
             <View style={{
                 height: "100%",
                 alignItems: "center",
@@ -106,16 +157,21 @@ const Converter = ({navigation}:any) => {
                 backgroundColor: "#000000"
             }}>
 
-                {isLoading && <ActivityIndicator size="large" color="#ff0033" />}
+                {isLoading && <View>
+                    <ActivityIndicator color={Colors.primary} size={22} />
+                    <Text style={{ color: Colors.white, fontSize: 14 }}>Loading video and subtitle</Text>
+                </View>}
                 {
                     source &&
                     <>
-                    <Plyr uri={source} />
-                    {
-                        subtitles.length > 0 && subtitles.map((item)=>
-                        <SubtitleEditor subtitle={item?.Word} onSubtitleChange={()=>{}} onSaveSubtitle={()=>{}} />
-                        )
-                    }
+                        <Plyr uri={source} />
+                        <ScrollView style={styles.subtitleEditoContainer} horizontal>
+                            {
+                                subtitles.length > 0 && subtitles.map((item: { Word: string, Duration: string, Offset: string }, index) =>
+                                    <SubtitleEditor subtitle={item} onSubtitleChange={(text: string) => handleSubtitleEditing(index, text)} index={index} />
+                                )
+                            }
+                        </ScrollView>
                     </>
                 }
 
@@ -134,6 +190,7 @@ const Plyr = (props: {
     const [status, setStatus] = React.useState<AVPlaybackStatus | {}>({});
 
     return (
+        <View style={styles.videoContainer}>
             <Video
                 ref={video}
                 style={styles.video}
@@ -141,18 +198,11 @@ const Plyr = (props: {
                     uri: props.uri,
                 }}
                 useNativeControls
-                resizeMode="contain"
+                resizeMode="cover"
                 onPlaybackStatusUpdate={(status: AVPlaybackStatus) => setStatus(() => status)}
             />
-            // <View style={styles.buttons}>
-            //     <Button
-            //         title={status?.isPlaying ? 'Pause' : 'Play'}
-            //         disabled={(props.uri == '')}
-            //         onPress={() =>
-            //             status.isPlaying ? video?.current.pauseAsync() : video?.current.playAsync()
-            //         }
-            //     />
-            // </View>
+        </View>
+
     );
 }
 
@@ -168,8 +218,17 @@ const styles = StyleSheet.create({
     video: {
         alignSelf: 'center',
         width: "100%",
-        height:300,
+        height: 500,
     },
+    videoContainer: {
+        backgroundColor: '#ecf0f1',
+        margin: 8,
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: "100%",
+    }
+    ,
     buttons: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -182,4 +241,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
     },
+
+    subtitleEditoContainer: {
+        backgroundColor: "rgba(29, 35, 41, 1)",
+        padding: 3,
+        borderRadius: 5
+    }
 });

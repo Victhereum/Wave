@@ -6315,6 +6315,11 @@ react-native-codegen@^0.71.6:
     jscodeshift "^0.14.0"
     nullthrows "^1.1.1"
 
+react-native-ffmpeg@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/react-native-ffmpeg/-/react-native-ffmpeg-0.5.2.tgz#4c60fa4e773ae82ed59628a5f23dd86f74f1c8f5"
+  integrity sha512-YxKWI9kPo4nDtAzNO+MIMIu56rfaixJrviQBKvdvmFD09oWH0GhKurJ+uJOvTbN3T7eEYCE0kUzK1puPDsniAA==
+
 react-native-flash-message@^0.4.2:
   version "0.4.2"
   resolved "https://registry.npmjs.org/react-native-flash-message/-/react-native-flash-message-0.4.2.tgz"

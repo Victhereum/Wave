@@ -1,20 +1,23 @@
  import React from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { addDurations } from '../../hooks/useCreateSrtFile';
+import Colors from '../../theme/colors';
 
-const SubtitleEditor = ({ subtitle, onSubtitleChange, onSaveSubtitle }) => {
+const SubtitleEditor = ({ subtitle, onSubtitleChange, index }: { subtitle: { Word: string, Duration: string, Offset: string }, onSubtitleChange: (text:string) => void, index :number}) => {
+  const timeStamp = addDurations(subtitle.Duration, subtitle.Offset)
+  
+
   return (
     <View style={styles.container}>
-      <Text style={styles.subtitleText}>{subtitle.text}</Text>
+      <View>
+      <Text style={styles.subtitleText}>{timeStamp}</Text>
+      </View>
       <TextInput
         style={styles.subtitleInput}
-        value={subtitle.text}
+        value={subtitle.Word}
         onChangeText={onSubtitleChange}
       />
-      <Button
-        title="Save"
-        onPress={onSaveSubtitle}
-        style={styles.saveButton}
-      />
+    
     </View>
   );
 };
@@ -22,26 +25,25 @@ const SubtitleEditor = ({ subtitle, onSubtitleChange, onSaveSubtitle }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    width:"100%"
+    // width: 300,
+    marginRight:3
   },
   subtitleText: {
     fontSize: 16,
     marginBottom: 5,
-    color:'red'
+    fontWeight: 'bold',
+    color:Colors.primary
   },
   subtitleInput: {
     borderWidth: 0.2,
-    borderColor: '#ccc',
-    borderRadius:10,
-    padding: 5,
+    borderColor: Colors.primary,
+    borderRadius:3,
+    padding: 7,
+    textAlign:"center",
     color:"white",
-    width:"100%",
+    // width:300,
     marginBottom: 10,
-  },
-  saveButton: {
-    backgroundColor: 'blue',
-    color: 'white',
-  },
+  }
 });
 
 export default SubtitleEditor;
