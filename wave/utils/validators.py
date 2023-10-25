@@ -63,6 +63,17 @@ class FileValidatorHelper:
             raise ValidationError("Only pdf, doc, docx, xlsx, xls, jpg, pptx " + "and png file is supported.")
 
     @staticmethod
+    def validate_subtitle_extension(obj):
+        """
+        Checks that we are using a valid subtitle extension
+        """
+
+        ext = os.path.splitext(obj.name)[1]
+
+        if not ext.lower() in [".srt", ".ass"]:
+            raise ValidationError("Only srt and ass file is supported.")
+
+    @staticmethod
     def validate_multiple_filetype_extension(obj):
         """
         Checks that we are using a valid file extension
@@ -98,6 +109,18 @@ class FileValidatorHelper:
         return obj
 
     @staticmethod
+    def validate_subtitle_size(obj):
+        """
+        Checks that the subtitle file size is not too large
+        """
+        filesize = obj.size
+
+        if filesize > 5_097_152:
+            raise ValidationError("The maximum video size that can be uploaded is 5MB")
+
+        return obj
+
+    @staticmethod
     def validate_video_extension(obj):
         """
         Checks that we are using a valid video extension
@@ -115,9 +138,8 @@ class FileValidatorHelper:
         """
         filesize = obj.size
 
-        if filesize > settings.MAX_VIDEO_SIZE:
-            mb = settings.MAX_VIDEO_SIZE / 1048576  # Convert the file size from bytes to MB
-            raise ValidationError(f"The maximum video size that can be uploaded is {mb}MB")
+        if filesize > 300_097_152:
+            raise ValidationError("The maximum video size that can be uploaded is 300MB")
 
         return obj
 

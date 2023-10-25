@@ -1,5 +1,5 @@
 from .base import *  # noqa
-from .base import env
+from .base import INSTALLED_APPS, env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ EMAIL_PORT = 1025
 # WhiteNoise
 # ------------------------------------------------------------------------------
 # http://whitenoise.evans.io/en/latest/django.html#using-whitenoise-in-development
-INSTALLED_APPS = ["whitenoise.runserver_nostatic"] + INSTALLED_APPS  # noqa: F405
+# INSTALLED_APPS = ["whitenoise.runserver_nostatic"] + INSTALLED_APPS  # noqa: F405
 
 
 # django-debug-toolbar
@@ -59,6 +59,8 @@ if env("USE_DOCKER", default="no") == "yes":
 # ------------------------------------------------------------------------------
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
 INSTALLED_APPS += ["django_extensions"]  # noqa: F405
+INSTALLED_APPS += ["storages"]  # noqa F405
+
 # Celery
 # ------------------------------------------------------------------------------
 
@@ -66,3 +68,21 @@ INSTALLED_APPS += ["django_extensions"]  # noqa: F405
 CELERY_TASK_EAGER_PROPAGATES = True
 # Your stuff...
 # ------------------------------------------------------------------------------
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+}
+
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY", default="minioadmin")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default="minioadmin")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default="wave-bucket")
+AWS_S3_ENDPOINT_URL = env("AWS_S3_ENDPOINT_URL", default="http://minio:9000")
+AWS_S3_CUSTOM_DOMAIN = env(
+    "DJANGO_AWS_S3_CUSTOM_DOMAIN",
+    default=f"minio:9000/{AWS_STORAGE_BUCKET_NAME}",
+)
+
+AWS_DEFAULT_ACL = "public-read"
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_FILE_OVERWRITE = False

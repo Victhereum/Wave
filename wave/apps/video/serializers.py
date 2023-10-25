@@ -57,7 +57,7 @@ class VideoSerializer:
     class GetVideo(serializers.ModelSerializer):
         class Meta:
             model = Video
-            fields = ("media_path", "was_captioned", "captions")
+            fields = ("media_path", "was_captioned", "media", "srt", "captions")
 
     class ListVideo(serializers.ModelSerializer):
         class Meta:
@@ -75,7 +75,7 @@ class VideoSerializer:
 
         class Meta:
             model = Video
-            fields = ("media_path", "captions")
+            fields = ("media_path", "captions", "media", "srt")
 
     class ResultSerializer(serializers.Serializer):
         result = serializers.JSONField()

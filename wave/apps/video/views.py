@@ -1,10 +1,13 @@
+from pathlib import Path
 from typing import Any
 
+from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.db.models.query import QuerySet
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -14,10 +17,13 @@ from rest_framework.viewsets import ModelViewSet
 from wave.apps.video.models import Video
 from wave.apps.video.paginations import CustomPagination
 from wave.apps.video.permissions import CanCreateVideo
+from wave.apps.video.s3 import s3_client
 from wave.apps.video.serializers import VideoSerializer
 from wave.apps.video.translator import AzureSpeachService
 from wave.utils.enums import FromLanguages, TaskLiterals, ToLanguages
 from wave.utils.media import MediaHelper
+
+fs = FileSystemStorage()
 
 
 class VideoViewSet(ModelViewSet):
@@ -91,6 +97,7 @@ class VideoViewSet(ModelViewSet):
     lookup_field = "id"
     permission_classes = [IsAuthenticated, CanCreateVideo]
     http_method_names = ["get", "post", "patch"]
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_serializer(self, *args, **kwargs) -> BaseSerializer:
         if self.action == "create":
@@ -149,7 +156,6 @@ class VideoViewSet(ModelViewSet):
             to_lang = serialized_params.validated_data.pop("to_lang", "")
             action = serialized_params.validated_data.pop("action")
             # Save the uploaded file to a temporary location
-            fs = FileSystemStorage()
             try:
                 filename = fs.save(media.name, media)
                 file_path = fs.path(filename)
@@ -169,22 +175,45 @@ class VideoViewSet(ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        """
-        - partial_update:
-        Partial updates for when you need to give your video a makeover without breaking the spell.
-        HTTP Method: PATCH
-        Path: /api/v1/videos/{id}/
-
-        Wizard's Tip:
-        Tweak the media path and captions of your video. Our wizards will ensure your updates are
-        gracefully accepted or met with a 400 BAD REQUEST spell.
-        """
+        instance = self.get_object()
+        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
         serializer = self.serializer_class.UpdateVideo(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            instance = self.get_object()
-            update = serializer.update(instance=instance, validated_data=serializer.validated_data)
-            response = self.serializer_class.GetVideo(update)
-            return Response(response.data, status=status.HTTP_202_ACCEPTED)
+            # media = request.FILES.get("media")
+            # srt = request.FILES.get("srt")
+            media = serializer.validated_data.get("media")
+            srt = serializer.validated_data.get("srt")
+            try:
+                medianame = fs.save(media.name, media)
+                srtname = fs.save(srt.name, srt)
+                media_path = fs.path(medianame)
+                srt_path = fs.path(srtname)
+
+                output = MediaHelper.embed_srt_to_video(media_path, srt_path)
+                subtitle_output = Path(output)
+                upload_to = MediaHelper.get_video_upload_path(Video, subtitle_output.name)
+
+                s3_client.upload_file(
+                    output,
+                    bucket_name,
+                    upload_to,
+                    ExtraArgs={"ACL": "public-read"},
+                )
+                # media_url = f"{upload_to}/{subtitle_output.name}"
+
+                fs.delete(medianame)
+                fs.delete(srtname)
+                fs.delete(output)
+
+                serializer.validated_data.pop("media")
+                serializer.validated_data.pop("srt")
+                instance.media = upload_to
+                instance.srt = srt
+                update = serializer.update(instance=instance, validated_data=serializer.validated_data)
+                response = self.serializer_class.GetVideo(update)
+                return Response(response.data, status=status.HTTP_202_ACCEPTED)
+            except AttributeError as e:
+                return Response({"media": f"The video seems to be corrupted: {e}"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:

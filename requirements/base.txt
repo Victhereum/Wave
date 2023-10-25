@@ -19,6 +19,8 @@ django-crispy-forms==2.0  # https://github.com/django-crispy-forms/django-crispy
 crispy-bootstrap5==0.7  # https://github.com/django-crispy-forms/crispy-bootstrap5
 django-compressor==4.4  # https://github.com/django-compressor/django-compressor
 django-redis==5.3.0  # https://github.com/jazzband/django-redis
+django-storages[boto3]==1.13.2  # https://github.com/jschneier/django-storages
+
 # Django REST Framework
 djangorestframework==3.14.0  # https://github.com/encode/django-rest-framework
 django-cors-headers==4.2.0  # https://github.com/adamchainz/django-cors-headers
@@ -35,7 +37,7 @@ twilio==8.5.0 # https://github.com/twilio/twilio-python
 django-filter==23.2 # https://github.com/carltongibson/django-filter/tree/main
 django-rest-knox==4.2.0
 moyasar==0.6.5
-openai==0.27.8
+# openai==0.27.8
 django-auto-prefetch==1.4.0
 dj-database-url==1.2.0
 azure-cognitiveservices-speech==1.31.0

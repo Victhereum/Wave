@@ -9,7 +9,7 @@ from django.core.files.storage import FileSystemStorage
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.timezone import now
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import APIException, ValidationError
 
 from wave.utils.validators import _VALID_AUDIO_EXTENSIONS, _VALID_IMAGE_EXTENSIONS, _VALID_VIDEO_EXTENSIONS
 
@@ -128,6 +128,32 @@ class MediaHelper:
         result = subprocess.run(cmd, check=True)
         if result.returncode == 0:
             return output, name
+
+    @staticmethod
+    def embed_srt_to_video(media_path: str, srt_path: str):
+        path = media_path.rsplit(".", 1)[0]
+        ext = media_path.rsplit(".", 1)[1]
+        output = f"{path}out.{ext}"
+        cmd = [
+            "ffmpeg",
+            "-i",
+            media_path,
+            "-vf",
+            f"subtitles={srt_path}",
+            "-c:a",
+            "copy",  # Copy the audio stream without re-encoding
+            output,
+        ]
+        try:
+            result = subprocess.run(
+                cmd, check=True, capture_output=True, text=True
+            )  # Added capture_output and text args
+        except subprocess.CalledProcessError as e:
+            print(f"Command failed with error:\n{e.stderr}")  # Print the error message from ffmpeg
+            raise APIException()
+
+        if result.returncode == 0:
+            return output
 
 
 class FolderDeletionHandler(FileSystemStorage):

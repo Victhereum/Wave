@@ -135,7 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    # "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -165,7 +165,7 @@ STATICFILES_FINDERS = [
 MEDIA_ROOT = str(APPS_DIR / "media")
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "/media/"
-DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400
+# DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400
 # TEMPLATES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#templates
@@ -372,3 +372,5 @@ ACCESS_STRUCTURE = {
         "LENGTH": timedelta(minutes=env.int("PREMIUM_LENGTH", default=5)).total_seconds(),
     },
 }
+DATA_UPLOAD_MAX_MEMORY_SIZE = 300_097_152
+FILE_UPLOAD_MAX_MEMORY_SIZE = DATA_UPLOAD_MAX_MEMORY_SIZE
