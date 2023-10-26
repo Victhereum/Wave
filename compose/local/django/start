@@ -5,7 +5,7 @@ set -o pipefail
 set -o nounset
 
 
-python /app/manage.py collectstatic --noinput
+# python /app/manage.py collectstatic --noinput
 python /app/manage.py migrate
 # exec uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'
 exec python manage.py runserver 0.0.0.0:8000

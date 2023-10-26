@@ -93,7 +93,7 @@ AWS_S3_DOMAIN = aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"s3.ap-southeast-1.wasa
 # ------------------------
 STORAGES = {
     "default": {
-        "BACKEND": "wave.utils.storages.MediaRootS3Boto3Storage",
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",

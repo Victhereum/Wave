@@ -13,7 +13,7 @@ class Video(UIDTimeBasedModel):
     captions = models.JSONField(default=dict, null=True)
     srt = models.FileField(
         upload_to=MediaHelper.get_document_upload_path,
-        validators=[FileValidatorHelper.validate_subtitle_extension, FileValidatorHelper.validate_subtitle_size],
+        validators=[FileValidatorHelper.validate_subtitle_size],
         null=True,
         blank=True,
         max_length=500,

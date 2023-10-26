@@ -33,7 +33,7 @@ EMAIL_PORT = 1025
 # WhiteNoise
 # ------------------------------------------------------------------------------
 # http://whitenoise.evans.io/en/latest/django.html#using-whitenoise-in-development
-# INSTALLED_APPS = ["whitenoise.runserver_nostatic"] + INSTALLED_APPS  # noqa: F405
+INSTALLED_APPS = ["whitenoise.runserver_nostatic"] + INSTALLED_APPS  # noqa: F405
 
 
 # django-debug-toolbar
@@ -71,6 +71,9 @@ CELERY_TASK_EAGER_PROPAGATES = True
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
