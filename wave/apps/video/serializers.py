@@ -57,7 +57,7 @@ class VideoSerializer:
     class GetVideo(serializers.ModelSerializer):
         class Meta:
             model = Video
-            fields = ("media_path", "was_captioned", "media", "srt", "captions")
+            fields = ("id", "media_path", "was_captioned", "media", "srt", "captions")
 
     class ListVideo(serializers.ModelSerializer):
         class Meta:
