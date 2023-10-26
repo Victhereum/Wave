@@ -13,9 +13,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   build-essential \
   # psycopg2 dependencies
   libpq-dev \
-
 # Requirements are installed here to ensure they will be cached.
-COPY ./requirements .
+COPY /requirements .
 
 # Create Python Dependency and Sub-Dependency Wheels.
 RUN pip wheel --wheel-dir /usr/src/app/wheels  \
