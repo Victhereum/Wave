@@ -62,27 +62,22 @@ RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
   && rm -rf /wheels/
 
 
-COPY --chown=django:django ./compose/production/django/entrypoint /entrypoint
-RUN sed -i 's/\r$//g' /entrypoint
-RUN chmod +x /entrypoint
-
-
-COPY --chown=django:django ./compose/production/django/start /start
-RUN sed -i 's/\r$//g' /start
-RUN chmod +x /start
-
-
 # copy application code to WORKDIR
 COPY --chown=django:django . ${APP_HOME}
 
 # make django owner of the WORKDIR directory as well.
 RUN chown django:django ${APP_HOME}
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
 
+# Switch to root user to change permissions
+USER root
+
+# Make the script executable
+RUN chmod +x /entrypoint.sh
+
+# Switch back to django user
 USER django
 
-RUN DATABASE_URL="" \
-  CELERY_BROKER_URL="" \
-  DJANGO_SETTINGS_MODULE="config.settings.test" \
-  python manage.py compilemessages
-
-ENTRYPOINT ["/entrypoint"]
+# Set the entrypoint script as the default command
+CMD ["/entrypoint.sh"]
