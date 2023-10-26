@@ -5,25 +5,16 @@ set -o pipefail
 set -o nounset
 
 
-python /app/manage.py collectstatic --noinput
+set -o errexit  # exit on error
 
-compress_enabled() {
-python << END
-import sys
+# apt-get update && \
+#     apt-get install -y ffmpeg
 
-from environ import Env
+pip install -r requirements/production.txt
 
-env = Env(COMPRESS_ENABLED=(bool, True))
-if env('COMPRESS_ENABLED'):
-    sys.exit(0)
-else:
-    sys.exit(1)
+python manage.py collectstatic --noinput
+python manage.py compress
 
-END
-}
-
-if compress_enabled; then
-  # NOTE this command will fail if django-compressor is disabled
-  python /app/manage.py compress
-fi
+python manage.py spectacular --color --file schema.yml
+python manage.py migrate
 exec /usr/local/bin/gunicorn config.asgi --bind 0.0.0.0:5000 --chdir=/app -k uvicorn.workers.UvicornWorker
