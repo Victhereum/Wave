@@ -177,8 +177,8 @@ class VideoViewSet(ModelViewSet):
     @staticmethod
     def clean_url(url: str) -> str:
         prefix = "https://"
-        while url.startswith(prefix + prefix):
-            url = url.replace(prefix + prefix, prefix, 1)
+        while url.startswith(prefix):
+            url = url.removeprefix(prefix)
         return url
 
     def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
@@ -186,8 +186,6 @@ class VideoViewSet(ModelViewSet):
         bucket_name = settings.AWS_STORAGE_BUCKET_NAME
         serializer = self.serializer_class.UpdateVideo(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            # media = request.FILES.get("media")
-            # srt = request.FILES.get("srt")
             media = serializer.validated_data.get("media")
             srt = serializer.validated_data.get("srt")
             try:
@@ -206,7 +204,6 @@ class VideoViewSet(ModelViewSet):
                     upload_to,
                     ExtraArgs={"ACL": "public-read"},
                 )
-                # media_url = f"{upload_to}/{subtitle_output.name}"
 
                 fs.delete(medianame)
                 fs.delete(srtname)
