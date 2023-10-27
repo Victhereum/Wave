@@ -174,6 +174,13 @@ class VideoViewSet(ModelViewSet):
                 return Response({"media": "The video seems to be corrupted"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @staticmethod
+    def clean_url(url: str) -> str:
+        prefix = "https://"
+        while url.startswith(prefix + prefix):
+            url = url.replace(prefix + prefix, prefix, 1)
+        return url
+
     def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         instance = self.get_object()
         bucket_name = settings.AWS_STORAGE_BUCKET_NAME
@@ -207,7 +214,7 @@ class VideoViewSet(ModelViewSet):
 
                 serializer.validated_data.pop("media")
                 serializer.validated_data.pop("srt")
-                instance.media = upload_to
+                instance.media = self.clean_url(upload_to)
                 instance.srt = srt
                 update = serializer.update(instance=instance, validated_data=serializer.validated_data)
                 response = self.serializer_class.GetVideo(update)
