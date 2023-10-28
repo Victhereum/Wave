@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from wave.apps.video.models import Video
 from wave.utils.enums import FromLanguages, TaskLiterals, ToLanguages
+from wave.utils.validators import FileValidatorHelper
 
 
 class VideoSerializer:
@@ -72,10 +73,16 @@ class VideoSerializer:
     class UpdateVideo(serializers.ModelSerializer):
         media_path = serializers.CharField(required=True)
         captions = serializers.JSONField(required=False)
+        media = serializers.FileField(
+            validators=[FileValidatorHelper.validate_video_extension, FileValidatorHelper.validate_video_size]
+        )
+        srt = serializers.FileField(
+            validators=[FileValidatorHelper.validate_subtitle_extension, FileValidatorHelper.validate_subtitle_size]
+        )
 
         class Meta:
             model = Video
-            fields = ("media_path", "captions", "media", "srt")
+            fields = ("media_path", "captions", "srt", "media")
 
     class ResultSerializer(serializers.Serializer):
         result = serializers.JSONField()

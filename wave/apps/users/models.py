@@ -46,6 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     free_mode_activated = BooleanField(default=False)
     free_mode_activated_at = DateTimeField(null=True)
     date_joined = DateTimeField(auto_now_add=True)
+    collection_id = CharField(null=True, blank=True, max_length=120)
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.

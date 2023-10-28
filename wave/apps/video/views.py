@@ -17,7 +17,7 @@ from rest_framework.viewsets import ModelViewSet
 from wave.apps.video.models import Video
 from wave.apps.video.paginations import CustomPagination
 from wave.apps.video.permissions import CanCreateVideo
-from wave.apps.video.s3 import s3_client
+from wave.apps.video.s3 import BunnyVideoAPI
 from wave.apps.video.serializers import VideoSerializer
 from wave.apps.video.translator import AzureSpeachService
 from wave.utils.enums import FromLanguages, TaskLiterals, ToLanguages
@@ -175,15 +175,22 @@ class VideoViewSet(ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
-    def clean_url(url: str) -> str:
-        prefix = "https://"
-        while url.startswith(prefix):
-            url = url.removeprefix(prefix)
-        return url
+    def build_url(video_id: str) -> str:
+        library_id = settings.CDN_LIBRARY
+        return f"https://video.bunnycdn.com/library/{library_id}/videos/{video_id}"
+
+    def get_or_create_user_collection(self):
+        user = self.request.user
+        if guid := user.collection_id:
+            return guid
+        response = BunnyVideoAPI().create_collection(user.phone_no)
+        guid = response.get("guid")
+        user.collection_id = guid
+        user.save()
+        return guid
 
     def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         instance = self.get_object()
-        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
         serializer = self.serializer_class.UpdateVideo(data=request.data)
         if serializer.is_valid(raise_exception=True):
             media = serializer.validated_data.get("media")
@@ -196,23 +203,17 @@ class VideoViewSet(ModelViewSet):
 
                 output = MediaHelper.embed_srt_to_video(media_path, srt_path)
                 subtitle_output = Path(output)
-                upload_to = MediaHelper.get_video_upload_path(Video, subtitle_output.name)
 
-                s3_client.upload_file(
-                    output,
-                    bucket_name,
-                    upload_to,
-                    ExtraArgs={"ACL": "public-read"},
-                )
+                collection_id = self.get_or_create_user_collection()
+
+                cdn = BunnyVideoAPI().upload_video(media.name, subtitle_output, collection_id)
 
                 fs.delete(medianame)
                 fs.delete(srtname)
                 fs.delete(output)
 
                 serializer.validated_data.pop("media")
-                serializer.validated_data.pop("srt")
-                instance.media = self.clean_url(upload_to)
-                instance.srt = srt
+                instance.media = self.build_url(cdn.get("guid"))
                 update = serializer.update(instance=instance, validated_data=serializer.validated_data)
                 response = self.serializer_class.GetVideo(update)
                 return Response(response.data, status=status.HTTP_202_ACCEPTED)
