@@ -182,8 +182,10 @@ class VideoViewSet(ModelViewSet):
     def get_or_create_user_collection(self):
         user = self.request.user
         if guid := user.collection_id:
+            print("THE GUID", guid)
             return guid
         response = BunnyVideoAPI().create_collection(user.phone_no)
+        print("CREATE COLLECTION RESPONSE", response)
         guid = response.get("guid")
         user.collection_id = guid
         user.save()
@@ -201,19 +203,21 @@ class VideoViewSet(ModelViewSet):
                 media_path = fs.path(medianame)
                 srt_path = fs.path(srtname)
 
+                print("EMBEDING SRT TO VIDEO")
                 output = MediaHelper.embed_srt_to_video(media_path, srt_path)
                 subtitle_output = Path(output)
 
                 collection_id = self.get_or_create_user_collection()
-
-                cdn = BunnyVideoAPI().upload_video(media.name, subtitle_output, collection_id)
-
+                print("SENDING VIDEO TO BUNNY")
+                response = BunnyVideoAPI().upload_video(media.name, subtitle_output, collection_id)
+                print("CREATE VIDEO RESPONSE", response)
                 fs.delete(medianame)
                 fs.delete(srtname)
                 fs.delete(output)
 
+                print("WRAPPING UP")
                 serializer.validated_data.pop("media")
-                instance.media = self.build_url(cdn.get("guid"))
+                instance.media = self.build_url(response.get("guid"))
                 update = serializer.update(instance=instance, validated_data=serializer.validated_data)
                 response = self.serializer_class.GetVideo(update)
                 return Response(response.data, status=status.HTTP_202_ACCEPTED)
