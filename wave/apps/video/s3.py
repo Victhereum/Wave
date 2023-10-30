@@ -6,7 +6,7 @@ class BunnyVideoAPI:
     def __init__(self):
         access_key = settings.BUNNY_ACCESS_KEY
         storage_name = settings.STORAGE_ZONE_NAME
-        self.base_url = f"https://storage.bunnycdn.com/{storage_name}"
+        self.base_url = f"https://sg.storage.bunnycdn.com/{storage_name}"
         self.headers = {
             "AccessKey": access_key,
             "Accept": "application/json",
