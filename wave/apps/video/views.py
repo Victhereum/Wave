@@ -178,7 +178,7 @@ class VideoViewSet(ModelViewSet):
 
     def build_url(self, *args, **kwargs) -> str:
         storage_zone = settings.STORAGE_ZONE_NAME
-        return f"https://storage.bunnycdn.com/{storage_zone}/{self.user_identifier()}/{kwargs.get('file_name')}"
+        return f"https://{storage_zone}.b-cdn.net/{self.user_identifier()}/{kwargs.get('file_name')}"
 
     def user_identifier(self, *args, **kwargs):
         user: User = self.request.user
@@ -189,7 +189,7 @@ class VideoViewSet(ModelViewSet):
         serializer = self.serializer_class.UpdateVideo(data=request.data)
         if serializer.is_valid(raise_exception=True):
             media = serializer.validated_data.get("media")
-            srt = serializer.validated_data.get("srt")
+            srt = serializer.validated_data.pop("srt")
             try:
                 medianame = fs.save(media.name, media)
                 srtname = fs.save(srt.name, srt)
