@@ -1,3 +1,4 @@
+from os.path import basename
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 from rest_framework.viewsets import ModelViewSet
 
+from wave.apps.users.models import User
 from wave.apps.video.models import Video
 from wave.apps.video.paginations import CustomPagination
 from wave.apps.video.permissions import CanCreateVideo
@@ -174,22 +176,13 @@ class VideoViewSet(ModelViewSet):
                 return Response({"media": "The video seems to be corrupted"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @staticmethod
-    def build_url(video_id: str) -> str:
-        library_id = settings.CDN_LIBRARY
-        return f"https://video.bunnycdn.com/library/{library_id}/videos/{video_id}"
+    def build_url(self, *args, **kwargs) -> str:
+        storage_zone = settings.STORAGE_ZONE_NAME
+        return f"https://storage.bunnycdn.com/{storage_zone}/{self.user_identifier()}/{kwargs.get('file_name')}"
 
-    def get_or_create_user_collection(self):
-        user = self.request.user
-        if guid := user.collection_id:
-            print("THE GUID", guid)
-            return guid
-        response = BunnyVideoAPI().create_collection(user.phone_no)
-        print("CREATE COLLECTION RESPONSE", response)
-        guid = response.get("guid")
-        user.collection_id = guid
-        user.save()
-        return guid
+    def user_identifier(self, *args, **kwargs):
+        user: User = self.request.user
+        return str(user.phone_no).removeprefix("+")
 
     def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         instance = self.get_object()
@@ -206,10 +199,12 @@ class VideoViewSet(ModelViewSet):
                 print("EMBEDING SRT TO VIDEO")
                 output = MediaHelper.embed_srt_to_video(media_path, srt_path)
                 subtitle_output = Path(output)
+                print(subtitle_output)
 
-                collection_id = self.get_or_create_user_collection()
                 print("SENDING VIDEO TO BUNNY")
-                response = BunnyVideoAPI().upload_video(media.name, subtitle_output, collection_id)
+                response = BunnyVideoAPI().upload_video(
+                    subtitle_output, self.user_identifier(), basename(subtitle_output)
+                )
                 print("CREATE VIDEO RESPONSE", response)
                 fs.delete(medianame)
                 fs.delete(srtname)
@@ -217,7 +212,7 @@ class VideoViewSet(ModelViewSet):
 
                 print("WRAPPING UP")
                 serializer.validated_data.pop("media")
-                instance.media = self.build_url(response.get("guid"))
+                instance.media = self.build_url(file_name=basename(subtitle_output))
                 update = serializer.update(instance=instance, validated_data=serializer.validated_data)
                 response = self.serializer_class.GetVideo(update)
                 return Response(response.data, status=status.HTTP_202_ACCEPTED)

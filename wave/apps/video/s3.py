@@ -4,13 +4,13 @@ from django.conf import settings
 
 class BunnyVideoAPI:
     def __init__(self):
-        api_key = settings.CDN_API_KEY
-        library = settings.CDN_LIBRARY
-        self.base_url = f"https://video.bunnycdn.com/library/{library}"
+        access_key = settings.BUNNY_ACCESS_KEY
+        storage_name = settings.STORAGE_ZONE_NAME
+        self.base_url = f"https://storage.bunnycdn.com/{storage_name}"
         self.headers = {
-            "AccessKey": api_key,
+            "AccessKey": access_key,
             "Accept": "application/json",
-            "Content-Type": "application/*+json",
+            "Content-Type": "application/octet-stream",
         }
 
     def _request(self, method, endpoint, data=None):
@@ -21,24 +21,18 @@ class BunnyVideoAPI:
         response.raise_for_status()
         return response.json()
 
-    def create_collection(self, name):
-        endpoint = "/collections"
-        return self._request("POST", endpoint, data={"name": name})
-
     def get_all_videos(self):
         endpoint = "/videos"
         return self._request("GET", endpoint)
 
-    def get_video(self, video_id):
+    def dowload_video(self, video_id):
         endpoint = f"/videos/{video_id}"
         return self._request("GET", endpoint)
 
-    def upload_video(self, title, video_path, collection) -> dict:
+    def upload_video(self, video_path, collection, file_name) -> dict:
         with open(video_path, "rb") as video_file:
-            endpoint = "/videos"
-            files = {"file": video_file}
-            data = {"collectionId": collection, "title": title}
-            response = requests.post(f"{self.base_url}{endpoint}", headers=self.headers, data=data, files=files)
+            endpoint = f"/{collection}/{file_name}"
+            response = requests.put(f"{self.base_url}{endpoint}", headers=self.headers, data=video_file)
             response.raise_for_status()
             return response.json()
 
