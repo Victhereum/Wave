@@ -178,8 +178,7 @@ class VideoViewSet(ModelViewSet):
 
     def build_url(self, *args, **kwargs) -> str:
         storage_zone = settings.STORAGE_ZONE_NAME
-        file_name = str(kwargs.get("file_name")).replace(" ", "")
-        return f"https://{storage_zone}.b-cdn.net/{self.user_identifier()}/{file_name}"
+        return f"https://{storage_zone}.b-cdn.net/{self.user_identifier()}/{kwargs.get('file_name')}"
 
     def user_identifier(self, *args, **kwargs):
         user: User = self.request.user
@@ -203,9 +202,8 @@ class VideoViewSet(ModelViewSet):
                 print(subtitle_output)
 
                 print("SENDING VIDEO TO BUNNY")
-                response = BunnyVideoAPI().upload_video(
-                    subtitle_output, self.user_identifier(), basename(subtitle_output)
-                )
+                file_name = str(basename(subtitle_output)).replace(" ", "")
+                response = BunnyVideoAPI().upload_video(subtitle_output, self.user_identifier(), file_name)
                 print("CREATE VIDEO RESPONSE", response)
                 fs.delete(medianame)
                 fs.delete(srtname)
@@ -213,7 +211,7 @@ class VideoViewSet(ModelViewSet):
 
                 print("WRAPPING UP")
                 serializer.validated_data.pop("media")
-                instance.media = self.build_url(file_name=basename(subtitle_output))
+                instance.media = self.build_url(file_name=file_name)
                 update = serializer.update(instance=instance, validated_data=serializer.validated_data)
                 response = self.serializer_class.GetVideo(update)
                 return Response(response.data, status=status.HTTP_202_ACCEPTED)
