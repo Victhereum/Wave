@@ -4,6 +4,7 @@ from typing import Any
 
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from django.db import transaction
 from django.db.models.query import QuerySet
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -189,12 +190,15 @@ class VideoViewSet(ModelViewSet):
             user.save()
         return collection
 
+    @transaction.atomic
     def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         instance = self.get_object()
         serializer = self.serializer_class.UpdateVideo(data=request.data)
         if serializer.is_valid(raise_exception=True):
             media = serializer.validated_data.get("media")
             srt = serializer.validated_data.pop("srt")
+            print("THE MEDIA", media.name)
+            print("THE SRT", srt.name)
             try:
                 medianame = fs.save(media.name, media)
                 srtname = fs.save(srt.name, srt)
