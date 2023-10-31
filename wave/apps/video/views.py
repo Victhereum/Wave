@@ -178,7 +178,8 @@ class VideoViewSet(ModelViewSet):
 
     def build_url(self, *args, **kwargs) -> str:
         storage_zone = settings.STORAGE_ZONE_NAME
-        return f"https://{storage_zone}.b-cdn.net/{self.user_identifier()}/{kwargs.get('file_name')}"
+        file_name = str(kwargs.get("file_name")).replace(" ", "")
+        return f"https://{storage_zone}.b-cdn.net/{self.user_identifier()}/{file_name}"
 
     def user_identifier(self, *args, **kwargs):
         user: User = self.request.user
