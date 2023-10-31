@@ -77,7 +77,7 @@ class VideoSerializer:
             validators=[FileValidatorHelper.validate_video_extension, FileValidatorHelper.validate_video_size]
         )
         srt = serializers.FileField(
-            validators=[FileValidatorHelper.validate_subtitle_extension, FileValidatorHelper.validate_subtitle_size],
+            # validators=[FileValidatorHelper.validate_subtitle_extension, FileValidatorHelper.validate_subtitle_size],
             write_only=True,
         )
 
