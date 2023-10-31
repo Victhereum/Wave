@@ -223,6 +223,7 @@ class VideoViewSet(ModelViewSet):
                 instance.media = self.build_url(file_name=file_name)
                 update = serializer.update(instance=instance, validated_data=serializer.validated_data)
                 response = self.serializer_class.GetVideo(update)
+                print("DONE")
                 return Response(response.data, status=status.HTTP_202_ACCEPTED)
             except AttributeError as e:
                 return Response({"media": f"The video seems to be corrupted: {e}"}, status=status.HTTP_400_BAD_REQUEST)
