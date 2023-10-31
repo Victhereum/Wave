@@ -21,8 +21,8 @@ class BunnyVideoAPI:
         response.raise_for_status()
         return response.json()
 
-    def get_all_videos(self):
-        endpoint = "/videos"
+    def list_videos(self, collection):
+        endpoint = f"/{collection}/"
         return self._request("GET", endpoint)
 
     def dowload_video(self, video_id):

@@ -182,7 +182,12 @@ class VideoViewSet(ModelViewSet):
 
     def user_identifier(self, *args, **kwargs):
         user: User = self.request.user
-        return str(user.phone_no).removeprefix("+")
+        storage_zone = settings.STORAGE_ZONE_NAME
+        collection = str(user.phone_no).removeprefix("+")
+        if not user.collection_id:
+            user.collection_id = f"https://sg.storage.bunnycdn.com/{storage_zone}/{collection}/"
+            user.save()
+        return collection
 
     def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         instance = self.get_object()
