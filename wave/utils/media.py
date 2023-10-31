@@ -150,7 +150,7 @@ class MediaHelper:
             )  # Added capture_output and text args
         except subprocess.CalledProcessError as e:
             print(f"Command failed with error:\n{e.stderr}")  # Print the error message from ffmpeg
-            raise APIException()
+            raise APIException(e.stderr)
 
         if result.returncode == 0:
             return output
