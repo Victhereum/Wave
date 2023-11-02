@@ -106,6 +106,15 @@ SERVICE_REGION = settings.AZURE_SERVICE_REGION
 #         return decoded_data
 
 
+def timedelta_to_str(td):
+    """Convert a timedelta object to a formatted string.
+    # E.g., "0:00:01.240000" to "0:00:01,240"""
+    hours, remainder = divmod(td.total_seconds(), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    milliseconds = int((td.total_seconds() - int(td.total_seconds())) * 1000)
+    return f"{int(hours):01}:{int(minutes):02}:{int(seconds):02},{milliseconds:03}"
+
+
 def map_translations_to_audio_words(translations: str, words_with_timestamps: list[dict]) -> list[dict]:
     # Split the translations string by spaces and remove any occurrences of "،"
     translations = translations.replace("،", "").split(" ")
@@ -114,11 +123,11 @@ def map_translations_to_audio_words(translations: str, words_with_timestamps: li
     new_words_with_timestamps = [
         {
             "Word": word,
-            "Start": f'{timedelta(milliseconds=(current_word["Offset"]/10000))}',
-            "Stop": f"""{
-                timedelta(
-                    milliseconds=(current_word["Offset"]/10000)) + timedelta(
-                        milliseconds=(current_word["Duration"]/10000))}""",
+            "Start": timedelta_to_str(timedelta(milliseconds=(current_word["Offset"] / 10000))),
+            "Stop": timedelta_to_str(
+                timedelta(milliseconds=(current_word["Offset"] / 10000))
+                + timedelta(milliseconds=(current_word["Duration"] / 10000))
+            ),
         }
         for word, current_word in zip(translations, words_with_timestamps)
     ]
@@ -134,13 +143,11 @@ def to_representation(words_with_timestamps: list[dict]) -> list[dict]:
     new_words_with_timestamps = [
         {
             "Word": current_word["Word"],
-            "Start": f"""{
-                timedelta(
-                    milliseconds=(current_word["Offset"]/10000))}""",
-            "Stop": f"""{
-                timedelta(
-                    milliseconds=(current_word["Offset"]/10000)) + timedelta(
-                        milliseconds=(current_word["Duration"]/10000))}""",
+            "Start": timedelta_to_str(timedelta(milliseconds=(current_word["Offset"] / 10000))),
+            "Stop": timedelta_to_str(
+                timedelta(milliseconds=(current_word["Offset"] / 10000))
+                + timedelta(milliseconds=(current_word["Duration"] / 10000))
+            ),
         }
         for current_word in words_with_timestamps
     ]
