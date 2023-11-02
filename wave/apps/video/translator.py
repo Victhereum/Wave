@@ -114,8 +114,11 @@ def map_translations_to_audio_words(translations: str, words_with_timestamps: li
     new_words_with_timestamps = [
         {
             "Word": word,
-            "Offset": f'{timedelta(milliseconds=(current_word["Offset"]/10000))}',
-            "Duration": f'{timedelta(milliseconds=(current_word["Duration"]/10000))}',
+            "Start": f'{timedelta(milliseconds=(current_word["Offset"]/10000))}',
+            "Stop": f"""{
+                timedelta(
+                    milliseconds=(current_word["Offset"]/10000)) + timedelta(
+                        milliseconds=(current_word["Duration"]/10000))}""",
         }
         for word, current_word in zip(translations, words_with_timestamps)
     ]
@@ -131,8 +134,13 @@ def to_representation(words_with_timestamps: list[dict]) -> list[dict]:
     new_words_with_timestamps = [
         {
             "Word": current_word["Word"],
-            "Offset": f'{timedelta(milliseconds=(current_word["Offset"]/10000))}',
-            "Duration": f'{timedelta(milliseconds=(current_word["Duration"]/10000))}',
+            "Start": f"""{
+                timedelta(
+                    milliseconds=(current_word["Offset"]/10000))}""",
+            "Stop": f"""{
+                timedelta(
+                    milliseconds=(current_word["Offset"]/10000)) + timedelta(
+                        milliseconds=(current_word["Duration"]/10000))}""",
         }
         for current_word in words_with_timestamps
     ]
