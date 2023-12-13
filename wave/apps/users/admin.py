@@ -11,6 +11,7 @@ class UserAdmin(auth_admin.UserAdmin):
     fieldsets = (
         (None, {"fields": ("password",)}),
         (_("Personal info"), {"fields": ("name", "phone_no")}),
+        (_("Subscription info"), {"fields": ("free_mode_activated", "free_mode_activated_at", "date_joined")}),
         (
             _("Permissions"),
             {
@@ -25,9 +26,9 @@ class UserAdmin(auth_admin.UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login",)}),
     )
-    list_display = ["name", "is_superuser"]
-    search_fields = ["name"]
-    ordering = ["name"]
+    list_display = ["name", "phone_no"]
+    search_fields = ["name", "phone_no"]
+    ordering = ["name", "phone_no"]
     add_fieldsets = (
         (
             None,
