@@ -23,7 +23,7 @@ class Command(BaseCommand):
                 user = User.objects.filter(phone_no=phone_no).first()
                 if not user:
                     try:
-                        user = User(email=phone_no, name=name)
+                        user = User(phone_no=phone_no, name=name)
                         user.is_active = True
                         user.is_superuser = True
                         user.is_staff = True
