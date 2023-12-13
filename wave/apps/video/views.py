@@ -99,7 +99,7 @@ class VideoViewSet(ModelViewSet):
     pagination_class = CustomPagination
     lookup_field = "id"
     permission_classes = [IsAuthenticated, CanCreateVideo]
-    http_method_names = ["get", "post", "patch"]
+    http_method_names = ["get", "post", "patch", "delete"]
     parser_classes = [MultiPartParser, FormParser]
 
     def get_serializer(self, *args, **kwargs) -> BaseSerializer:
@@ -221,6 +221,7 @@ class VideoViewSet(ModelViewSet):
                 print("WRAPPING UP")
                 serializer.validated_data.pop("media")
                 instance.media = self.build_url(file_name=file_name)
+                instance.name = file_name
                 update = serializer.update(instance=instance, validated_data=serializer.validated_data)
                 response = self.serializer_class.GetVideo(update)
                 print("DONE")
@@ -278,3 +279,9 @@ class VideoViewSet(ModelViewSet):
             "to_languages": ({"value": choice[0], "label": choice[1]} for choice in ToLanguages.choices),
         }
         return Response(choices)
+
+    def destroy(self, request, *args, **kwargs):
+        instance: Video = self.get_object()
+        # Remove the file from bunny
+        BunnyVideoAPI().delete_video(self.user_identifier(), instance.name)
+        return super().destroy(request, **args, **kwargs)

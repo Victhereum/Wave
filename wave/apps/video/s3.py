@@ -36,9 +36,11 @@ class BunnyVideoAPI:
             response.raise_for_status()
             return response.json()
 
-    def delete_video(self, video_id):
-        endpoint = f"/videos/{video_id}"
-        return self._request("DELETE", endpoint)
+    def delete_video(self, collection, file_name):
+        endpoint = f"/{collection}/{file_name}"
+        response = requests.delete(f"{self.base_url}{endpoint}", headers=self.headers)
+        response.raise_for_status()
+        return response.json()
 
     def update_video(self, video_id, data):
         endpoint = f"/videos/{video_id}"

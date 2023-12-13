@@ -9,6 +9,7 @@ class Video(UIDTimeBasedModel):
     media_path = models.CharField(max_length=200, null=True)
     was_captioned = models.BooleanField(default=False)
     captions = models.JSONField(default=dict, null=True)
+    name = models.CharField(max_length=200, null=True)
     media = models.URLField(
         null=True,
         blank=True,
