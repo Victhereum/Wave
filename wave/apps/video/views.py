@@ -177,6 +177,28 @@ class VideoViewSet(ModelViewSet):
                 return Response({"media": "The video seems to be corrupted"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=["POST"], permission_classes=[AllowAny])
+    def text(self, request: Request, *args, **kwargs):
+        """
+        Create text to text translation
+        """
+        if translation_data := getattr(request, "translation_data"):
+            serializer = self.serializer_class.TranslateText(data=translation_data)
+            self.action = "text"
+        else:
+            serializer = self.serializer_class.TranslateText(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        translation = AzureSpeachService(
+            text=serializer.validated_data.get("text"), from_lang=FromLanguages.EN_US, to_lang=ToLanguages.ARABIC
+        )
+        translation_data = translation.perform(self.action)
+        return Response(self.serializer_class.TextTranslationResponse(translation_data).data)
+
+    @action(detail=False, methods=["GET"], permission_classes=[AllowAny])
+    def rss(self, request: Request, *args, **kwargs):
+        request.translation_data = AzureSpeachService.rss()
+        return self.text(request=request)
+
     def build_url(self, *args, **kwargs) -> str:
         storage_zone = settings.STORAGE_ZONE_NAME
         return f"https://{storage_zone}.b-cdn.net/{self.user_identifier()}/{kwargs.get('file_name')}"

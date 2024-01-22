@@ -1,19 +1,28 @@
 import json
+import random
 import time
 from datetime import timedelta
+from uuid import uuid4
 
 import azure.cognitiveservices.speech as speechsdk
+import feedparser
+import requests
 
 # import openai
 from django.conf import settings
+from openai import OpenAI
+from rest_framework.exceptions import APIException
 
 from wave.apps.video.serializers import VideoSerializer
 
 # from wave.utils.enums import LanguageChoices, TaskLiterals
 
 ENDPOINT = settings.AZURE_SERVICE_ENDPOINT
+TEXT_ENDPOINT = settings.AZURE_TEXT_SERVICE_ENDPOINT
 SERVICE_KEY = settings.AZURE_SERVICE_KEY
+TEXT_SERVICE_KEY = settings.AZURE_TEXT_SERVICE_KEY
 SERVICE_REGION = settings.AZURE_SERVICE_REGION
+OPEN_AI_KEY = settings.OPEN_AI_KEY
 
 
 # class OpenAIWhisper:
@@ -159,11 +168,13 @@ def to_representation(words_with_timestamps: list[dict]) -> list[dict]:
 class AzureSpeachService:
     def __init__(
         self,
-        media_path,
+        media_path: str = None,
+        text: str = None,
         from_lang: str = "en",
         to_lang: str = "en",
     ) -> None:
         self._media_path = media_path
+        self._text = text
         self._from_lang = from_lang
         self._to_lang = to_lang
 
@@ -180,7 +191,7 @@ class AzureSpeachService:
             List[dict]: The result of the action.
         """
         assert action
-        actions = {"translate": self.translate, "transcribe": self.transcribe}
+        actions = {"translate": self.translate, "transcribe": self.transcribe, "text": self.text_translation}
         return actions.get(action)()
 
     def translate(self) -> list[dict]:
@@ -329,3 +340,50 @@ class AzureSpeachService:
         self.result = []
         # Return the recognized result
         return copy
+
+    def text_translation(self):
+        url = f"{TEXT_ENDPOINT}/translate?api-version=3.0&from={self._from_lang}&to={self._to_lang}"
+        headers = {
+            "Ocp-Apim-Subscription-Key": TEXT_SERVICE_KEY,
+            "Ocp-Apim-Subscription-Region": SERVICE_REGION,
+            "Content-type": "application/json",
+            "X-ClientTraceId": str(uuid4()),
+        }
+        body = [{"text": self._text}]
+        request = requests.post(url, headers=headers, json=body)
+        response = request.json()
+        print(f"{response = }")
+        response[0]["translations"][0]["original"] = self._text
+
+        return response[0]
+
+    @classmethod
+    def rss(cls) -> str:
+        model = OpenAI(api_key=OPEN_AI_KEY)
+        # model = OpenAI(api_key="sk-BHlWvn0SXT1p85He9GCtT3B1bkFJluENivhTM1rT638inofa")
+
+        rss_urls = [
+            "https://www.coindesk.com/arc/outboundfeeds/rss/",
+            "https://bitcoinmagazine.com/.rss/full/",
+            "https://cryptopotato.com/feed/",
+        ]
+        rss_url = random.choice(rss_urls)
+        feed = feedparser.parse(rss_url)
+
+        try:
+            info = feed.entries[random.choice(range(len(feed.entries)))]
+        except IndexError:
+            raise APIException(f"Please try again, {len(feed.entries)} feeds were collected ")
+
+        def formulate_prompt(info):
+            return f"""
+            Act like a twitter influencer, write me a tweet regarding the below topic.
+            write the tweets in a simple and human format. make it informational and
+            with some hunour. make your own formulated analysis and coments on the topic
+            as well. do not go over 70 words. '{info}'"""
+
+        tweet = formulate_prompt(info)
+        response = model.completions.create(model="gpt-3.5-turbo-instruct", prompt=tweet, max_tokens=100)
+
+        quote = response.choices[0].text.strip()
+        return dict(text=quote.strip('"'))

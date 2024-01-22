@@ -13,6 +13,16 @@ class VideoSerializer:
             #     # model = Video
             fields = ("media",)
 
+    class TranslateText(serializers.Serializer):
+        text = serializers.CharField(required=True)
+
+        class Meta:
+            #     # model = Video
+            fields = ("text",)
+
+    class TextTranslationResponse(serializers.Serializer):
+        translations = serializers.ListField(child=serializers.JSONField(read_only=True))
+
     class TranslateVideoParams(serializers.Serializer):
         from_lang = serializers.ChoiceField(choices=FromLanguages.choices, default=FromLanguages.OTHERS)
         to_lang = serializers.ChoiceField(choices=ToLanguages.choices, default=ToLanguages.OTHERS)
