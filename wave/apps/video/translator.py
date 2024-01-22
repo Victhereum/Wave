@@ -360,7 +360,6 @@ class AzureSpeachService:
     @classmethod
     def rss(cls) -> str:
         model = OpenAI(api_key=OPEN_AI_KEY)
-        # model = OpenAI(api_key="sk-BHlWvn0SXT1p85He9GCtT3B1bkFJluENivhTM1rT638inofa")
 
         rss_urls = [
             "https://www.coindesk.com/arc/outboundfeeds/rss/",
@@ -379,8 +378,8 @@ class AzureSpeachService:
             return f"""
             Act like a twitter influencer, write me a tweet regarding the below topic.
             write the tweets in a simple and human format. make it informational and
-            with some hunour. make your own formulated analysis and coments on the topic
-            as well. do not go over 70 words. '{info}'"""
+            with some humour. make your own formulated analysis and coments on the topic
+            as well. Do not go over 70 words. '{info}'"""
 
         tweet = formulate_prompt(info)
         response = model.completions.create(model="gpt-3.5-turbo-instruct", prompt=tweet, max_tokens=100)
