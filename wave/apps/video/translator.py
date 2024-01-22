@@ -379,7 +379,7 @@ class AzureSpeachService:
             Act like a twitter influencer, write me a tweet regarding the below topic.
             write the tweets in a simple and human format. make it informational and
             with some humour. make your own formulated analysis and coments on the topic
-            as well. Do not go over 70 words. '{info}'"""
+            as well. Do not go over 70 words '{info}'"""
 
         tweet = formulate_prompt(info)
         response = model.completions.create(model="gpt-3.5-turbo-instruct", prompt=tweet, max_tokens=100)
