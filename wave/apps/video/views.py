@@ -196,6 +196,9 @@ class VideoViewSet(ModelViewSet):
 
     @action(detail=False, methods=["GET"], permission_classes=[AllowAny])
     def rss(self, request: Request, *args, **kwargs):
+        """
+        This endpoint would fetch rss feeds from major rss feed providers, and translate it to Arabic
+        """
         request.translation_data = AzureSpeachService.rss()
         return self.text(request=request)
 
