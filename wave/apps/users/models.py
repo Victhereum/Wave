@@ -1,16 +1,15 @@
-from datetime import timedelta
+from typing import Literal
 from uuid import uuid4
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.db.models import BooleanField, CharField, DateTimeField, IntegerField
+from django.db.models import BooleanField, CharField, DateTimeField, IntegerField, QuerySet
 from django.urls import reverse
-from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import PermissionDenied
 
-from wave.apps.payments.models import Payments
+from wave.apps.payments.models import PaymentPlan, Payments
 from wave.apps.users.managers import CustomUserManager
-from wave.utils.enums import FreeModeChoices, PaymentStatus
+from wave.utils.enums import FreeModeChoices, PaymentStatus, PaymentSubscriptionStatus
 from wave.utils.models import UIDTimeBasedModel
 
 
@@ -47,6 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     free_mode_activated_at = DateTimeField(null=True)
     date_joined = DateTimeField(auto_now_add=True)
     collection_id = CharField(null=True, blank=True, max_length=120)
+    user_payments: QuerySet["Payments"]
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
@@ -65,19 +65,26 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.phone_no
 
-    def _last_payment(self) -> Payments:
-        payments = self.user_payments
+    @property
+    def _last_payment(self) -> Payments | None:
+        payments: QuerySet[Payments] = self.user_payments.order_by("-created_at")
         if payments:
-            return payments.first()
+            return payments.filter(status=PaymentStatus.PAID).first()
         return None
 
+    def subscribe_to_free_plan(self) -> None:
+        if not self.user_payments.exists():
+            free_plan = PaymentPlan.create_free().first()
+            return Payments.objects.create(user=self, plan=free_plan)
+
     def _free_mode_status(self) -> str:
-        if self.free_mode_activated:
-            time_difference: timedelta = now() - self.free_mode_activated_at
-            if time_difference.days > 10:
+        if not self._last_payment:
+            # Set the user to the free plan
+            return FreeModeChoices.NOT_USED
+        else:
+            if self._last_payment.has_expired:
                 return FreeModeChoices.EXPIRED
             return FreeModeChoices.ACTIVE
-        return FreeModeChoices.NOT_USED
 
     def _has_active_subscription(self) -> bool:
         # Get the last payment made by this user
@@ -87,36 +94,27 @@ class User(AbstractBaseUser, PermissionsMixin):
         # If the the type is yearly
         # Get the time difference by year(365 days)
         if self._last_payment():
-            last_payment = self._last_payment()
             # time_difference: timedelta = now() - last_payment.created_at
             # payment_type = last_payment.plan
             # If the last payment status, didn't go through
             # return False
-            if last_payment.status != PaymentStatus.PAID:
-                return False
-            # if payment_type == PaymentPlans.MONTHLY:
-            #     if time_difference.days > 30:
-            #         return False
-            #     return True
-            # elif payment_type == PaymentPlans.YEARLY:
-            #     if time_difference.days > 365:
-            #         return False
-            #     return True
-            else:
+            payment_status = self._last_payment().status == PaymentStatus.PAID
+            subscription_status = self._last_payment().subscription_status == PaymentSubscriptionStatus.ACTIVE
+            if payment_status and subscription_status:
                 return True
         return False
 
     @property
-    def has_active_subscription(self):
-        return self._has_active_subscription
+    def has_active_subscription(self) -> bool:
+        return self._has_active_subscription()
 
     @property
-    def free_mode_status(self):
+    def free_mode_status(self) -> Literal[FreeModeChoices.ACTIVE, FreeModeChoices.EXPIRED, FreeModeChoices.NOT_USED]:
         return self._free_mode_status()
 
     @property
     def can_download(self) -> bool:
-        if self._free_mode_status() == FreeModeChoices.ACTIVE:
+        if self.free_mode_status == FreeModeChoices.ACTIVE:
             return True
         elif self._free_mode_status() in [FreeModeChoices.EXPIRED, FreeModeChoices.NOT_USED]:
             # If the user has an active subscription return True
@@ -136,3 +134,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if not self.can_download:
             raise PermissionDenied(detail="You do not have an active subscription, kindly create a payment plan")
         return True
+
+    @property
+    def current_plan(self):
+        return self._last_payment().plan

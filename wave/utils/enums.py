@@ -1,3 +1,5 @@
+from typing import Literal, TypedDict
+
 from django.db.models import TextChoices
 
 
@@ -9,9 +11,22 @@ class CurrencyChoices(TextChoices):
 
 
 class PaymentPlans(TextChoices):
+    FREE = ("FREE", "FREE")
     BASIC = ("BASIC", "BASIC")
-    PRO = ("PRO", "PRO")
     PREMIUM = ("PREMIUM", "PREMIUM")
+    CUSTOM = ("CUSTOM", "CUSTOM")
+
+
+class PaymentPlanDurationChoices(TextChoices):
+    DEFAULT = ("DEFAULT", "DEFAULT")
+    ONE_MONTH = ("ONE_MONTH", "ONE_MONTH")
+    ONE_YEAR = ("ONE_YEAR", "ONE_YEAR")
+
+
+class PaymentSubscriptionStatus(TextChoices):
+    NONE = ("NONE", "NONE")
+    ACTIVE = ("ACTIVE", "ACTIVE")
+    EXPIRED = ("EXPIRED", "EXPIRED")
 
 
 class FreeModeChoices(TextChoices):
@@ -905,3 +920,17 @@ CountryName = [
     ("ZM", "Zambia"),
     ("ZW", "Zimbabwe"),
 ]
+
+
+class CardSourceType(TypedDict):
+    type: Literal["applepay", "creditcard"]
+    name: str
+    number: str
+    cvc: str
+    month: Literal["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    year: str
+
+
+class PaymentPriviledges(TextChoices):
+    CAN_DOWNLOAD = ("CAN_DOWNLOAD", "User can download video to watch offline")
+    CAN_CREATE_SUBTILES = ("CAN_CREATE_SUBTILES", "User can add subtitles to video")

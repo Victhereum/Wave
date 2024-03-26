@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 from django.db.transaction import atomic
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -22,62 +23,6 @@ from wave.utils.payments import MoyasarAPIWrapper
 
 
 class PaymentViewSet(ModelViewSet):
-    """
-    PaymentViewSet: Level Up Your Video Quest with Payment Magic
-
-    Greetings, fellow adventurers of the WaveVerse! 🎮💰 Welcome to the realm of Payments,
-    where your heroic endeavors with videos are about to get a powerful upgrade. Gear up for an
-    exhilarating journey as we blend the forces of videos and payments into one epic tale.
-
-    The Chronicles Begin:
-    Get ready to step into a world where videos meet payments in perfect harmony. Payments
-    emerges as your trusty guide, enhancing your WaveVerse experience like never before!
-
-    Payment Sorcery:
-    - create: Prepare to wield the ultimate spell to conjure payments that seamlessly integrate with
-      your video conquests! ✨🧙‍♂️
-      Magic Scroll: POST
-      Command: /payments/
-
-      Quest Tips:
-      Channel your inner spellcaster to defining your payment plan. Our payment wizards
-      will craft a seamless journey, complete with callbacks that align with your heroic quest.
-
-    - list: Embark on a treasure hunt that reveals the riches of your WaveVerse accomplishments,
-      guarded by loyal pagination guardians! 🗺️📜
-      Explorer's Scroll: GET
-      Command: /payments/
-
-      Quest Tips:
-      Journey through the scrolls guided by our wise pagination guardians. Uncover your hard-earned
-      treasures in bite-sized portions, making your exploration smooth and delightful.
-
-    - retrieve: Venture deeper into the realm as you unveil the secrets behind individual payments,
-      adding a layer of mystique to your adventure! 🔍🤐
-      Decoder Scroll: GET
-      Command: /payments/{id}
-
-      Quest Tips:
-      Empower yourself to unravel the essence of a single payment. The response shall reveal the
-      secrets you seek, letting you savor the thrill of discovery.
-
-    Guardians of Forbidden Paths:
-    Beware, brave seeker! Some paths are forbidden, guarded by formidable sentinels.
-    - update and partial_update: These sacred records are untouchable, holding ancient power.
-      Approach with respect. Forbidden: 403
-    - destroy: The fabric of the realm shudders at the thought of deletion. Honor the balance and
-      tread carefully. Forbidden: 403
-
-    Trusty Allies:
-    Meet your allies, the valiant serializers, standing by to help you navigate this grand quest.
-    - PaymentSerializers.Get: Reveals the full scope of payment details.
-    - PaymentSerializers.Fetch: Fetches essential payment information, offering a taste of the adventure.
-
-    Fear not, brave developer! Your journey through the realms of videos and payments is about to
-    reach new heights. May your callbacks resonate with victory and your code be as epic as the most
-    legendary tales! 🌟🔮🚀
-    """
-
     serializer_class: PaymentSerializers = PaymentSerializers
     queryset = Payments.objects.all()
     pagination_class = CustomPagination
@@ -202,17 +147,15 @@ class PaymentViewSet(ModelViewSet):
 
         return icons.get(company)
 
+    @extend_schema(
+        request=PaymentSerializers.CreatePayment,
+        responses={status.HTTP_200_OK: PaymentSerializers.GetPayment},
+        summary="Buy a plan",
+    )
     @atomic
     def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
-        - create: Prepare to wield the ultimate spell to conjure payments that seamlessly integrate with
-        your video conquests! ✨🧙‍♂️
-        Magic Scroll: POST
-        Command: /payments/create
-
-        Quest Tips:
-        Channel your inner spellcaster to define the amount and payment plan. Our payment wizards
-        will craft a seamless journey, complete with callbacks that align with your heroic quest.
+        - Buy a plan
 
         """
         user = request.user
@@ -245,33 +188,19 @@ class PaymentViewSet(ModelViewSet):
             return Response(response.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(responses={status.HTTP_200_OK: PaymentSerializers.GetPayment(many=True)})
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
-        - list: Embark on a treasure hunt that reveals the riches of your VideoVerse accomplishments,
-        guarded by loyal pagination guardians! 🗺️📜
-        Explorer's Scroll: GET
-        Command: /payments
-
-        Quest Tips:
-        Journey through the scrolls guided by our wise pagination guardians. Uncover your hard-earned
-        treasures in bite-sized portions, making your exploration smooth and delightful.
-
+        - List all payments made by the user
         """
         page = self.paginate_queryset(self.get_queryset())
         data = self.serializer_class.GetPayment(instance=page, many=True).data
         return self.get_paginated_response(data)
 
+    @extend_schema(responses={status.HTTP_200_OK: PaymentSerializers.FetchPayment}, summary="Payment webhook")
     def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
-        - retrieve: Venture deeper into the realm as you unveil the secrets behind individual payments,
-        adding a layer of mystique to your adventure! 🔍🤐
-        Decoder Scroll: GET
-        Command: /payments/{id}
-
-        Quest Tips:
-        Empower yourself to unravel the essence of a single payment. The response shall reveal the
-        secrets you seek, letting you savor the thrill of discovery.
-
+        - Webhook for confirming the status of a payment
         """
         instance = self.get_object()
         response = self.serializer_class.FetchPayment(instance)
@@ -304,11 +233,17 @@ class PaymentViewSet(ModelViewSet):
         """
         # TODO: List all payment plans, description, priviledges and prices
 
+    @extend_schema(responses={status.HTTP_200_OK: PaymentSerializers.CurrencySchema})
     @action(detail=False, methods=["get"])
     def currencies(self, request, *args, **kwargs):
         choices = ({"value": choice[0], "label": choice[1]} for choice in CurrencyChoices.choices)
         return Response(choices)
 
+    @extend_schema(
+        request=PaymentSerializers.CardType,
+        responses={status.HTTP_200_OK: PaymentSerializers.CardTypeResponseSchema},
+        summary="Get the company of the card through the card number",
+    )
     @action(detail=False, methods=["get"])
     def card_type(self, request, *args, **kwargs):
         serializer = self.serializer_class.CardType(data=request.query_params)
