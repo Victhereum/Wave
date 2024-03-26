@@ -16,7 +16,13 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from wave.apps.users.api.serializers import CreateUserSerializer, GetUserSerializer, OTPSerializer, PhoneSerializer
+from wave.apps.users.api.serializers import (
+    CreateUserSerializer,
+    GetUserSerializer,
+    LoginResponseSerializer,
+    OTPSerializer,
+    PhoneSerializer,
+)
 from wave.apps.users.models import PhoneModel, User
 from wave.utils.custom_exceptions import CustomError
 from wave.utils.enums import CountryEnum, CountryName
@@ -135,7 +141,7 @@ class PhoneNumberView(GenericAPIView):
 
     @extend_schema(
         request=OTPSerializer,
-        responses={200: PhoneSerializer},
+        responses={200: LoginResponseSerializer},
     )
     @action(detail=False, methods=["GET"], permission_classes=[AllowAny])
     def login(self, request, *args, **kwargs):
@@ -157,6 +163,10 @@ class PhoneNumberView(GenericAPIView):
             mobile.counter += 1  # Update the counter after every verificaation
             mobile.save(update_fields=["counter", "is_verified"])
             token = RefreshToken.for_user(user)
-            response = {"refresh": str(token), "access": str(token.access_token)}
+            response = {
+                "refresh": str(token),
+                "access": str(token.access_token),
+                "name": user.name,
+            }
             return Response(response, status=200)
         raise CustomError.BadRequest(detail="Wrong OTP")
