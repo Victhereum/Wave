@@ -60,11 +60,11 @@ services:
   #     - '9000:9000'
   #   command: /start-docs
 
-  mailhog:
-    image: mailhog/mailhog:v1.0.0
-    container_name: wave_local_mailhog
-    ports:
-      - "8025:8025"
+  # mailhog:
+  #   image: mailhog/mailhog:v1.0.0
+  #   container_name: wave_local_mailhog
+  #   ports:
+  #     - "8025:8025"
 
   redis:
     image: redis:6

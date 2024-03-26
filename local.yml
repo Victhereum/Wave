@@ -104,42 +104,42 @@ services:
   #     - '5555:5555'
   #   command: /start-flower
 
-  minio:
-    image: minio/minio
-    container_name: wave_local_minio_storage
-    restart: always
-    working_dir: "/minio-image/storage"
-    volumes:
-      - wave_local_minio_storage:/data
-    env_file:
-      - ./.envs/.local/.aws
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    deploy:
-      restart_policy:
-        condition: any
-    command: server /minio-image/storage --console-address :9001
+  # minio:
+  #   image: minio/minio
+  #   container_name: wave_local_minio_storage
+  #   restart: always
+  #   working_dir: "/minio-image/storage"
+  #   volumes:
+  #     - wave_local_minio_storage:/data
+  #   env_file:
+  #     - ./.envs/.local/.aws
+  #   ports:
+  #     - "9000:9000"
+  #     - "9001:9001"
+  #   deploy:
+  #     restart_policy:
+  #       condition: any
+  #   command: server /minio-image/storage --console-address :9001
 
-  createbuckets:
-    image: minio/mc
-    depends_on:
-      - minio
-    entrypoint: >
-      /bin/sh -c "
-      apk add nc &&
-      while ! nc -z minio 9000; do echo 'Wait minio to startup...' && sleep 0.1; done; sleep 5 &&
-      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
-      if ! /usr/bin/mc ls myminio/wave-bucket &> /dev/null; then
-        /usr/bin/mc mb myminio/wave-bucket;
-        /usr/bin/mc policy download myminio/wave-bucket;
-      fi;
-      exit 0;
-      "
-    deploy:
-      restart_policy:
-        condition: none
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 2G
+  # createbuckets:
+  #   image: minio/mc
+  #   depends_on:
+  #     - minio
+  #   entrypoint: >
+  #     /bin/sh -c "
+  #     apk add nc &&
+  #     while ! nc -z minio 9000; do echo 'Wait minio to startup...' && sleep 0.1; done; sleep 5 &&
+  #     /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
+  #     if ! /usr/bin/mc ls myminio/wave-bucket &> /dev/null; then
+  #       /usr/bin/mc mb myminio/wave-bucket;
+  #       /usr/bin/mc policy download myminio/wave-bucket;
+  #     fi;
+  #     exit 0;
+  #     "
+  #   deploy:
+  #     restart_policy:
+  #       condition: none
+  #     resources:
+  #       limits:
+  #         cpus: '0.5'
+  #         memory: 2G
