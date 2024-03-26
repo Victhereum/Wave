@@ -72,6 +72,7 @@ class GetUserSerializer(serializers.ModelSerializer):
             "name",
             "has_active_subscription",
             "free_mode_status",
+            "can_download",
             "subscription_status",
         )
 

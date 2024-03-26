@@ -124,6 +124,7 @@ class CaptionViewSet(ModelViewSet):
     @extend_schema(
         request=CaptionSerializer.UpdateCaption,
         responses={status.HTTP_202_ACCEPTED: CaptionSerializer.GetCaption},
+        summary="Embed SRT to the video",
     )
     @transaction.atomic
     def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:

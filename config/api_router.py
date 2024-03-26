@@ -12,7 +12,7 @@ else:
 
 router.register("users", UserViewSet)
 router.register("subscriptions", SubscriptionViewSet)
-router.register("videos", CaptionViewSet)
+router.register("captions", CaptionViewSet)
 
 
 app_name = "api"

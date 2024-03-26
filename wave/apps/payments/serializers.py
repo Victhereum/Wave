@@ -1,7 +1,7 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from wave.apps.payments.models import SubscriptionPlan, Subscriptions
+from wave.apps.payments.models import SubscriptionPlan, SubscriptionPriviledge, Subscriptions
 from wave.utils.enums import CardSourceType, CurrencyChoices, SubscriptionPlans
 
 
@@ -45,7 +45,7 @@ class SubscriptionSerializers:
 
 class SubscriptionPriviledgesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Subscriptions
+        model = SubscriptionPriviledge
         fields = ("id", "description", "priviledge")
 
 
