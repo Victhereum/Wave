@@ -10,20 +10,20 @@ class CurrencyChoices(TextChoices):
     # NGN = ("NGN", "NGN")
 
 
-class PaymentPlans(TextChoices):
+class SubscriptionPlans(TextChoices):
     FREE = ("FREE", "FREE")
     BASIC = ("BASIC", "BASIC")
     PREMIUM = ("PREMIUM", "PREMIUM")
     CUSTOM = ("CUSTOM", "CUSTOM")
 
 
-class PaymentPlanDurationChoices(TextChoices):
+class SubscriptionPlanDurationChoices(TextChoices):
     DEFAULT = ("DEFAULT", "DEFAULT")
     ONE_MONTH = ("ONE_MONTH", "ONE_MONTH")
     ONE_YEAR = ("ONE_YEAR", "ONE_YEAR")
 
 
-class PaymentSubscriptionStatus(TextChoices):
+class SubscriptionStatus(TextChoices):
     NONE = ("NONE", "NONE")
     ACTIVE = ("ACTIVE", "ACTIVE")
     EXPIRED = ("EXPIRED", "EXPIRED")
@@ -931,6 +931,6 @@ class CardSourceType(TypedDict):
     year: str
 
 
-class PaymentPriviledges(TextChoices):
+class SubscriptionPriviledges(TextChoices):
     CAN_DOWNLOAD = ("CAN_DOWNLOAD", "User can download video to watch offline")
     CAN_CREATE_SUBTILES = ("CAN_CREATE_SUBTILES", "User can add subtitles to video")

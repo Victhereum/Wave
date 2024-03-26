@@ -4,12 +4,13 @@ from uuid import uuid4
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db.models import BooleanField, CharField, DateTimeField, IntegerField, QuerySet
 from django.urls import reverse
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import PermissionDenied
 
-from wave.apps.payments.models import PaymentPlan, Payments
+from wave.apps.payments.models import SubscriptionPlan, Subscriptions
 from wave.apps.users.managers import CustomUserManager
-from wave.utils.enums import FreeModeChoices, PaymentStatus, PaymentSubscriptionStatus
+from wave.utils.enums import FreeModeChoices, PaymentStatus, SubscriptionPlans, SubscriptionStatus
 from wave.utils.models import UIDTimeBasedModel
 
 
@@ -46,7 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     free_mode_activated_at = DateTimeField(null=True)
     date_joined = DateTimeField(auto_now_add=True)
     collection_id = CharField(null=True, blank=True, max_length=120)
-    user_payments: QuerySet["Payments"]
+    subscriptions: QuerySet["Subscriptions"]
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
@@ -66,16 +67,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.phone_no
 
     @property
-    def _last_payment(self) -> Payments | None:
-        payments: QuerySet[Payments] = self.user_payments.order_by("-created_at")
+    def _last_payment(self) -> Subscriptions | None:
+        payments: QuerySet[Subscriptions] = self.subscriptions.order_by("-created_at")
         if payments:
             return payments.filter(status=PaymentStatus.PAID).first()
         return None
 
     def subscribe_to_free_plan(self) -> None:
-        if not self.user_payments.exists():
-            free_plan = PaymentPlan.create_free().first()
-            return Payments.objects.create(user=self, plan=free_plan)
+        if not self.subscriptions.exists():
+            free_plan = SubscriptionPlan.create_free().first()
+            return Subscriptions.objects.create(user=self, plan=free_plan)
 
     def _free_mode_status(self) -> str:
         if not self._last_payment:
@@ -99,7 +100,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             # If the last payment status, didn't go through
             # return False
             payment_status = self._last_payment().status == PaymentStatus.PAID
-            subscription_status = self._last_payment().subscription_status == PaymentSubscriptionStatus.ACTIVE
+            subscription_status = self._last_payment().subscription_status == SubscriptionStatus.ACTIVE
             if payment_status and subscription_status:
                 return True
         return False
@@ -138,3 +139,23 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def current_plan(self):
         return self._last_payment().plan
+
+    @property
+    def subscription_status(
+        self,
+    ) -> Literal[SubscriptionStatus.ACTIVE, SubscriptionStatus.EXPIRED]:
+        """
+        If the payment is for a custom plan, then check by duration alloted
+        else check by number of videos subtitled
+        """
+        if self.current_plan.name == SubscriptionPlans.CUSTOM:
+            used_days = now() - self.created_at
+            if used_days.total_seconds() >= self.plan.duration:
+                return SubscriptionStatus.EXPIRED
+            if self.captions_during_subscription.count() >= self.plan.slots:
+                return SubscriptionStatus.EXPIRED
+            return SubscriptionStatus.ACTIVE
+        else:
+            if self.captions_during_subscription.count() >= self.plan.slots:
+                return SubscriptionStatus.EXPIRED
+            return SubscriptionStatus.ACTIVE

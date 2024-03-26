@@ -1,30 +1,30 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from wave.apps.payments.models import Payments
-from wave.utils.enums import CardSourceType, CurrencyChoices, PaymentPlans
+from wave.apps.payments.models import SubscriptionPlan, Subscriptions
+from wave.utils.enums import CardSourceType, CurrencyChoices, SubscriptionPlans
 
 
-class PaymentSerializers:
-    class CreatePayment(serializers.Serializer):
+class SubscriptionSerializers:
+    class CreateSubscription(serializers.Serializer):
         currency = serializers.CharField(required=False, write_only=True)
         source: CardSourceType = serializers.JSONField(required=True)
-        plan = serializers.ChoiceField(choices=PaymentPlans.choices, required=True)
+        plan = serializers.ChoiceField(choices=SubscriptionPlans.choices, required=True)
 
         @extend_schema_field(CardSourceType)
         def get_source(self, obj) -> CardSourceType:
             return obj["source"]
 
-    class GetPayment(serializers.ModelSerializer):
+    class GetSubscription(serializers.ModelSerializer):
         class Meta:
-            model = Payments
+            model = Subscriptions
             fields = ("id", "plan", "status")
 
-    class FetchPayment(serializers.ModelSerializer):
+    class FetchSubscription(serializers.ModelSerializer):
         metadata = serializers.ReadOnlyField()
 
         class Meta:
-            model = Payments
+            model = Subscriptions
             fields = ("id", "plan", "status", "metadata")
 
     class CardType(serializers.Serializer):
@@ -41,3 +41,17 @@ class PaymentSerializers:
         value = serializers.ChoiceField(choices=[x[0] for x in CurrencyChoices.choices])
         label = serializers.ChoiceField(choices=[x[1] for x in CurrencyChoices.choices])
         icon = serializers.ChoiceField(choices=[x[1] for x in CurrencyChoices.choices])
+
+
+class SubscriptionPriviledgesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subscriptions
+        fields = ("id", "description", "priviledge")
+
+
+class SubscriptionPlansSerializer(serializers.ModelSerializer):
+    priviledges = SubscriptionPriviledgesSerializer(many=True)
+
+    class Meta:
+        model = SubscriptionPlan
+        fields = ("id", "name", "price", "description", "max_duration", "slots", "type", "priviledges")

@@ -86,8 +86,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "wave.apps.users.apps.UsersConfig",
-    "wave.apps.payments.apps.PaymentsConfig",
-    "wave.apps.video.apps.VideoConfig",
+    "wave.apps.payments.apps.SubscriptionsConfig",
+    "wave.apps.video.apps.CaptionConfig",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

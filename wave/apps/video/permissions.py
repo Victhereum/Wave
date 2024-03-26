@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from wave.utils.functions import access_control
 
 
-class CanCreateVideo(BasePermission):
+class CanCreateCaption(BasePermission):
     def has_permission(self, request: Request, view: APIView) -> bool:
         if request.method not in SAFE_METHODS:
             return access_control(request)

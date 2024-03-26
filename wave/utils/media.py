@@ -21,13 +21,13 @@ APPS_DIR = settings.APPS_DIR
 
 class MediaHelper:
     """
-    Utility class to manage media files
+    Utility class to manage resource files
     """
 
     @staticmethod
     def _upload_path_with_folder(model, filetype, filename):
         """
-        function to generate upload path for media files to prevent duplicate
+        function to generate upload path for resource files to prevent duplicate
         """
         path = f"{filetype}/{model}/{timezone.localdate()}"
         ext = filename.rsplit(".", 1)
@@ -41,7 +41,7 @@ class MediaHelper:
     @staticmethod
     def _upload_path_file_only(model, filetype, filename):
         """
-        function to generate upload path for media files to prevent duplicate
+        function to generate upload path for resource files to prevent duplicate
         """
         path = f"{filetype}/{model}/{timezone.localdate()}"
         ext = filename.rsplit(".", 1)
@@ -69,7 +69,7 @@ class MediaHelper:
 
     @staticmethod
     def get_document_upload_path(model, filename):
-        """generate media path for all medias to prevent duplicate"""
+        """generate resource path for all resources to prevent duplicate"""
         ext = filename.rsplit(".", 1)
         return MediaHelper._upload_path_file_only(model, f"{ext}/{now().date()}", filename)
 
@@ -107,14 +107,14 @@ class MediaHelper:
             raise ValidationError(detail="Could not determine the duration of the video.")
 
     @staticmethod
-    def convert_to_wav(media_path: str):
-        path = media_path.rsplit(".", 1)[0]
+    def convert_to_wav(resource_path: str):
+        path = resource_path.rsplit(".", 1)[0]
         output = f"{path}.wav"
         name = output.rsplit("/", 1)[1]
         cmd = [
             "ffmpeg",
             "-i",
-            media_path,
+            resource_path,
             "-ar",
             "16000",  # Sample rate: 16 kHz
             "-ac",
@@ -130,14 +130,14 @@ class MediaHelper:
             return output, name
 
     @staticmethod
-    def embed_srt_to_video(media_path: str, srt_path: str):
-        path = media_path.rsplit(".", 1)[0]
-        ext = media_path.rsplit(".", 1)[1]
+    def embed_srt_to_video(resource_path: str, srt_path: str):
+        path = resource_path.rsplit(".", 1)[0]
+        ext = resource_path.rsplit(".", 1)[1]
         output = f"{path}out.{ext}"
         cmd = [
             "ffmpeg",
             "-i",
-            media_path,
+            resource_path,
             "-vf",
             f"subtitles={srt_path}",
             "-c:a",
@@ -171,7 +171,7 @@ folder_deletion_handler = FolderDeletionHandler()
 
 class CustomTemporaryFolder:
     def __init__(self, folder_name):
-        self.folder_path = str(APPS_DIR / "media")
+        self.folder_path = str(APPS_DIR / "resource")
         self.folder_name = folder_name
 
     def __enter__(self):

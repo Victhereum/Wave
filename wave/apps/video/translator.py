@@ -13,7 +13,7 @@ from django.conf import settings
 from openai import OpenAI
 from rest_framework.exceptions import APIException
 
-from wave.apps.video.serializers import VideoSerializer
+from wave.apps.video.serializers import CaptionSerializer
 
 # from wave.utils.enums import LanguageChoices, TaskLiterals
 
@@ -31,11 +31,11 @@ OPEN_AI_KEY = settings.OPEN_AI_KEY
 
 #     def __init__(
 #         self,
-#         media_path,
+#         resource_path,
 #         task: Literal[TaskLiterals.TRANSLATE, TaskLiterals.TRANSCRIBE] = TaskLiterals.TRANSCRIBE,
 #         lang: str = "en",
 #     ) -> None:
-#         self._media_path = media_path
+#         self._resource_path = resource_path
 #         self._lang = lang
 #         self._task = task
 
@@ -93,21 +93,21 @@ OPEN_AI_KEY = settings.OPEN_AI_KEY
 #         _traverse_and_decode(decoded_dict)
 #         return decoded_dict
 
-#     def transcribe_media(self) -> dict:
-#         media_file_path = self._media_path
-#         # Read the media file
-#         with open(media_file_path, "rb") as media_file:
+#     def transcribe_resource(self) -> dict:
+#         resource_file_path = self._resource_path
+#         # Read the resource file
+#         with open(resource_file_path, "rb") as resource_file:
 #             if self._task == "transcribe":
 #                 transcription_result = openai.Audio.transcribe(
 #                     **self._params,
 #                     model="whisper-1",
-#                     file=media_file,
+#                     file=resource_file,
 #                 )
 #             else:
 #                 transcription_result = openai.Audio.translate(
 #                     **self._params,
 #                     model="whisper-1",
-#                     file=media_file,
+#                     file=resource_file,
 #                 )
 #             # decoded_data = self._decode_unicode_text(json.loads(str(transcription_result)))
 #             decoded_data = transcription_result
@@ -168,12 +168,12 @@ def to_representation(words_with_timestamps: list[dict]) -> list[dict]:
 class AzureSpeachService:
     def __init__(
         self,
-        media_path: str = None,
+        resource_path: str = None,
         text: str = None,
         from_lang: str = "en",
         to_lang: str = "en",
     ) -> None:
-        self._media_path = media_path
+        self._resource_path = resource_path
         self._text = text
         self._from_lang = from_lang
         self._to_lang = to_lang
@@ -213,7 +213,7 @@ class AzureSpeachService:
         speech_config.output_format = speechsdk.OutputFormat(0)
 
         # Configure the audio input
-        audio_config = speechsdk.audio.AudioConfig(filename=self._media_path)
+        audio_config = speechsdk.audio.AudioConfig(filename=self._resource_path)
 
         # Create a translation recognizer with the configured settings
         speech_recognizer = speechsdk.translation.TranslationRecognizer(
@@ -225,7 +225,7 @@ class AzureSpeachService:
         def on_recognized(evt):
             # Extract the result data from the recognized
             print("SUCCESS")
-            data = VideoSerializer.ResultSerializer({"result": json.loads(evt.result.json)}).data["result"]
+            data = CaptionSerializer.ResultSerializer({"result": json.loads(evt.result.json)}).data["result"]
             translation = data["Translation"]["Translations"][0]["Text"]
             words = data["Words"]
             # Map the translations to the corresponding audio words
@@ -282,8 +282,8 @@ class AzureSpeachService:
         # Set the output format to JSON
         speech_config.output_format = speechsdk.OutputFormat(0)
 
-        # Create an AudioConfig object with the provided media file path
-        audio_config = speechsdk.audio.AudioConfig(filename=self._media_path)
+        # Create an AudioConfig object with the provided resource file path
+        audio_config = speechsdk.audio.AudioConfig(filename=self._resource_path)
 
         # Create a SpeechRecognizer object with the SpeechConfig and AudioConfig objects
         speech_recognizer = speechsdk.SpeechRecognizer(
@@ -296,7 +296,7 @@ class AzureSpeachService:
             # Print "SUCCESS" when speech is recognized
             print("SUCCESS")
             # Access the recognized words from the JSON result and assign them to the `result` attribute
-            data = VideoSerializer.ResultSerializer({"result": json.loads(evt.result.json)}).data["result"]["NBest"][
+            data = CaptionSerializer.ResultSerializer({"result": json.loads(evt.result.json)}).data["result"]["NBest"][
                 0
             ]["Words"]
             self.result.extend(to_representation(data))

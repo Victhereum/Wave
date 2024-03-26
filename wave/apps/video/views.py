@@ -13,15 +13,14 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.serializers import BaseSerializer
 from rest_framework.viewsets import ModelViewSet
 
 from wave.apps.users.models import User
-from wave.apps.video.models import Video
+from wave.apps.video.models import Caption
 from wave.apps.video.paginations import CustomPagination
-from wave.apps.video.permissions import CanCreateVideo
-from wave.apps.video.s3 import BunnyVideoAPI
-from wave.apps.video.serializers import VideoSerializer
+from wave.apps.video.permissions import CanCreateCaption
+from wave.apps.video.s3 import BunnyCaptionAPI
+from wave.apps.video.serializers import CaptionSerializer
 from wave.apps.video.translator import AzureSpeachService
 from wave.utils.enums import FromLanguages, TaskLiterals, ToLanguages
 from wave.utils.media import MediaHelper
@@ -29,140 +28,43 @@ from wave.utils.media import MediaHelper
 fs = FileSystemStorage()
 
 
-class VideoViewSet(ModelViewSet):
-    """
-    VideoViewSet: Taming Videos with AI
-
-    Whether you're a frontend developer, backend wizard, or a unicorn enthusiast, welcome to the realm
-    of Wave video endpoints! 🎥✨ Let's dive into the epic saga of handling videos in a way that even Gandalf
-    would be proud of.
-
-    Description:
-    VideoViewSet is your trusty companion for managing videos like a pro. It's not just a view, it's
-    a view with style and swagger, ready to slay dragons and transcribe videos. 🐉
-
-    Methods:
-    - create:
-        Use this mystical spell to create a new video with captions that even Shakespeare would envy.
-        HTTP Method: POST
-        Path: /api/v1/videos/
-
-        Wizard's Tip:
-        Supply your media file and the type of task you want the video to perform. The sorcery behind
-        the scenes will transcribe your video and craft you a magic response.
-
-    - partial_update:
-        Partial updates for when you need to give your video a makeover without breaking the spell.
-        HTTP Method: PATCH
-        Path: /api/v1/videos/{id}/
-
-        Wizard's Tip:
-        Tweak the media path and captions of your video. Our wizards will ensure your updates are
-        gracefully accepted or met with a 400 BAD REQUEST spell.
-
-    - list:
-        Retrieve a list of your enchanted videos, safely guarded by your own user shield.
-        HTTP Method: GET
-        Path: /api/v1/videos/
-
-        Wizard's Tip:
-        Paginate your way through your videos. Gather them in small, friendly clusters to avoid
-        overwhelming even the bravest of browsers.
-
-    - retrieve:
-        Summon the details of a single video by invoking its unique identifier.
-        HTTP Method: GET
-        Path: /api/v1/videos/{id}
-
-        Wizard's Tip:
-        Retrieve the mystical knowledge of a specific video. The video's secrets shall be revealed in
-        a splendid 200 OK response.
-
-    Sidekicks:
-    Meet your trusty sidekicks, the powerful serializers, ready to translate your requests and
-    responses between different dimensions.
-    - VideoSerializer.Create: Use this to channel your creativity when creating a video. Specify the
-      task and language, and witness the magic unfold.
-    - VideoSerializer.Get: The master of ceremonies when revealing video secrets. This serializer
-      unveils the beauty of a video.
-    - VideoSerializer.List: For those moments when you need to showcase your collection of videos.
-      Tame the list with elegance.
-    - VideoSerializer.Update: When your video craves updates, this is your go-to spell. Adjust the
-      media path and captions with grace.
-
-    Remember, brave developer, you are the commander of these views. May your APIs be as smooth as
-    butter and your code as elegant as a dragon's dance. 🐲👩‍💻🚀
-    """
-
-    queryset = Video.objects.all()
-    serializer_class: VideoSerializer = VideoSerializer
+class CaptionViewSet(ModelViewSet):
+    queryset = Caption.objects.all()
+    serializer_class: CaptionSerializer = CaptionSerializer
     pagination_class = CustomPagination
     lookup_field = "id"
-    permission_classes = [IsAuthenticated, CanCreateVideo]
+    permission_classes = [IsAuthenticated, CanCreateCaption]
     http_method_names = ["get", "post", "patch", "delete"]
     parser_classes = [MultiPartParser, FormParser]
 
-    def get_serializer(self, *args, **kwargs) -> BaseSerializer:
-        if self.action == "create":
-            return self.serializer_class.CreateVideo(*args, **kwargs)
-        elif self.action == "partial_update":
-            return self.serializer_class.UpdateVideo(*args, **kwargs)
-        elif self.action in ["list", "retrieve"]:
-            return self.serializer_class.GetVideo(*args, **kwargs)
-        elif self.action in "to_languages":
-            return self.serializer_class.ToLanguageSerializer(*args, **kwargs)
-        elif self.action in "from_languages":
-            return self.serializer_class.FromLanguageSerializer(*args, **kwargs)
-        return self.serializer_class.GetVideo(*args, **kwargs)
-
-    def get_serializer_class(self) -> type[BaseSerializer]:
-        if self.action == "create":
-            return self.serializer_class.CreateVideo
-        elif self.action == "partial_update":
-            return self.serializer_class.UpdateVideo
-        elif self.action in ["list", "retrieve"]:
-            return self.serializer_class.GetVideo
-        elif self.action in "to_languages":
-            return self.serializer_class.ToLanguageSerializer
-        elif self.action in "from_languages":
-            return self.serializer_class.FromLanguageSerializer
-        return self.serializer_class.GetVideo
-
     def get_queryset(self) -> QuerySet:
-        self.queryset = Video.objects.filter(user=self.request.user)
+        self.queryset = Caption.objects.filter(user=self.request.user)
         return self.queryset
 
     @extend_schema(
-        request=VideoSerializer.CreateVideo,
-        parameters=[VideoSerializer.TranscribleVideoParams, VideoSerializer.TranslateVideoParams],
-        responses={status.HTTP_200_OK: VideoSerializer.GetVideo},
+        request=CaptionSerializer.CreateCaption,
+        parameters=[CaptionSerializer.TranscriptionParams, CaptionSerializer.TranslationParams],
+        responses={status.HTTP_200_OK: CaptionSerializer.GetCaption},
     )
     def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
-        - create:
-        Use this mystical spell to create a new video with captions that even Shakespeare would envy.
-        HTTP Method: POST
-        Path: /api/v1/videos/
-
-        Wizard's Tip:
-        Supply your media file and the type of task you want the video to perform. The sorcery behind
-        the scenes will transcribe your video and craft you a magic response.
+        Create a new caption
         """
-        serializer = self.serializer_class.CreateVideo(data=request.data)
+        serializer = self.serializer_class.CreateCaption(data=request.data)
         if request.query_params.get("action", None) == TaskLiterals.TRANSLATE:
-            serialized_params = self.serializer_class.TranslateVideoParams(data=request.query_params)
+            serialized_params = self.serializer_class.TranslationParams(data=request.query_params)
         else:
-            serialized_params = self.serializer_class.TranscribleVideoParams(data=request.query_params)
+            serialized_params = self.serializer_class.TranscriptionParams(data=request.query_params)
         if serializer.is_valid(raise_exception=True) and serialized_params.is_valid(raise_exception=True):
-            media = request.FILES.get("media")
+            resource = request.FILES.get("resource")
             from_lang = serialized_params.validated_data.pop("from_lang")
             to_lang = serialized_params.validated_data.pop("to_lang", "")
             action = serialized_params.validated_data.pop("action")
             # Save the uploaded file to a temporary location
             try:
-                filename = fs.save(media.name, media)
+                filename = fs.save(resource.name, resource)
                 file_path = fs.path(filename)
-                if "wave" not in media.content_type:
+                if "wave" not in resource.content_type:
                     file_path, name = MediaHelper.convert_to_wav(file_path)
                 caption = AzureSpeachService(file_path, from_lang=from_lang, to_lang=to_lang)
                 captioned_data = caption.perform(action=action)
@@ -170,13 +72,17 @@ class VideoViewSet(ModelViewSet):
                 fs.delete(filename)
                 fs.delete(name)
 
-                video: Video = Video.objects.create(user=request.user, was_captioned=True, captions=captioned_data)
-                response = self.serializer_class.GetVideo(video)
+                video: Caption = Caption.objects.create(user=request.user, was_captioned=True, captions=captioned_data)
+                response = self.serializer_class.GetCaption(video)
                 return Response(response.data, status=status.HTTP_200_OK)
             except AttributeError:
-                return Response({"media": "The video seems to be corrupted"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"resource": "The video seems to be corrupted"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        request=CaptionSerializer.TranslateText,
+        responses={status.HTTP_200_OK: CaptionSerializer.TextTranslationResponse},
+    )
     @action(detail=False, methods=["POST"], permission_classes=[AllowAny])
     def text(self, request: Request, *args, **kwargs):
         """
@@ -215,81 +121,78 @@ class VideoViewSet(ModelViewSet):
             user.save()
         return collection
 
+    @extend_schema(
+        request=CaptionSerializer.UpdateCaption,
+        responses={status.HTTP_202_ACCEPTED: CaptionSerializer.GetCaption},
+    )
     @transaction.atomic
     def partial_update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        """
+        This endpoint embeds the srt file to the video
+        """
         instance = self.get_object()
-        serializer = self.serializer_class.UpdateVideo(data=request.data)
+        serializer = self.serializer_class.UpdateCaption(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            media = serializer.validated_data.get("media")
+            resource = serializer.validated_data.get("resource")
             srt = serializer.validated_data.pop("srt")
-            print("THE MEDIA", media.name)
-            print("THE SRT", srt.name)
             try:
-                medianame = fs.save(media.name, media)
+                resourcename = fs.save(resource.name, resource)
                 srtname = fs.save(srt.name, srt)
-                media_path = fs.path(medianame)
+                resource_path = fs.path(resourcename)
                 srt_path = fs.path(srtname)
 
-                print("EMBEDING SRT TO VIDEO")
-                output = MediaHelper.embed_srt_to_video(media_path, srt_path)
+                output = MediaHelper.embed_srt_to_video(resource_path, srt_path)
                 subtitle_output = Path(output)
-                print(subtitle_output)
 
-                print("SENDING VIDEO TO BUNNY")
                 file_name = str(basename(subtitle_output)).replace(" ", "")
-                response = BunnyVideoAPI().upload_video(subtitle_output, self.user_identifier(), file_name)
-                print("CREATE VIDEO RESPONSE", response)
-                fs.delete(medianame)
+                response = BunnyCaptionAPI().upload_video(subtitle_output, self.user_identifier(), file_name)
+                fs.delete(resourcename)
                 fs.delete(srtname)
                 fs.delete(output)
 
-                print("WRAPPING UP")
-                serializer.validated_data.pop("media")
-                instance.media = self.build_url(file_name=file_name)
+                serializer.validated_data.pop("resource")
+                instance.resource = self.build_url(file_name=file_name)
                 instance.name = file_name
                 update = serializer.update(instance=instance, validated_data=serializer.validated_data)
-                response = self.serializer_class.GetVideo(update)
-                print("DONE")
+                response = self.serializer_class.GetCaption(update)
                 return Response(response.data, status=status.HTTP_202_ACCEPTED)
             except AttributeError as e:
-                return Response({"media": f"The video seems to be corrupted: {e}"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"resource": f"The video seems to be corrupted: {e}"}, status=status.HTTP_400_BAD_REQUEST
+                )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(responses={status.HTTP_200_OK: CaptionSerializer.ListCaption(many=True)})
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
-        - list:
-        Retrieve a list of your enchanted videos, safely guarded by your own user shield.
-        HTTP Method: GET
-        Path: /api/v1/videos/
-
-        Wizard's Tip:
-        Paginate your way through your videos. Gather them in small, friendly clusters to avoid
-        overwhelming even the bravest of browsers.
+        - List all caption projects
         """
         page = self.paginate_queryset(self.get_queryset())
-        response = self.serializer_class.ListVideo(page, many=True)
+        response = self.serializer_class.ListCaption(page, many=True)
         return self.get_paginated_response(response.data)
 
+    @extend_schema(responses={status.HTTP_200_OK: CaptionSerializer.GetCaption})
     def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
-        - retrieve:
-        Summon the details of a single video by invoking its unique identifier.
-        HTTP Method: GET
-        Path: /api/v1/videos/{id}
-
-        Wizard's Tip:
-        Retrieve the mystical knowledge of a specific video. The video's secrets shall be revealed in
-        a splendid 200 OK response.
+        - Retrieve a caption project
         """
-        response = self.serializer_class.GetVideo(self.get_object())
+        response = self.serializer_class.GetCaption(self.get_object())
         return Response(response.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        responses={status.HTTP_200_OK: CaptionSerializer.FromLanguageResponseSerializer(many=True)},
+        summary="List of languages to be used in from_lang parameter",
+    )
     @action(detail=False, methods=["get"], permission_classes=[AllowAny])
     def from_languages(self, request, *args, **kwargs):
         """List of languages to be used in from_lang parameter"""
         choices = ({"value": choice[0], "label": choice[1]} for choice in FromLanguages.choices)
         return Response(choices)
 
+    @extend_schema(
+        responses={status.HTTP_200_OK: CaptionSerializer.ToLanguageResponseSerializer(many=True)},
+        summary="List of languages to be used in to_lang parameter",
+    )
     @action(detail=False, methods=["get"], permission_classes=[AllowAny])
     def to_languages(self, request, *args, **kwargs):
         """List of languages to be used in to_lang parameter"""
@@ -297,6 +200,10 @@ class VideoViewSet(ModelViewSet):
         choices = ({"value": choice[0], "label": choice[1]} for choice in ToLanguages.choices)
         return Response(choices)
 
+    @extend_schema(
+        responses={status.HTTP_200_OK: CaptionSerializer.ToLanguageResponseSerializer(many=True)},
+        summary="List of languages to be used in languages parameter",
+    )
     @action(detail=False, methods=["get"], permission_classes=[AllowAny])
     def languages(self, request, *args, **kwargs):
         choices = {
@@ -306,7 +213,7 @@ class VideoViewSet(ModelViewSet):
         return Response(choices)
 
     def destroy(self, request, *args, **kwargs):
-        instance: Video = self.get_object()
+        instance: Caption = self.get_object()
         # Remove the file from bunny
-        BunnyVideoAPI().delete_video(self.user_identifier(), instance.name)
+        BunnyCaptionAPI().delete_video(self.user_identifier(), instance.name)
         return super().destroy(request, **args, **kwargs)

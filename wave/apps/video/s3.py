@@ -2,7 +2,7 @@ import requests
 from django.conf import settings
 
 
-class BunnyVideoAPI:
+class BunnyCaptionAPI:
     def __init__(self):
         access_key = settings.BUNNY_ACCESS_KEY
         storage_name = settings.STORAGE_ZONE_NAME
@@ -49,6 +49,6 @@ class BunnyVideoAPI:
 
 # # Usage
 # api_key = "YOUR_BUNNY_API_KEY"
-# bunny_api = BunnyVideoAPI(api_key)
+# bunny_api = BunnyCaptionAPI(api_key)
 # all_videos = bunny_api.get_all_videos()
 # print(all_videos)

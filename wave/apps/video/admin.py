@@ -1,14 +1,14 @@
 from django.contrib import admin
 
-from .models import Video
+from .models import Caption
 
 
-@admin.register(Video)
-class VideoAdmin(admin.ModelAdmin):
-    list_display = ("user", "media_path", "was_captioned")
+@admin.register(Caption)
+class CaptionAdmin(admin.ModelAdmin):
+    list_display = ("user", "resource_path", "was_captioned")
     list_filter = ("user", "was_captioned")
-    search_fields = ("user__phone_no", "user__phone_no", "media_path")
-    readonly_fields = ("user", "media_path", "was_captioned", "captions")
+    search_fields = ("user__phone_no", "user__phone_no", "resource_path")
+    readonly_fields = ("user", "resource_path", "was_captioned", "captions")
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("user")

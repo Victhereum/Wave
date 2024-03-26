@@ -14,17 +14,17 @@ from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 from rest_framework.viewsets import ModelViewSet
 
-from wave.apps.payments.models import Payments
+from wave.apps.payments.models import SubscriptionPlan, Subscriptions
 from wave.apps.payments.paginations import CustomPagination
-from wave.apps.payments.serializers import PaymentSerializers
+from wave.apps.payments.serializers import SubscriptionPlansSerializer, SubscriptionSerializers
 from wave.utils.custom_exceptions import CustomError
-from wave.utils.enums import CurrencyChoices, PaymentPlans
+from wave.utils.enums import CurrencyChoices, SubscriptionPlans
 from wave.utils.payments import MoyasarAPIWrapper
 
 
-class PaymentViewSet(ModelViewSet):
-    serializer_class: PaymentSerializers = PaymentSerializers
-    queryset = Payments.objects.all()
+class SubscriptionViewSet(ModelViewSet):
+    serializer_class: SubscriptionSerializers = SubscriptionSerializers
+    queryset = Subscriptions.objects.all()
     pagination_class = CustomPagination
     payment = MoyasarAPIWrapper()
     lookup_field = "id"
@@ -59,8 +59,8 @@ class PaymentViewSet(ModelViewSet):
 
     def get_serializer(self, *args: Any, **kwargs: Any) -> BaseSerializer:
         if self.action == "retrieve":
-            return self.serializer_class.FetchPayment
-        return self.serializer_class.GetPayment
+            return self.serializer_class.FetchSubscription
+        return self.serializer_class.GetSubscription
 
     def get_call_back(self):
         """
@@ -79,7 +79,7 @@ class PaymentViewSet(ModelViewSet):
 
     def get_object(self) -> Any:
         id = self.kwargs["id"]
-        instance = get_object_or_404(Payments, id=id)
+        instance = get_object_or_404(Subscriptions, id=id)
         self.check_object_permissions(self.request, instance)
         return instance
 
@@ -89,22 +89,22 @@ class PaymentViewSet(ModelViewSet):
 
     def get_plan_amount(self, plan: str) -> int:
         """
-        Calculates and returns the amount for a given payment plan.
+        Calculates and returns the amount for a given subscription plan.
 
         Parameters:
-        - plan (PaymentPlans): The type of payment plan to calculate the amount for.
+        - plan (SubscriptionPlans): The type of subscription plan to calculate the amount for.
 
         Returns:
-        - float: The amount for the given payment plan.
+        - float: The amount for the given subscription plan.
 
         Raises:
-        - ValueError: If an invalid payment plan is provided.
+        - ValueError: If an invalid subscription plan is provided.
         """
-        if plan == PaymentPlans.BASIC:
+        if plan == SubscriptionPlans.BASIC:
             return self.dollars_to_cents(settings.BASIC_PLAN_PRICE)
-        if plan == PaymentPlans.PRO:
+        if plan == SubscriptionPlans.PRO:
             return self.dollars_to_cents(settings.PRO_PLAN_PRICE)
-        if plan == PaymentPlans.ANNUAL:
+        if plan == SubscriptionPlans.ANNUAL:
             return self.dollars_to_cents(settings.PREMIUM_PLAN_PRICE)
         raise ValueError
 
@@ -148,8 +148,8 @@ class PaymentViewSet(ModelViewSet):
         return icons.get(company)
 
     @extend_schema(
-        request=PaymentSerializers.CreatePayment,
-        responses={status.HTTP_200_OK: PaymentSerializers.GetPayment},
+        request=SubscriptionSerializers.CreateSubscription,
+        responses={status.HTTP_200_OK: SubscriptionSerializers.GetSubscription},
         summary="Buy a plan",
     )
     @atomic
@@ -159,14 +159,14 @@ class PaymentViewSet(ModelViewSet):
 
         """
         user = request.user
-        serializer = PaymentSerializers.CreatePayment(data=request.data)
+        serializer = SubscriptionSerializers.CreateSubscription(data=request.data)
         if serializer.is_valid(raise_exception=True):
             plan = serializer.validated_data.get("plan", None)
             amount = self.get_plan_amount(plan=plan)
             currency = serializer.validated_data.get("currency", "SAR")
             # month_text = self.month_number_to_text(month_number=int(datetime.now().date().month))
-            # plan_description = month_text if plan == PaymentPlans.MONTHLY else datetime.now().date().year
-            description = f"Wave payment from {user.name} for {plan} Plan"
+            # plan_description = month_text if plan == SubscriptionPlans.MONTHLY else datetime.now().date().year
+            description = f"Wave subscription from {user.name} for {plan} Plan"
             source: dict = serializer.validated_data.pop("source", {})
             source.update(
                 {
@@ -183,27 +183,29 @@ class PaymentViewSet(ModelViewSet):
                 callback_url=call_back,
                 metadata=metadata,
             )
-            instance = Payments.objects.create(user=request.user, id=payment.get("id"))
-            response = self.serializer_class.GetPayment(instance=instance)
+            instance = Subscriptions.objects.create(user=request.user, id=payment.get("id"))
+            response = self.serializer_class.GetSubscription(instance=instance)
             return Response(response.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @extend_schema(responses={status.HTTP_200_OK: PaymentSerializers.GetPayment(many=True)})
+    @extend_schema(responses={status.HTTP_200_OK: SubscriptionSerializers.GetSubscription(many=True)})
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
         - List all payments made by the user
         """
         page = self.paginate_queryset(self.get_queryset())
-        data = self.serializer_class.GetPayment(instance=page, many=True).data
+        data = self.serializer_class.GetSubscription(instance=page, many=True).data
         return self.get_paginated_response(data)
 
-    @extend_schema(responses={status.HTTP_200_OK: PaymentSerializers.FetchPayment}, summary="Payment webhook")
+    @extend_schema(
+        responses={status.HTTP_200_OK: SubscriptionSerializers.FetchSubscription}, summary="Subscription webhook"
+    )
     def retrieve(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """
-        - Webhook for confirming the status of a payment
+        - Webhook for confirming the status of a subscription
         """
         instance = self.get_object()
-        response = self.serializer_class.FetchPayment(instance)
+        response = self.serializer_class.FetchSubscription(instance)
         return Response(response.data, status=status.HTTP_200_OK)
 
     def update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
@@ -227,21 +229,28 @@ class PaymentViewSet(ModelViewSet):
         """
         raise PermissionDenied(detail="You can't delete a record")
 
+    @extend_schema(
+        responses={status.HTTP_200_OK: SubscriptionPlansSerializer(many=True)},
+        summary="Get all payment plans",
+    )
+    @action(detail=False, methods=["get"])
     def plans(self, request: Request, *args, **kwargs):
         """
-        Returns all payment plans, their prices and descriptions
+        Returns all payment plans, their prices, descriptions, etc
         """
-        # TODO: List all payment plans, description, priviledges and prices
+        plans = SubscriptionPlan.objects.exclude(name=SubscriptionPlans.CUSTOM)
+        serializer = SubscriptionPlansSerializer(plans, many=True)
+        return Response(serializer.data)
 
-    @extend_schema(responses={status.HTTP_200_OK: PaymentSerializers.CurrencySchema})
+    @extend_schema(responses={status.HTTP_200_OK: SubscriptionSerializers.CurrencySchema})
     @action(detail=False, methods=["get"])
     def currencies(self, request, *args, **kwargs):
         choices = ({"value": choice[0], "label": choice[1]} for choice in CurrencyChoices.choices)
         return Response(choices)
 
     @extend_schema(
-        request=PaymentSerializers.CardType,
-        responses={status.HTTP_200_OK: PaymentSerializers.CardTypeResponseSchema},
+        request=SubscriptionSerializers.CardType,
+        responses={status.HTTP_200_OK: SubscriptionSerializers.CardTypeResponseSchema},
         summary="Get the company of the card through the card number",
     )
     @action(detail=False, methods=["get"])

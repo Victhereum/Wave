@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from wave.apps.payments.models import Payments
+from wave.apps.payments.models import Subscriptions
 
 
-@admin.register(Payments)
-class PaymentsAdmin(admin.ModelAdmin):
+@admin.register(Subscriptions)
+class SubscriptionsAdmin(admin.ModelAdmin):
     list_display = ("user", "plan", "status")
     list_filter = ("plan",)
     search_fields = ("user__name", "user__phone_no")
@@ -17,5 +17,5 @@ class PaymentsAdmin(admin.ModelAdmin):
         return super().get_queryset(request).prefetch_related("user")
 
     @admin.display(description="User Phone")
-    def user_phone(self, obj: Payments):
+    def user_phone(self, obj: Subscriptions):
         return obj.user.phone_no if obj.user else None

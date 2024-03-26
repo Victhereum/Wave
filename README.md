@@ -47,13 +47,13 @@ Access Structure:
 
 # Endpoints
 
-## VideoViewSet: Taming Video Captioning With The Help of AI
+## CaptionViewSet: Taming Caption Captioning With The Help of AI
 
 Whether you're a frontend developer, backend wizard, or a unicorn enthusiast, welcome to the realm of video ednpoints! 🎥✨ Let's dive into the epic saga of handling videos in a way that even Gandalf would be proud of.
 
 ## Description
 
-VideoViewSet is your trusty companion for managing videos like a pro. It's not just a view, it's a view with style and swagger, ready to slay dragons and transcribe videos. 🐉
+CaptionViewSet is your trusty companion for managing videos like a pro. It's not just a view, it's a view with style and swagger, ready to slay dragons and transcribe videos. 🐉
 
 ### Methods
 
@@ -66,7 +66,7 @@ Use this mystical spell to create a new video with captions that even Shakespear
 
 ##### Wizard's Tip
 
-Supply your media file and the type of task you want the video to perform. The sorcery behind the scenes will transcribe your video and craft you a magic response.
+Supply your resource file and the type of task you want the video to perform. The sorcery behind the scenes will transcribe your video and craft you a magic response.
 
 #### `partial_update`
 
@@ -77,7 +77,7 @@ Partial updates for when you need to give your video a makeover without breaking
 
 ##### Wizard's Tip
 
-Tweak the media path and captions of your video. Our wizards will ensure your updates are gracefully accepted or met with a `400 BAD REQUEST` spell.
+Tweak the resource path and captions of your video. Our wizards will ensure your updates are gracefully accepted or met with a `400 BAD REQUEST` spell.
 
 #### `list`
 
@@ -105,16 +105,16 @@ Retrieve the mystical knowledge of a specific video. The video's secrets shall b
 
 Meet your trusty sidekicks, the powerful serializers, ready to translate your requests and responses between different dimensions.
 
-- `VideoSerializer.Create`: Use this to channel your creativity when creating a video. Specify the task and language, and witness the magic unfold.
-- `VideoSerializer.Get`: The master of ceremonies when revealing video secrets. This serializer unveils the beauty of a video.
-- `VideoSerializer.List`: For those moments when you need to showcase your collection of videos. Tame the list with elegance.
-- `VideoSerializer.Update`: When your video craves updates, this is your go-to spell. Adjust the media path and captions with grace.
+- `CaptionSerializer.Create`: Use this to channel your creativity when creating a video. Specify the task and language, and witness the magic unfold.
+- `CaptionSerializer.Get`: The master of ceremonies when revealing video secrets. This serializer unveils the beauty of a video.
+- `CaptionSerializer.List`: For those moments when you need to showcase your collection of videos. Tame the list with elegance.
+- `CaptionSerializer.Update`: When your video craves updates, this is your go-to spell. Adjust the resource path and captions with grace.
 
 Remember, brave developer, you are the commander of these views. May your APIs be as smooth as butter and your code as elegant as a dragon's dance. 🐲👩‍💻🚀
 
 
 
-# PaymentViewSet: Level Up Your Video Quest with Payment Magic
+# SubscriptionViewSet: Level Up Your Caption Quest with Subscription Magic
 
 Greetings, fellow adventurers of the WaveVerse! 🎮💰 Welcome to the realm of payments, where your heroic endeavors with videos are about to get a powerful upgrade. Gear up for an exhilarating journey as we blend the forces of videos and payments into one epic tale.
 
@@ -122,9 +122,9 @@ Greetings, fellow adventurers of the WaveVerse! 🎮💰 Welcome to the realm of
 
 Get ready to step into a world where videos meet payments in perfect harmony. payment emerges as your trusty guide, enhancing your WaveVerse experience like never before!
 
-### Payment Sorcery
+### Subscription Sorcery
 
-#### `create` - Enchanting Payments
+#### `create` - Enchanting Subscriptions
 
 Prepare to wield the ultimate spell to conjure payments that seamlessly integrate with your video conquests! ✨🧙‍♂️
 
@@ -137,7 +137,7 @@ Channel your inner spellcaster to define the amount and payment plan. Our paymen
 
 #### `list` - Treasure Trove Unveiled
 
-Embark on a treasure hunt that reveals the riches of your VideoVerse accomplishments, guarded by loyal pagination guardians! 🗺️📜
+Embark on a treasure hunt that reveals the riches of your CaptionVerse accomplishments, guarded by loyal pagination guardians! 🗺️📜
 
 - **Explorer's Scroll:** GET
 - **Command:** `/api/v1/payments/`
@@ -146,7 +146,7 @@ Embark on a treasure hunt that reveals the riches of your VideoVerse accomplishm
 
 Journey through the scrolls guided by our wise pagination guardians. Uncover your hard-earned treasures in bite-sized portions, making your exploration smooth and delightful.
 
-#### `retrieve` - Unmask Payment Secrets
+#### `retrieve` - Unmask Subscription Secrets
 
 Venture deeper into the realm as you unveil the secrets behind individual payments, adding a layer of mystique to your adventure! 🔍🤐
 
@@ -169,7 +169,7 @@ Beware, brave seeker! Some paths are forbidden, guarded by formidable sentinels.
 
 Meet your allies, the valiant serializers, standing by to help you navigate this grand quest.
 
-- `PaymentSerializers.Get`: Reveals the full scope of payment details.
-- `PaymentSerializers.Fetch`: Fetches essential payment information, offering a taste of the adventure.
+- `SubscriptionSerializers.Get`: Reveals the full scope of payment details.
+- `SubscriptionSerializers.Fetch`: Fetches essential payment information, offering a taste of the adventure.
 
 Fear not, brave developer! Your journey through the realms of videos and payments is about to reach new heights. May your callbacks resonate with victory and your code be as epic as the most legendary tales! 🌟🔮🚀
