@@ -41,12 +41,8 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
     def free_mode(self, request, *args, **kwargs):
         user: User = request.user
 
-        if not user.free_mode_activated_at:
-            user.free_mode_activated = True
-            user.free_mode_activated_at = datetime.now()
-            user.save()
-            return Response(data={"detail": "free mode activated"}, status=status.HTTP_202_ACCEPTED)
-        raise PermissionDenied(detail="You have exhausted your 3-day trial period")
+        user.subscribe_to_free_plan()
+        return Response(data={"detail": "free mode activated"}, status=status.HTTP_202_ACCEPTED)
 
     @action(detail=False, methods=["get"], permission_classes=[AllowAny])
     def dialing_code(self, request, *args, **kwargs):
@@ -91,7 +87,8 @@ class PhoneNumberView(GenericAPIView):
         return PhoneSerializer
 
     @extend_schema(parameters=[PhoneSerializer])
-    def get(self, request: Request, *args, **kwargs):
+    @action(detail=False, methods=["GET"], permission_classes=[AllowAny])
+    def get_otp(self, request: Request, *args, **kwargs):
         """
         Retrieves a user based on the provided phone number and generates an OTP for authentication.
 
@@ -136,7 +133,12 @@ class PhoneNumberView(GenericAPIView):
         except Exception as e:
             raise APIException(detail=f"Please try again {e}")
 
-    def post(self, request, *args, **kwargs):
+    @extend_schema(
+        request=OTPSerializer,
+        responses={200: PhoneSerializer},
+    )
+    @action(detail=False, methods=["GET"], permission_classes=[AllowAny])
+    def login(self, request, *args, **kwargs):
         serializer = OTPSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             phone = serializer.validated_data.get("phone_no", None)

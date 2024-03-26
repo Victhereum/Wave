@@ -77,6 +77,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if not self.subscriptions.exists():
             free_plan = SubscriptionPlan.create_free().first()
             return Subscriptions.objects.create(user=self, plan=free_plan)
+        raise PermissionDenied("You can only subscribe to a free plan once.")
 
     def _free_mode_status(self) -> str:
         if not self._last_payment:
@@ -94,13 +95,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         # Get the time difference by month(30 days)
         # If the the type is yearly
         # Get the time difference by year(365 days)
-        if self._last_payment():
+        if self._last_payment:
             # time_difference: timedelta = now() - last_payment.created_at
             # payment_type = last_payment.plan
             # If the last payment status, didn't go through
             # return False
-            payment_status = self._last_payment().status == PaymentStatus.PAID
-            subscription_status = self._last_payment().subscription_status == SubscriptionStatus.ACTIVE
+            payment_status = self._last_payment.status == PaymentStatus.PAID
+            subscription_status = self.subscription_status == SubscriptionStatus.ACTIVE
             if payment_status and subscription_status:
                 return True
         return False
@@ -138,7 +139,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def current_plan(self):
-        return self._last_payment().plan
+        return self._last_payment.plan
 
     @property
     def subscription_status(

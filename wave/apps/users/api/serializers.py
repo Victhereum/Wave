@@ -72,24 +72,19 @@ class GetUserSerializer(serializers.ModelSerializer):
             "name",
             "has_active_subscription",
             "free_mode_status",
-            "can_download",
-            "can_download",
-            "can_download",
-            "can_download",
-            "can_download",
+            "subscription_status",
         )
 
 
 class PhoneSerializer(serializers.Serializer):
     phone_no = serializers.CharField(required=True)
 
-    class Meta:
-        fields = "phone_no"
-
 
 class OTPSerializer(serializers.Serializer):
     phone_no = serializers.CharField(required=True)
     otp = serializers.CharField(required=True)
 
-    class Meta:
-        fields = ("phone", "otp")
+
+class LoginResponseSerializer(serializers.Serializer):
+    refresh = serializers.CharField(required=True)
+    access = serializers.CharField(required=True)
