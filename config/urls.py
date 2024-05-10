@@ -10,7 +10,7 @@ urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
-    path(f"api/{settings.API_VERSION}/users/", include("wave.apps.users.api.routers", namespace="users")),
+    # path(f"api/{settings.API_VERSION}/users/", include("wave.apps.users.api.routers", namespace="users")),
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:

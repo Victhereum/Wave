@@ -8,7 +8,6 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException, NotFound, PermissionDenied
-from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
@@ -60,19 +59,19 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
         return Response(choices)
 
 
-class RegistrationAPI(GenericAPIView):
-    permission_classes = [AllowAny]
-    serializer_class = CreateUserSerializer
+# class RegistrationAPI(GenericAPIView):
+#     permission_classes = [AllowAny]
+#     serializer_class = CreateUserSerializer
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response(
-            {
-                "detail": GetUserSerializer(user, context=self.get_serializer_context()).data,
-            }
-        )
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.save()
+#         return Response(
+#             {
+#                 "detail": GetUserSerializer(user, context=self.get_serializer_context()).data,
+#             }
+#         )
 
 
 class generateKey:
@@ -81,10 +80,11 @@ class generateKey:
         return str(phone) + str(datetime.date(datetime.now())) + "Some Random Secret Key"
 
 
-class PhoneNumberView(GenericAPIView):
+class PhoneNumberView(GenericViewSet):
     # authentication_classes = None
     permission_classes = [AllowAny]
     serializer_class = PhoneSerializer
+    queryset = User.objects.none()
 
     # Get to Create a call for OTP
     def get_serializer_class(self):
@@ -143,7 +143,7 @@ class PhoneNumberView(GenericAPIView):
         request=OTPSerializer,
         responses={200: LoginResponseSerializer},
     )
-    @action(detail=False, methods=["GET"], permission_classes=[AllowAny])
+    @action(detail=False, methods=["POST"], permission_classes=[AllowAny])
     def login(self, request, *args, **kwargs):
         serializer = OTPSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -170,3 +170,18 @@ class PhoneNumberView(GenericAPIView):
             }
             return Response(response, status=200)
         raise CustomError.BadRequest(detail="Wrong OTP")
+
+    @extend_schema(
+        request=CreateUserSerializer,
+        responses={200: GetUserSerializer},
+    )
+    @action(detail=False, methods=["POST"], permission_classes=[AllowAny])
+    def register(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(
+            {
+                "detail": GetUserSerializer(user, context=self.get_serializer_context()).data,
+            }
+        )
