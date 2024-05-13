@@ -177,7 +177,7 @@ class PhoneNumberView(GenericViewSet):
     )
     @action(detail=False, methods=["POST"], permission_classes=[AllowAny])
     def register(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = CreateUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response(
